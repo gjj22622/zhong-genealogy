@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(openspec:*)",
+      "Bash(mkdir -p \"C:/Users/gjj22/OneDrive/鍾氏族譜/.claude/skills/commit\")",
+      "Bash(npm --version)",
+      "Bash(pip --version)",
+      "Bash(git --version)",
+      "Bash(where code:*)",
+      "Bash(where pnpm:*)",
+      "Bash(python -m pip --version)",
+      "Bash(where yarn:*)",
+      "Bash(npm create:*)",
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(python -m venv .venv)",
+      "Bash(.venv/Scripts/pip install:*)",
+      "Bash(npx vite:*)"
+    ]
+  }
+}

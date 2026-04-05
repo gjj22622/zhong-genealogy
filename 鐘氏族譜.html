@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+<title>鐘氏族譜 — 福建泉州安溪渡台家族</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #8B4513;
+  --primary-light: #D2B48C;
+  --primary-dark: #5C3317;
+  --bg: #FFF8F0;
+  --bg-card: #FFFFFF;
+  --text: #2C1810;
+  --text-light: #6B5B4F;
+  --accent-green: #2E7D32;
+  --accent-blue: #1565C0;
+  --accent-red: #C62828;
+  --border: #D4C5B9;
+  --shadow: rgba(139,69,19,0.1);
+  --branch-top: #8B4513;
+  --branch-cao: #2E7D32;
+  --branch-pu: #1565C0;
+  --gen-badge: #F5E6D3;
+  --nav-h: 56px;
+  --bottom-h: 60px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: "Noto Serif TC", "Source Han Serif TC", "PMingLiU", serif;
+  background: var(--bg); color: var(--text);
+  min-height: 100vh; min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== TOP NAV ===== */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  color: #FFF8F0;
+  box-shadow: 0 2px 12px var(--shadow);
+  height: var(--nav-h);
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 16px;
+}
+.nav-title {
+  font-size: 20px; font-weight: 700; letter-spacing: 2px;
+  display: flex; align-items: center; gap: 8px;
+}
+.nav-title .icon { font-size: 22px; }
+
+/* ===== BOTTOM TAB BAR (mobile-first) ===== */
+.bottom-tabs {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 1000;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  display: flex;
+  padding-bottom: var(--safe-bottom);
+  box-shadow: 0 -2px 12px var(--shadow);
+}
+.bottom-tab {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  justify-content: center;
+  padding: 8px 4px 6px; gap: 2px;
+  background: transparent; border: none;
+  color: var(--text-light);
+  font-size: 11px; font-family: inherit;
+  cursor: pointer; transition: color 0.2s;
+  -webkit-user-select: none; user-select: none;
+  min-height: 52px;
+}
+.bottom-tab .tab-icon { font-size: 22px; line-height: 1; }
+.bottom-tab.active { color: var(--primary); font-weight: 600; }
+.bottom-tab:active { background: rgba(139,69,19,0.06); }
+
+/* ===== MAIN ===== */
+.main {
+  padding-top: calc(var(--nav-h) + 8px);
+  padding-bottom: calc(var(--bottom-h) + var(--safe-bottom) + 16px);
+  min-height: 100vh; min-height: 100dvh;
+}
+.page { display: none; padding: 12px; max-width: 1200px; margin: 0 auto; }
+.page.active { display: block; }
+
+/* ===== STATS BANNER ===== */
+.stats-banner {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 8px; margin-bottom: 14px;
+}
+.stat-card {
+  background: var(--bg-card); border-radius: 10px; padding: 12px 6px; text-align: center;
+  box-shadow: 0 1px 6px var(--shadow);
+}
+.stat-card .stat-num { font-size: 22px; font-weight: 700; color: var(--primary); }
+.stat-card .stat-label { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+
+/* ===== TREE CONTROLS ===== */
+.tree-controls {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;
+}
+.tree-controls select, .tree-controls input {
+  padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px;
+  font-family: inherit; font-size: 14px; background: var(--bg-card);
+  color: var(--text); min-height: 44px; /* touch target */
+}
+.tree-controls select { flex: 1; min-width: 0; }
+.tree-controls input { flex: 2; min-width: 0; }
+
+.legend {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;
+  font-size: 12px; align-items: center;
+}
+.legend-item { display: flex; align-items: center; gap: 4px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+/* ===== TREE CONTAINER (touch zoom/pan) ===== */
+.tree-wrapper {
+  position: relative; width: 100%; border-radius: 12px;
+  box-shadow: 0 2px 12px var(--shadow); overflow: hidden;
+  background: var(--bg-card); min-height: 60vh;
+}
+.tree-zoom-controls {
+  position: absolute; top: 10px; right: 10px; z-index: 10;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.tree-zoom-controls button {
+  width: 40px; height: 40px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--bg-card);
+  font-size: 20px; cursor: pointer; color: var(--text);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 1px 4px var(--shadow);
+}
+.tree-zoom-controls button:active { background: var(--gen-badge); }
+.tree-toggle-btn { cursor: pointer; }
+.tree-toggle-btn:hover rect { fill: #E8E0D8; }
+.collapse-badge {
+  font-family: sans-serif; font-weight: 700; pointer-events: none;
+}
+.tree-collapse-actions {
+  display: flex; gap: 6px; margin-left: auto;
+}
+.tree-collapse-actions button {
+  padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--bg-card); font-size: 13px; cursor: pointer; color: var(--text);
+  white-space: nowrap;
+}
+.tree-collapse-actions button:active { background: var(--gen-badge); }
+.tree-container {
+  width: 100%; height: 100%; overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  min-height: 60vh;
+  cursor: grab;
+  touch-action: pan-x pan-y;
+}
+.tree-container:active { cursor: grabbing; }
+.tree-svg { min-width: 100%; min-height: 500px; }
+
+/* ===== PERSON NODE (SVG) ===== */
+.person-node { cursor: pointer; }
+.person-rect { rx: 8; ry: 8; stroke-width: 2; }
+
+/* ===== DETAIL MODAL ===== */
+.modal-overlay {
+  display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5); z-index: 2000;
+  justify-content: center; align-items: flex-end;
+  padding: 0;
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  background: var(--bg-card); border-radius: 20px 20px 0 0;
+  width: 100%; max-height: 88vh;
+  overflow-y: auto; box-shadow: 0 -4px 32px rgba(0,0,0,0.15);
+  -webkit-overflow-scrolling: touch;
+  animation: slideUp 0.3s ease;
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.modal-handle {
+  width: 36px; height: 4px; background: var(--border); border-radius: 2px;
+  margin: 10px auto 0;
+}
+.modal-header {
+  padding: 12px 20px 10px;
+  display: flex; justify-content: space-between; align-items: center;
+  position: sticky; top: 0; background: var(--bg-card); z-index: 1;
+  border-bottom: 1px solid var(--border);
+}
+.modal-header h2 { font-size: 20px; color: var(--primary-dark); }
+.modal-close {
+  background: none; border: none; font-size: 28px;
+  cursor: pointer; color: var(--text-light); padding: 4px 12px;
+  min-width: 44px; min-height: 44px;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-body { padding: 16px 20px 32px; }
+.modal-body .field { margin-bottom: 14px; }
+.modal-body .field-label {
+  font-size: 12px; color: var(--text-light); margin-bottom: 3px;
+  font-weight: 600; letter-spacing: 1px;
+}
+.modal-body .field-value { font-size: 15px; color: var(--text); line-height: 1.5; }
+.modal-body .field-value a {
+  color: var(--primary); text-decoration: underline;
+  text-underline-offset: 2px; padding: 2px 0;
+}
+.branch-tag {
+  display: inline-block; padding: 2px 10px; border-radius: 12px;
+  font-size: 12px; font-weight: 600; color: #fff;
+}
+.branch-tag.頂番婆 { background: var(--branch-top); }
+.branch-tag.草湳底 { background: var(--branch-cao); }
+.branch-tag.埔姜崙 { background: var(--branch-pu); }
+.branch-tag.全族 { background: var(--text-light); }
+.gen-tag {
+  display: inline-block; padding: 2px 10px; border-radius: 12px;
+  font-size: 12px; background: var(--gen-badge); color: var(--primary-dark);
+  font-weight: 600;
+}
+
+/* ===== SEARCH PAGE ===== */
+.search-box { position: relative; margin-bottom: 12px; }
+.search-box input {
+  width: 100%; padding: 14px 16px 14px 44px;
+  border: 2px solid var(--border); border-radius: 12px;
+  font-size: 16px; font-family: inherit;
+  background: var(--bg-card); transition: border-color 0.2s;
+  min-height: 50px;
+}
+.search-box input:focus { outline: none; border-color: var(--primary); }
+.search-box .search-icon {
+  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+  font-size: 20px; color: var(--text-light);
+}
+.search-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.filter-chip {
+  padding: 8px 16px; border-radius: 20px;
+  border: 1px solid var(--border); background: var(--bg-card);
+  font-size: 14px; cursor: pointer; font-family: inherit;
+  transition: all 0.2s; color: var(--text);
+  min-height: 40px;
+}
+.filter-chip.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.person-list { display: flex; flex-direction: column; gap: 8px; }
+.person-card {
+  background: var(--bg-card); border-radius: 12px; padding: 14px;
+  box-shadow: 0 1px 6px var(--shadow); cursor: pointer;
+  border-left: 4px solid var(--primary);
+  transition: all 0.15s; active: scale(0.98);
+}
+.person-card:active { transform: scale(0.98); }
+.person-card .pc-name {
+  font-size: 17px; font-weight: 700; color: var(--primary-dark);
+  margin-bottom: 4px;
+}
+.person-card .pc-info {
+  font-size: 12px; color: var(--text-light);
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+}
+.person-card.branch-頂番婆 { border-left-color: var(--branch-top); }
+.person-card.branch-草湳底 { border-left-color: var(--branch-cao); }
+.person-card.branch-埔姜崙 { border-left-color: var(--branch-pu); }
+
+/* ===== STORY PAGE ===== */
+.story-section {
+  background: var(--bg-card); border-radius: 12px; padding: 20px 16px;
+  box-shadow: 0 2px 12px var(--shadow); margin-bottom: 16px;
+}
+.story-section h2 {
+  font-size: 20px; color: var(--primary-dark); margin-bottom: 14px;
+  padding-bottom: 8px; border-bottom: 2px solid var(--primary-light);
+}
+.story-section p {
+  font-size: 15px; line-height: 1.9; margin-bottom: 10px;
+  text-indent: 2em; text-align: justify;
+}
+.story-section .author {
+  text-align: right; font-size: 14px; color: var(--text-light);
+  margin-top: 16px; font-style: italic;
+}
+.timeline { position: relative; padding-left: 20px; border-left: 3px solid var(--primary-light); }
+.timeline-item { position: relative; margin-bottom: 20px; padding-left: 16px; }
+.timeline-item::before {
+  content: ''; position: absolute; left: -28px; top: 5px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--primary); border: 3px solid var(--bg);
+}
+.timeline-item .tl-year { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 3px; }
+.timeline-item .tl-event { font-size: 14px; color: var(--text); line-height: 1.6; }
+.branch-grid {
+  display: grid; grid-template-columns: 1fr; gap: 12px;
+}
+.branch-box {
+  padding: 14px; border-radius: 8px; border-width: 2px; border-style: solid;
+}
+.branch-box h3 { margin-bottom: 6px; font-size: 16px; }
+.branch-box p { font-size: 13px; line-height: 1.6; text-indent: 0; margin: 0; }
+
+/* ===== EDIT PAGE ===== */
+.edit-section {
+  background: var(--bg-card); border-radius: 12px; padding: 16px;
+  box-shadow: 0 2px 12px var(--shadow); margin-bottom: 14px;
+}
+.edit-section h3 { font-size: 17px; color: var(--primary-dark); margin-bottom: 14px; }
+.form-group { margin-bottom: 12px; }
+.form-group label {
+  display: block; font-size: 13px; font-weight: 600;
+  color: var(--text-light); margin-bottom: 4px;
+}
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%; padding: 12px;
+  border: 1px solid var(--border); border-radius: 8px;
+  font-size: 16px; font-family: inherit;
+  background: var(--bg); color: var(--text);
+  min-height: 48px;
+}
+.form-group textarea { min-height: 80px; resize: vertical; }
+.form-row { display: flex; gap: 10px; }
+.form-row .form-group { flex: 1; }
+.btn {
+  padding: 12px 20px; border: none; border-radius: 8px;
+  font-size: 15px; font-family: inherit; cursor: pointer;
+  font-weight: 600; transition: all 0.2s;
+  min-height: 48px;
+}
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:active { background: var(--primary-dark); }
+.btn-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+.btn-danger { background: var(--accent-red); color: #fff; }
+.btn-group { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+
+/* ===== TOAST ===== */
+.toast {
+  position: fixed; bottom: calc(var(--bottom-h) + var(--safe-bottom) + 16px);
+  left: 50%; transform: translateX(-50%);
+  background: var(--primary-dark); color: #fff; padding: 12px 24px;
+  border-radius: 8px; font-size: 14px; z-index: 3000;
+  opacity: 0; transition: opacity 0.3s; pointer-events: none;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; }
+
+/* ====== DESKTOP ====== */
+@media (min-width: 769px) {
+  .bottom-tabs { display: none; }
+  .nav {
+    height: auto; flex-direction: column; align-items: stretch;
+    padding: 0;
+  }
+  .nav-inner-row {
+    max-width: 1200px; margin: 0 auto; width: 100%;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 20px 0;
+  }
+  .desktop-tabs {
+    display: flex; gap: 4px; padding: 0 20px;
+    max-width: 1200px; margin: 0 auto;
+  }
+  .desktop-tab {
+    padding: 10px 20px; background: transparent; border: none;
+    color: rgba(255,248,240,0.7); font-size: 15px; font-family: inherit;
+    cursor: pointer; border-bottom: 3px solid transparent;
+    transition: all 0.2s; white-space: nowrap;
+  }
+  .desktop-tab:hover { color: #FFF8F0; }
+  .desktop-tab.active { color: #FFF8F0; border-bottom-color: var(--primary-light); font-weight: 600; }
+  .main {
+    padding-top: 108px;
+    padding-bottom: 40px;
+  }
+  .page { padding: 16px 20px; }
+  .stats-banner { gap: 16px; }
+  .stat-card .stat-num { font-size: 28px; }
+  .modal-overlay { align-items: center; padding: 20px; }
+  .modal { border-radius: 16px; max-width: 520px; max-height: 85vh; }
+  .modal-handle { display: none; }
+  .branch-grid { grid-template-columns: repeat(3, 1fr); }
+  .toast { bottom: 40px; }
+  .tree-controls select { min-width: 130px; flex: unset; }
+  .tree-controls input { min-width: 200px; }
+}
+@media (max-width: 768px) {
+  .desktop-tabs { display: none; }
+  .nav-inner-row { display: flex; align-items: center; justify-content: center; width: 100%; }
+  .nav-title { font-size: 18px; }
+  .main { padding-top: calc(var(--nav-h) + 4px); }
+  .form-row { flex-direction: column; gap: 0; }
+  .stats-banner { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 380px) {
+  .stats-banner { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  .stat-card { padding: 10px 4px; }
+  .stat-card .stat-num { font-size: 20px; }
+  .stat-card .stat-label { font-size: 10px; }
+  .tree-controls { gap: 6px; }
+  .page { padding: 10px 8px; }
+}
+
+/* Print */
+@media print {
+  .nav, .bottom-tabs, .tree-controls, .search-box, .search-filters, .edit-section, .tree-zoom-controls, .tree-toggle-btn, .collapse-badge { display: none; }
+  .main { padding: 0; }
+  .page { display: block !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="nav">
+  <div class="nav-inner-row">
+    <div class="nav-title"><span class="icon">🏛</span> 鐘氏族譜</div>
+  </div>
+  <div class="desktop-tabs">
+    <button class="desktop-tab active" data-page="tree">族譜圖</button>
+    <button class="desktop-tab" data-page="search">搜尋</button>
+    <button class="desktop-tab" data-page="story">家族故事</button>
+    <button class="desktop-tab" data-page="edit">新增/編輯</button>
+  </div>
+</nav>
+
+<!-- BOTTOM TAB BAR (mobile) -->
+<div class="bottom-tabs">
+  <button class="bottom-tab active" data-page="tree">
+    <span class="tab-icon">🌳</span>族譜圖
+  </button>
+  <button class="bottom-tab" data-page="search">
+    <span class="tab-icon">🔍</span>搜尋
+  </button>
+  <button class="bottom-tab" data-page="story">
+    <span class="tab-icon">📖</span>故事
+  </button>
+  <button class="bottom-tab" data-page="edit">
+    <span class="tab-icon">✏️</span>編輯
+  </button>
+</div>
+
+<div class="main">
+  <!-- TREE PAGE -->
+  <div class="page active" id="page-tree">
+    <div class="stats-banner" id="stats-banner"></div>
+    <div class="tree-controls">
+      <select id="branch-filter">
+        <option value="all">所有支系</option>
+        <option value="頂番婆">頂番婆</option>
+        <option value="草湳底">草湳底</option>
+        <option value="埔姜崙">埔姜崙</option>
+      </select>
+      <select id="gen-filter">
+        <option value="all">所有世代</option>
+      </select>
+      <input type="text" id="tree-search" placeholder="搜尋族人姓名...">
+      <div class="tree-collapse-actions">
+        <button id="expand-all" title="展開全部">展開全部</button>
+        <button id="collapse-all" title="收合全部">收合全部</button>
+      </div>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--branch-top)"></div>頂番婆</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--branch-cao)"></div>草湳底</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--branch-pu)"></div>埔姜崙</div>
+    </div>
+    <div class="tree-wrapper">
+      <div class="tree-zoom-controls">
+        <button id="zoom-in" title="放大">+</button>
+        <button id="zoom-out" title="縮小">−</button>
+        <button id="zoom-fit" title="適合螢幕">⊡</button>
+      </div>
+      <div class="tree-container" id="tree-container">
+        <svg class="tree-svg" id="tree-svg"></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEARCH PAGE -->
+  <div class="page" id="page-search">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="輸入姓名、世代或支系搜尋...">
+    </div>
+    <div class="search-filters" id="search-filters"></div>
+    <div id="search-count" style="font-size:13px;color:var(--text-light);margin-bottom:10px;"></div>
+    <div class="person-list" id="person-list"></div>
+  </div>
+
+  <!-- STORY PAGE -->
+  <div class="page" id="page-story">
+    <div class="story-section">
+      <h2>修譜緣由</h2>
+      <p>族譜乃氏族之譜系。家譜乃世系及事實之文獻。修譜之意義，在於使世系不亂、承先啟後、長幼有序、尊敬長輩，使後代子孫能知自己之所出。</p>
+      <p>吾鐘氏祖先渡台之前，唐山祖籍乃「福建省泉州府安溪縣南光堂」。舊有簡譜中無記載何世橫渡黑水溝來台，而據載有關清朝開放禁令渡台，是雍正、乾隆年間(西元一七二三～一七九五年)，推算可能是鄭成功據台後，康熙年間由大陸來台謀生，大約三百年前左右。</p>
+      <p>聽聞有母帶二子，由廈門經鹿港來台，而後安居於秀水鄉埔姜崙務農過日。過世後，洗骨納盒合葬於彰化八卦山上。(墓牌上記載乾隆年間立)因彰化中學、商業區等創立後，該墓被遷塚至秀水鄉後壁埔塚。光復後該大墓牌被盜，致現在無法辨別，而後遷居至「鹿港頂番婆」至今，佔地約一甲五分地，頂番婆猶有「水龍頭的故鄉」之稱。</p>
+      <p>第五代祖先，埤公、奎公兩兄弟，自「鹿港頂番婆」遷居至「彰化崙仔平」西門口四九三番地，於明治三十九年(西元一九零六年)八月廿二日設藉「彰化崙仔平」，至今已傳至第十代，子孫近百人。埤公、奎公乃「崙仔平」之開基祖(唯族譜因火災不幸燒毀)。</p>
+      <p>民國七十七年，本人鐘俊雄榮獲省教育廳「師鐸獎」。當時拜訪鐘水獺伯父，告知得獎過程及領獎事宜時，伯父交給我一份手稿，登錄了草湳底公媽神祖牌框內所有祖先的事蹟。鐘水獺伯父之曾祖父鍾品(一八二零～一八七二)，乃外埔村草湳底之開基祖，自秀水鄉埔姜崙遷居至福興鄉外埔村草湳底。「鍾」與「鐘」的寫法不同，據說是日據時期戶政人員的筆誤所造成的，現在已變成兩個不同的姓氏。</p>
+      <p>民國一百年七月十五日，本人認識一位在金馬路三段七二七號賣菜的老闆鐘福華先生(家住彰化市)，談話中得知他有一本鹿港鎮頂番婆的鐘氏族譜，才想起當年得自伯父的這份手稿，可用來編寫族譜，於是根據手稿內容，並參考頂番婆的鐘氏族譜，撰寫這份福興鄉草湳底的鐘氏族譜。</p>
+      <p>最後感謝族親們的幫忙與協助，並提供資料，使此次修譜能順利完成。吾鐘氏後代子孫應傳承家族傳統，尊宗敬祖、首重孝道、刻苦耐勞、勤儉持家之美德，源遠流長。</p>
+      <p>願與吾鐘氏族人共勉之。</p>
+      <div class="author">八代裔孫 鐘俊雄 敬述<br>民國一百零七年三月廿七日 於彰化市</div>
+    </div>
+    <div class="story-section">
+      <h2>遷徙歷史</h2>
+      <div class="timeline">
+        <div class="timeline-item"><div class="tl-year">清康熙年間（約1700年代）</div><div class="tl-event">開基祖母攜二子由福建泉州安溪經廈門、鹿港渡海來台，定居彰化秀水鄉埔姜崙務農。</div></div>
+        <div class="timeline-item"><div class="tl-year">清乾隆年間</div><div class="tl-event">開基祖母過世後合葬於彰化八卦山。部分子孫遷居至鹿港頂番婆。</div></div>
+        <div class="timeline-item"><div class="tl-year">約1820年（第四代）</div><div class="tl-event">鍾品（1820-1872）自秀水鄉埔姜崙遷居至福興鄉外埔村草湳底，成為草湳底開基祖。</div></div>
+        <div class="timeline-item"><div class="tl-year">1906年（明治39年）</div><div class="tl-event">第五代埤公、奎公兩兄弟自鹿港頂番婆遷居至彰化崙仔平西門口，成為崙仔平開基祖。</div></div>
+        <div class="timeline-item"><div class="tl-year">日據時期</div><div class="tl-event">因戶政人員筆誤，部分族人姓氏由「鍾」變為「鐘」，至今成為兩個不同姓氏。</div></div>
+        <div class="timeline-item"><div class="tl-year">1988年（民國77年）</div><div class="tl-event">鐘俊雄獲省教育廳「師鐸獎」，拜訪鐘水獺伯父時取得祖先事蹟手稿。</div></div>
+        <div class="timeline-item"><div class="tl-year">2011年（民國100年）</div><div class="tl-event">鐘俊雄認識鐘福華先生，獲得頂番婆鐘氏族譜參考資料，開始編撰本族譜。</div></div>
+        <div class="timeline-item"><div class="tl-year">2018年（民國107年）</div><div class="tl-event">族譜編撰完成，記錄十代約一百五十餘位族人。</div></div>
+      </div>
+    </div>
+    <div class="story-section">
+      <h2>三大支系</h2>
+      <div class="branch-grid">
+        <div class="branch-box" style="border-color:var(--branch-top);">
+          <h3 style="color:var(--branch-top);">頂番婆支系</h3>
+          <p>由次子鍾仁傳下，定居鹿港頂番婆。頂番婆有「水龍頭的故鄉」之稱。第五代埤公、奎公遷居彰化崙仔平。</p>
+        </div>
+        <div class="branch-box" style="border-color:var(--branch-cao);">
+          <h3 style="color:var(--branch-cao);">草湳底支系</h3>
+          <p>由第四代鍾品遷居福興鄉外埔村草湳底開基。人數最多，傳至第十代。編譜人鐘俊雄即屬此支系。</p>
+        </div>
+        <div class="branch-box" style="border-color:var(--branch-pu);">
+          <h3 style="color:var(--branch-pu);">埔姜崙支系</h3>
+          <p>長子一系留居秀水鄉埔姜崙，為最初渡台定居之地。第四代鍾春一系也歸此支系。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT PAGE -->
+  <div class="page" id="page-edit">
+    <div class="edit-section">
+      <h3>新增族人</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label>姓名</label>
+          <input type="text" id="edit-name" placeholder="例：鐘○○">
+        </div>
+        <div class="form-group">
+          <label>性別</label>
+          <select id="edit-gender"><option value="male">男</option><option value="female">女</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>出生年（西元）</label>
+          <input type="number" id="edit-birth" placeholder="例：1990">
+        </div>
+        <div class="form-group">
+          <label>卒年（在世留空）</label>
+          <input type="number" id="edit-death" placeholder="在世者留空">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>世代</label>
+          <select id="edit-gen"></select>
+        </div>
+        <div class="form-group">
+          <label>支系</label>
+          <select id="edit-branch">
+            <option value="頂番婆">頂番婆</option>
+            <option value="草湳底">草湳底</option>
+            <option value="埔姜崙">埔姜崙</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>配偶姓名</label>
+        <input type="text" id="edit-spouse" placeholder="例：林○○">
+      </div>
+      <div class="form-group">
+        <label>父親（從現有族人選擇）</label>
+        <select id="edit-parent"><option value="">-- 選擇父親 --</option></select>
+      </div>
+      <div class="form-group">
+        <label>備註</label>
+        <textarea id="edit-notes" placeholder="特殊事蹟、職業、居住地等"></textarea>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" id="btn-add">新增族人</button>
+        <button class="btn btn-secondary" id="btn-export">匯出 JSON</button>
+        <button class="btn btn-secondary" id="btn-import">匯入資料</button>
+        <input type="file" id="file-import" accept=".json" style="display:none">
+      </div>
+    </div>
+    <div class="edit-section">
+      <h3>已新增的族人</h3>
+      <div id="added-list" style="font-size:14px;color:var(--text-light);">尚未新增任何族人</div>
+    </div>
+    <div class="edit-section">
+      <h3>編輯現有族人</h3>
+      <div class="form-group">
+        <label>選擇要編輯的族人</label>
+        <select id="edit-select"><option value="">-- 選擇族人 --</option></select>
+      </div>
+      <div id="edit-existing-form" style="display:none;">
+        <div class="form-row">
+          <div class="form-group"><label>姓名</label><input type="text" id="ex-name"></div>
+          <div class="form-group"><label>配偶</label><input type="text" id="ex-spouse"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>出生年</label><input type="number" id="ex-birth"></div>
+          <div class="form-group"><label>卒年</label><input type="number" id="ex-death"></div>
+        </div>
+        <div class="form-group"><label>備註</label><textarea id="ex-notes"></textarea></div>
+        <div class="btn-group"><button class="btn btn-primary" id="btn-save-edit">儲存修改</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <h2 id="modal-name"></h2>
+      <button class="modal-close" id="modal-close">&times;</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============ DATA ============
+const INITIAL_DATA = [
+  {id:"p1",name:"開基祖母",gender:"female",generation:0,branch:"全族",birthYear:null,deathYear:null,spouse:null,childrenIds:["p2","p3"],parentId:null,notes:"攜二子由廈門經鹿港來台，安居秀水鄉埔姜崙"},
+  {id:"p2",name:"鍾（長子）",gender:"male",generation:1,branch:"埔姜崙",birthYear:null,deathYear:null,spouse:"廖氏",childrenIds:["p4"],parentId:"p1",notes:"長子"},
+  {id:"p3",name:"鍾仁",gender:"male",generation:1,branch:"頂番婆",birthYear:null,deathYear:null,spouse:null,childrenIds:["p5"],parentId:"p1",notes:"次子，頂番婆開基祖"},
+  {id:"p4",name:"鍾提",gender:"male",generation:2,branch:"埔姜崙",birthYear:1749,deathYear:1799,spouse:"翏氏",childrenIds:["p6"],parentId:"p2",notes:"享年51歲"},
+  {id:"p5",name:"鍾胡",gender:"male",generation:2,branch:"頂番婆",birthYear:null,deathYear:null,spouse:null,childrenIds:["p7"],parentId:"p3",notes:""},
+  {id:"p6",name:"鍾富貴",gender:"male",generation:3,branch:"埔姜崙",birthYear:1776,deathYear:1829,spouse:"許錦良",childrenIds:["p10","p9","p8"],parentId:"p4",notes:"享年54歲，妻許錦良(1778-1840)"},
+  {id:"p7",name:"鍾三",gender:"male",generation:3,branch:"頂番婆",birthYear:1796,deathYear:null,spouse:null,childrenIds:["p11"],parentId:"p5",notes:""},
+  {id:"p8",name:"鍾品",gender:"male",generation:4,branch:"草湳底",birthYear:1820,deathYear:1872,spouse:"郭惜",childrenIds:["p12","p13"],parentId:"p6",notes:"五子，草湳底開基祖。自秀水鄉埔姜崙遷居至福興鄉外埔村草湳底。妻郭惜(1849-1891)"},
+  {id:"p9",name:"鍾交",gender:"male",generation:4,branch:"埔姜崙",birthYear:1812,deathYear:1836,spouse:null,childrenIds:[],parentId:"p6",notes:"四子，享年25歲"},
+  {id:"p10",name:"鍾春",gender:"male",generation:4,branch:"埔姜崙",birthYear:null,deathYear:1864,spouse:"林蜜",childrenIds:["p16"],parentId:"p6",notes:"三子"},
+  {id:"p11",name:"鍾世",gender:"male",generation:4,branch:"頂番婆",birthYear:1827,deathYear:null,spouse:null,childrenIds:["p14","p15"],parentId:"p7",notes:""},
+  {id:"p12",name:"鍾吉",gender:"male",generation:5,branch:"草湳底",birthYear:1850,deathYear:1893,spouse:"梁哂",childrenIds:["p17","p18"],parentId:"p8",notes:"享年44歲。妻梁哂(1851-1881)"},
+  {id:"p13",name:"鍾仁德",gender:"male",generation:5,branch:"草湳底",birthYear:1868,deathYear:1919,spouse:"許密",childrenIds:["p19","p20","p21"],parentId:"p8",notes:"享年52歲。妻許密(1872-1938)"},
+  {id:"p14",name:"鍾埤",gender:"male",generation:5,branch:"頂番婆",birthYear:1858,deathYear:null,spouse:null,childrenIds:["p24"],parentId:"p11",notes:"崙仔平開基祖之一，1906年遷居彰化崙仔平"},
+  {id:"p15",name:"鍾奎",gender:"male",generation:5,branch:"頂番婆",birthYear:1865,deathYear:null,spouse:null,childrenIds:["p25","p91"],parentId:"p11",notes:"崙仔平開基祖之一"},
+  {id:"p16",name:"鍾乾",gender:"male",generation:5,branch:"埔姜崙",birthYear:1843,deathYear:1911,spouse:"梁宜",childrenIds:["p26","p27"],parentId:"p10",notes:"享年69歲"},
+  {id:"p17",name:"鍾瑞源",gender:"male",generation:6,branch:"草湳底",birthYear:1893,deathYear:1949,spouse:"張品",childrenIds:["p101"],parentId:"p12",notes:"享年57歲。妻張品(1899-1983)"},
+  {id:"p18",name:"鍾心婦",gender:"male",generation:6,branch:"草湳底",birthYear:1871,deathYear:1948,spouse:"梁卜",childrenIds:["p28","p29","p30","p31"],parentId:"p12",notes:"享年78歲。妻梁卜(1875-1956)"},
+  {id:"p19",name:"鍾禮",gender:"male",generation:6,branch:"草湳底",birthYear:1917,deathYear:2002,spouse:"林咸",childrenIds:["p32","p33","p34","p35","p36","p37"],parentId:"p13",notes:"妻林咸(1919-1980)"},
+  {id:"p20",name:"鍾義",gender:"male",generation:6,branch:"草湳底",birthYear:1909,deathYear:2009,spouse:"陳玉娥",childrenIds:["p38","p39","p40","p41","p42"],parentId:"p13",notes:"妻陳玉娥(1913-1995)"},
+  {id:"p21",name:"鍾成嘉",gender:"male",generation:6,branch:"草湳底",birthYear:1903,deathYear:2009,spouse:"陳醜",childrenIds:["p43","p44","p45","p46","p47"],parentId:"p13",notes:""},
+  {id:"p24",name:"鍾田",gender:"male",generation:6,branch:"頂番婆",birthYear:1892,deathYear:null,spouse:null,childrenIds:["p94","p95"],parentId:"p14",notes:""},
+  {id:"p25",name:"鍾牛",gender:"male",generation:6,branch:"頂番婆",birthYear:1896,deathYear:null,spouse:null,childrenIds:["p92"],parentId:"p15",notes:""},
+  {id:"p26",name:"鍾龍",gender:"male",generation:6,branch:"埔姜崙",birthYear:1884,deathYear:1910,spouse:"林掽",childrenIds:["p48","p49","p50","p51","p52","p53","p54","p55"],parentId:"p16",notes:"享年27歲"},
+  {id:"p27",name:"鍾取",gender:"male",generation:6,branch:"埔姜崙",birthYear:1886,deathYear:1956,spouse:null,childrenIds:[],parentId:"p16",notes:"享年71歲"},
+  {id:"p91",name:"鍾向",gender:"male",generation:6,branch:"頂番婆",birthYear:null,deathYear:null,spouse:null,childrenIds:["p93"],parentId:"p15",notes:""},
+  {id:"p28",name:"鍾水獺",gender:"male",generation:7,branch:"草湳底",birthYear:1906,deathYear:1995,spouse:"陳樹蘭",childrenIds:["p56","p57","p58","p59","p61"],parentId:"p18",notes:"曾保存祖先事蹟手稿"},
+  {id:"p29",name:"鍾添丁",gender:"male",generation:7,branch:"草湳底",birthYear:1899,deathYear:1940,spouse:"梁琴",childrenIds:["p60","p100"],parentId:"p18",notes:""},
+  {id:"p30",name:"鍾川",gender:"male",generation:7,branch:"草湳底",birthYear:1917,deathYear:2004,spouse:"氏爾",childrenIds:["p65","p66","p67","p68"],parentId:"p18",notes:""},
+  {id:"p31",name:"鍾漸",gender:"male",generation:7,branch:"草湳底",birthYear:1910,deathYear:1997,spouse:"梁好",childrenIds:["p62","p63","p64"],parentId:"p18",notes:""},
+  {id:"p101",name:"鍾知州",gender:"male",generation:7,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p17",notes:"移居日本"},
+  {id:"p32",name:"鍾正行",gender:"male",generation:7,branch:"草湳底",birthYear:1936,deathYear:null,spouse:"梁姈嬌",childrenIds:["p86","p87"],parentId:"p19",notes:""},
+  {id:"p33",name:"鍾獻鳴",gender:"male",generation:7,branch:"草湳底",birthYear:1939,deathYear:null,spouse:"施美容",childrenIds:["p88"],parentId:"p19",notes:""},
+  {id:"p34",name:"鍾昱男",gender:"male",generation:7,branch:"草湳底",birthYear:1942,deathYear:null,spouse:"鄭玉串",childrenIds:["p122","p123"],parentId:"p19",notes:""},
+  {id:"p35",name:"鍾友聯",gender:"male",generation:7,branch:"草湳底",birthYear:1947,deathYear:null,spouse:"梁素英",childrenIds:["p90"],parentId:"p19",notes:""},
+  {id:"p36",name:"鍾重音",gender:"male",generation:7,branch:"草湳底",birthYear:1950,deathYear:null,spouse:"林于真",childrenIds:["p89","p121"],parentId:"p19",notes:""},
+  {id:"p37",name:"鍾如純",gender:"male",generation:7,branch:"草湳底",birthYear:1955,deathYear:null,spouse:"許麗雪",childrenIds:[],parentId:"p19",notes:""},
+  {id:"p38",name:"鍾耀庭",gender:"male",generation:7,branch:"草湳底",birthYear:1951,deathYear:null,spouse:"廖寶彩",childrenIds:["p77","p78"],parentId:"p20",notes:""},
+  {id:"p39",name:"鍾健三",gender:"male",generation:7,branch:"草湳底",birthYear:1942,deathYear:2017,spouse:"蔣秀美",childrenIds:["p79","p80"],parentId:"p20",notes:""},
+  {id:"p40",name:"鍾國隆",gender:"male",generation:7,branch:"草湳底",birthYear:1938,deathYear:null,spouse:"簡秀霞",childrenIds:["p81","p82"],parentId:"p20",notes:""},
+  {id:"p41",name:"鍾朝鉉",gender:"male",generation:7,branch:"草湳底",birthYear:1931,deathYear:null,spouse:"楊爽",childrenIds:["p83","p84"],parentId:"p20",notes:""},
+  {id:"p42",name:"鍾朝鵬",gender:"male",generation:7,branch:"草湳底",birthYear:1932,deathYear:null,spouse:"梁榴",childrenIds:["p85"],parentId:"p20",notes:""},
+  {id:"p43",name:"鍾炭",gender:"male",generation:7,branch:"草湳底",birthYear:1922,deathYear:1988,spouse:"粹瓊",childrenIds:["p69","p70","p71"],parentId:"p21",notes:""},
+  {id:"p44",name:"鍾雅埕",gender:"male",generation:7,branch:"草湳底",birthYear:1925,deathYear:2014,spouse:"吳水琴",childrenIds:["p72","p73","p74"],parentId:"p21",notes:""},
+  {id:"p45",name:"鍾建生",gender:"male",generation:7,branch:"草湳底",birthYear:1946,deathYear:null,spouse:"賴月桃",childrenIds:["p135"],parentId:"p21",notes:""},
+  {id:"p46",name:"鍾建上",gender:"male",generation:7,branch:"草湳底",birthYear:1949,deathYear:null,spouse:"許秋娥",childrenIds:["p133","p134"],parentId:"p21",notes:""},
+  {id:"p47",name:"鍾建學",gender:"male",generation:7,branch:"草湳底",birthYear:1951,deathYear:null,spouse:null,childrenIds:[],parentId:"p21",notes:""},
+  {id:"p48",name:"鍾文錦",gender:"male",generation:7,branch:"埔姜崙",birthYear:1912,deathYear:1965,spouse:null,childrenIds:[],parentId:"p26",notes:"享年54歲"},
+  {id:"p49",name:"鍾火爐",gender:"male",generation:7,branch:"埔姜崙",birthYear:1916,deathYear:null,spouse:null,childrenIds:["p75"],parentId:"p26",notes:""},
+  {id:"p50",name:"鍾文绣",gender:"male",generation:7,branch:"埔姜崙",birthYear:1919,deathYear:2000,spouse:null,childrenIds:[],parentId:"p26",notes:"享年82歲"},
+  {id:"p51",name:"鍾文海",gender:"male",generation:7,branch:"埔姜崙",birthYear:1922,deathYear:1953,spouse:null,childrenIds:[],parentId:"p26",notes:"享年32歲"},
+  {id:"p52",name:"鍾文南",gender:"male",generation:7,branch:"埔姜崙",birthYear:1925,deathYear:1957,spouse:null,childrenIds:[],parentId:"p26",notes:"享年33歲"},
+  {id:"p53",name:"鍾文林",gender:"male",generation:7,branch:"埔姜崙",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p26",notes:""},
+  {id:"p54",name:"鍾文杜",gender:"male",generation:7,branch:"埔姜崙",birthYear:1933,deathYear:1980,spouse:null,childrenIds:["p141"],parentId:"p26",notes:"享年48歲"},
+  {id:"p55",name:"鍾傳烈",gender:"male",generation:7,branch:"埔姜崙",birthYear:1938,deathYear:2000,spouse:null,childrenIds:["p139","p140"],parentId:"p26",notes:"享年63歲"},
+  {id:"p92",name:"鍾杏枝",gender:"male",generation:7,branch:"頂番婆",birthYear:1925,deathYear:null,spouse:null,childrenIds:["p96"],parentId:"p25",notes:""},
+  {id:"p93",name:"鍾龍河",gender:"male",generation:7,branch:"頂番婆",birthYear:null,deathYear:null,spouse:null,childrenIds:["p97"],parentId:"p91",notes:""},
+  {id:"p94",name:"鍾塗金",gender:"male",generation:7,branch:"頂番婆",birthYear:1926,deathYear:null,spouse:null,childrenIds:[],parentId:"p24",notes:""},
+  {id:"p95",name:"鍾福華",gender:"male",generation:7,branch:"頂番婆",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p24",notes:""},
+  {id:"p56",name:"鍾志誠",gender:"male",generation:8,branch:"草湳底",birthYear:null,deathYear:null,spouse:"賴美芳",childrenIds:["p109"],parentId:"p28",notes:""},
+  {id:"p57",name:"鍾志堅",gender:"male",generation:8,branch:"草湳底",birthYear:null,deathYear:null,spouse:"廖雪",childrenIds:["p110"],parentId:"p28",notes:""},
+  {id:"p58",name:"鍾恒吉",gender:"male",generation:8,branch:"草湳底",birthYear:null,deathYear:null,spouse:"李淑瓔",childrenIds:[],parentId:"p28",notes:""},
+  {id:"p59",name:"鍾茂生",gender:"male",generation:8,branch:"草湳底",birthYear:null,deathYear:null,spouse:"林專",childrenIds:["p111"],parentId:"p28",notes:""},
+  {id:"p61",name:"鍾燦卿",gender:"male",generation:8,branch:"草湳底",birthYear:null,deathYear:null,spouse:"李阿杏",childrenIds:["p112"],parentId:"p28",notes:""},
+  {id:"p60",name:"鍾振修",gender:"male",generation:8,branch:"草湳底",birthYear:null,deathYear:null,spouse:"施淑美",childrenIds:["p113"],parentId:"p29",notes:"添丁養子"},
+  {id:"p100",name:"鍾松源",gender:"male",generation:8,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:["p114"],parentId:"p29",notes:""},
+  {id:"p62",name:"鍾聰信",gender:"male",generation:8,branch:"草湳底",birthYear:1934,deathYear:null,spouse:"施玉聘",childrenIds:["p107","p108"],parentId:"p31",notes:""},
+  {id:"p63",name:"鍾哲雄",gender:"male",generation:8,branch:"草湳底",birthYear:1942,deathYear:2017,spouse:"施靜華",childrenIds:["p105","p106"],parentId:"p31",notes:""},
+  {id:"p64",name:"鍾生財",gender:"male",generation:8,branch:"草湳底",birthYear:1945,deathYear:null,spouse:"蔡秀鳳",childrenIds:["p102","p103","p104"],parentId:"p31",notes:""},
+  {id:"p65",name:"鍾廣盛",gender:"male",generation:8,branch:"草湳底",birthYear:1944,deathYear:null,spouse:null,childrenIds:["p120"],parentId:"p30",notes:""},
+  {id:"p66",name:"鍾國光",gender:"male",generation:8,branch:"草湳底",birthYear:1951,deathYear:null,spouse:"兵美英",childrenIds:["p118","p119"],parentId:"p30",notes:""},
+  {id:"p67",name:"鍾政益",gender:"male",generation:8,branch:"草湳底",birthYear:1957,deathYear:null,spouse:"葉錦蓮",childrenIds:["p117"],parentId:"p30",notes:""},
+  {id:"p68",name:"鍾健暉",gender:"male",generation:8,branch:"草湳底",birthYear:1958,deathYear:null,spouse:"謝金素",childrenIds:["p115","p116"],parentId:"p30",notes:""},
+  {id:"p69",name:"鍾俊雄",gender:"male",generation:8,branch:"草湳底",birthYear:1943,deathYear:null,spouse:"盧寶蓮",childrenIds:[],parentId:"p43",notes:"省教育廳師鐸獎得主，本族譜編撰者"},
+  {id:"p70",name:"鍾俊恊",gender:"male",generation:8,branch:"草湳底",birthYear:1965,deathYear:null,spouse:"林美櫻",childrenIds:[],parentId:"p43",notes:""},
+  {id:"p71",name:"鍾俊麒",gender:"male",generation:8,branch:"草湳底",birthYear:1963,deathYear:null,spouse:"粘家蓉",childrenIds:[],parentId:"p43",notes:""},
+  {id:"p72",name:"鍾東陽",gender:"male",generation:8,branch:"草湳底",birthYear:1949,deathYear:null,spouse:"林清芸",childrenIds:[],parentId:"p44",notes:""},
+  {id:"p73",name:"鍾東山",gender:"male",generation:8,branch:"草湳底",birthYear:1953,deathYear:null,spouse:null,childrenIds:[],parentId:"p44",notes:""},
+  {id:"p74",name:"鍾東海",gender:"male",generation:8,branch:"草湳底",birthYear:1959,deathYear:null,spouse:"王淑貞",childrenIds:["p137","p138"],parentId:"p44",notes:""},
+  {id:"p75",name:"鍾朝國",gender:"male",generation:8,branch:"埔姜崙",birthYear:1940,deathYear:null,spouse:null,childrenIds:["p76"],parentId:"p49",notes:""},
+  {id:"p77",name:"鍾博瀚",gender:"male",generation:8,branch:"草湳底",birthYear:1986,deathYear:null,spouse:null,childrenIds:[],parentId:"p38",notes:""},
+  {id:"p78",name:"鍾楷閔",gender:"male",generation:8,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p38",notes:""},
+  {id:"p79",name:"鍾偉臺",gender:"male",generation:8,branch:"草湳底",birthYear:1973,deathYear:null,spouse:"王佳文",childrenIds:["p130","p131"],parentId:"p39",notes:""},
+  {id:"p80",name:"鍾煥文",gender:"male",generation:8,branch:"草湳底",birthYear:1970,deathYear:null,spouse:"梁美惠",childrenIds:[],parentId:"p39",notes:""},
+  {id:"p81",name:"鍾順熙",gender:"male",generation:8,branch:"草湳底",birthYear:1968,deathYear:null,spouse:"陳瑞足",childrenIds:["p132"],parentId:"p40",notes:""},
+  {id:"p82",name:"鍾順輝",gender:"male",generation:8,branch:"草湳底",birthYear:1966,deathYear:null,spouse:"關瑜君",childrenIds:[],parentId:"p40",notes:""},
+  {id:"p83",name:"鍾振溢",gender:"male",generation:8,branch:"草湳底",birthYear:1971,deathYear:null,spouse:"楊雅惠",childrenIds:[],parentId:"p41",notes:""},
+  {id:"p84",name:"鍾炯福",gender:"male",generation:8,branch:"草湳底",birthYear:1968,deathYear:null,spouse:"莊雅雯",childrenIds:[],parentId:"p41",notes:""},
+  {id:"p85",name:"鍾文宏",gender:"male",generation:8,branch:"草湳底",birthYear:1958,deathYear:null,spouse:"張娟",childrenIds:[],parentId:"p42",notes:""},
+  {id:"p86",name:"鍾方遠",gender:"male",generation:8,branch:"草湳底",birthYear:1984,deathYear:null,spouse:"周靜宜",childrenIds:["p124","p125"],parentId:"p32",notes:""},
+  {id:"p87",name:"鍾政凱",gender:"male",generation:8,branch:"草湳底",birthYear:1981,deathYear:null,spouse:"黃曉薇",childrenIds:["p126"],parentId:"p32",notes:""},
+  {id:"p88",name:"鍾頂天",gender:"male",generation:8,branch:"草湳底",birthYear:1973,deathYear:null,spouse:"魏麗玲",childrenIds:["p128","p129"],parentId:"p33",notes:""},
+  {id:"p89",name:"鍾柏硯",gender:"male",generation:8,branch:"草湳底",birthYear:1985,deathYear:null,spouse:"謝依臻",childrenIds:["p127"],parentId:"p36",notes:""},
+  {id:"p90",name:"鍾櫂陽",gender:"male",generation:8,branch:"草湳底",birthYear:1976,deathYear:null,spouse:"吳斐莉",childrenIds:[],parentId:"p35",notes:""},
+  {id:"p121",name:"鍾柏翔",gender:"male",generation:8,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p36",notes:""},
+  {id:"p122",name:"鍾偉通",gender:"male",generation:8,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p34",notes:""},
+  {id:"p123",name:"鍾偉峯",gender:"male",generation:8,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p34",notes:""},
+  {id:"p96",name:"鍾榮煌",gender:"male",generation:8,branch:"頂番婆",birthYear:1953,deathYear:null,spouse:null,childrenIds:["p98"],parentId:"p92",notes:""},
+  {id:"p97",name:"鍾平進",gender:"male",generation:8,branch:"頂番婆",birthYear:null,deathYear:null,spouse:null,childrenIds:["p99"],parentId:"p93",notes:""},
+  {id:"p133",name:"鍾悅徑",gender:"male",generation:8,branch:"草湳底",birthYear:1990,deathYear:null,spouse:null,childrenIds:[],parentId:"p46",notes:""},
+  {id:"p134",name:"鍾云略",gender:"male",generation:8,branch:"草湳底",birthYear:1982,deathYear:null,spouse:null,childrenIds:[],parentId:"p46",notes:""},
+  {id:"p135",name:"鍾思仿",gender:"male",generation:8,branch:"草湳底",birthYear:1975,deathYear:null,spouse:"陳慧珊",childrenIds:["p136"],parentId:"p45",notes:""},
+  {id:"p139",name:"鍾政焜",gender:"male",generation:8,branch:"埔姜崙",birthYear:null,deathYear:null,spouse:null,childrenIds:["p142"],parentId:"p55",notes:""},
+  {id:"p140",name:"鍾朝彬",gender:"male",generation:8,branch:"埔姜崙",birthYear:null,deathYear:null,spouse:null,childrenIds:["p143"],parentId:"p55",notes:""},
+  {id:"p141",name:"鍾炎祥",gender:"male",generation:8,branch:"埔姜崙",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p54",notes:""},
+  {id:"p76",name:"鍾耀明",gender:"male",generation:9,branch:"埔姜崙",birthYear:1973,deathYear:null,spouse:null,childrenIds:[],parentId:"p75",notes:""},
+  {id:"p115",name:"鍾懷寬",gender:"male",generation:9,branch:"草湳底",birthYear:1996,deathYear:null,spouse:null,childrenIds:[],parentId:"p68",notes:""},
+  {id:"p116",name:"鍾承芳",gender:"male",generation:9,branch:"草湳底",birthYear:1993,deathYear:null,spouse:null,childrenIds:[],parentId:"p68",notes:""},
+  {id:"p117",name:"鍾和潔",gender:"male",generation:9,branch:"草湳底",birthYear:1991,deathYear:null,spouse:null,childrenIds:[],parentId:"p67",notes:""},
+  {id:"p118",name:"鍾格瑜",gender:"male",generation:9,branch:"草湳底",birthYear:1970,deathYear:null,spouse:null,childrenIds:[],parentId:"p66",notes:""},
+  {id:"p119",name:"鍾格維",gender:"male",generation:9,branch:"草湳底",birthYear:1968,deathYear:null,spouse:null,childrenIds:[],parentId:"p66",notes:""},
+  {id:"p120",name:"鍾明修",gender:"male",generation:9,branch:"草湳底",birthYear:1982,deathYear:null,spouse:null,childrenIds:[],parentId:"p65",notes:""},
+  {id:"p102",name:"鍾元享",gender:"male",generation:9,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:["p144"],parentId:"p64",notes:""},
+  {id:"p103",name:"鍾元甫",gender:"male",generation:9,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:["p145","p146"],parentId:"p64",notes:""},
+  {id:"p104",name:"鍾元鴻",gender:"male",generation:9,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:["p147","p148"],parentId:"p64",notes:""},
+  {id:"p105",name:"鍾培發",gender:"male",generation:9,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:["p149"],parentId:"p63",notes:""},
+  {id:"p106",name:"鍾盈麟",gender:"male",generation:9,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p63",notes:""},
+  {id:"p107",name:"鍾永進",gender:"male",generation:9,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:["p150"],parentId:"p62",notes:""},
+  {id:"p108",name:"鍾永導",gender:"male",generation:9,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:["p151"],parentId:"p62",notes:""},
+  {id:"p109",name:"鍾基瑞",gender:"male",generation:9,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p56",notes:""},
+  {id:"p110",name:"鍾基啟",gender:"male",generation:9,branch:"草湳底",birthYear:null,deathYear:null,spouse:"林心怡",childrenIds:[],parentId:"p57",notes:""},
+  {id:"p111",name:"鍾基立",gender:"male",generation:9,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p59",notes:""},
+  {id:"p112",name:"鍾耀南",gender:"male",generation:9,branch:"草湳底",birthYear:null,deathYear:null,spouse:"洪猗翎",childrenIds:["p152","p153"],parentId:"p61",notes:""},
+  {id:"p113",name:"鍾文彬",gender:"male",generation:9,branch:"草湳底",birthYear:null,deathYear:null,spouse:"陳文彩",childrenIds:["p154"],parentId:"p60",notes:""},
+  {id:"p114",name:"鍾文進",gender:"male",generation:9,branch:"草湳底",birthYear:null,deathYear:null,spouse:"王玉蘭",childrenIds:[],parentId:"p100",notes:""},
+  {id:"p124",name:"鍾彥博",gender:"male",generation:9,branch:"草湳底",birthYear:2016,deathYear:null,spouse:null,childrenIds:[],parentId:"p86",notes:""},
+  {id:"p125",name:"鍾廣濤",gender:"male",generation:9,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p86",notes:""},
+  {id:"p126",name:"鍾晨尚",gender:"male",generation:9,branch:"草湳底",birthYear:2013,deathYear:null,spouse:null,childrenIds:[],parentId:"p87",notes:""},
+  {id:"p127",name:"鍾敬晴",gender:"male",generation:9,branch:"草湳底",birthYear:2015,deathYear:null,spouse:null,childrenIds:[],parentId:"p89",notes:""},
+  {id:"p128",name:"鍾仁禾",gender:"male",generation:9,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p88",notes:""},
+  {id:"p129",name:"鍾啟元",gender:"male",generation:9,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p88",notes:""},
+  {id:"p130",name:"鍾浩誠",gender:"male",generation:9,branch:"草湳底",birthYear:2007,deathYear:null,spouse:null,childrenIds:[],parentId:"p79",notes:""},
+  {id:"p131",name:"鍾浩睿",gender:"male",generation:9,branch:"草湳底",birthYear:2004,deathYear:null,spouse:null,childrenIds:[],parentId:"p79",notes:""},
+  {id:"p132",name:"鍾梓彧",gender:"male",generation:9,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p81",notes:""},
+  {id:"p136",name:"鍾于勛",gender:"male",generation:9,branch:"草湳底",birthYear:2011,deathYear:null,spouse:null,childrenIds:[],parentId:"p135",notes:""},
+  {id:"p137",name:"鍾翊墉",gender:"male",generation:9,branch:"草湳底",birthYear:1995,deathYear:null,spouse:null,childrenIds:[],parentId:"p74",notes:""},
+  {id:"p138",name:"鍾翊明",gender:"male",generation:9,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p74",notes:""},
+  {id:"p98",name:"鍾禹強",gender:"male",generation:9,branch:"頂番婆",birthYear:1980,deathYear:null,spouse:null,childrenIds:[],parentId:"p96",notes:""},
+  {id:"p99",name:"鍾柏雄",gender:"male",generation:9,branch:"頂番婆",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p97",notes:""},
+  {id:"p142",name:"鍾家佑",gender:"male",generation:9,branch:"埔姜崙",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p139",notes:""},
+  {id:"p143",name:"鍾晨升",gender:"male",generation:9,branch:"埔姜崙",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p140",notes:""},
+  {id:"p144",name:"鍾引澤",gender:"male",generation:10,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p102",notes:""},
+  {id:"p145",name:"鍾俊家",gender:"male",generation:10,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p103",notes:""},
+  {id:"p146",name:"鍾禾家",gender:"male",generation:10,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p103",notes:""},
+  {id:"p147",name:"鍾韋程",gender:"male",generation:10,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p104",notes:""},
+  {id:"p148",name:"鍾韋傑",gender:"male",generation:10,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p104",notes:""},
+  {id:"p149",name:"鍾得綱",gender:"male",generation:10,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p105",notes:""},
+  {id:"p150",name:"鍾爾群",gender:"male",generation:10,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p107",notes:""},
+  {id:"p151",name:"鍾延承",gender:"male",generation:10,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p108",notes:""},
+  {id:"p152",name:"鍾敏豪",gender:"male",generation:10,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p112",notes:""},
+  {id:"p153",name:"鍾驊",gender:"male",generation:10,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p112",notes:""},
+  {id:"p154",name:"鍾擎",gender:"male",generation:10,branch:"草湳底",birthYear:null,deathYear:null,spouse:null,childrenIds:[],parentId:"p113",notes:""}
+];
+
+
+// ============ APP STATE ============
+let persons = [];
+let addedPersons = [];
+let nextId = 200;
+let treeScale = 1;
+let collapsedNodes = new Set(); // track collapsed node IDs
+
+function loadData() {
+  try {
+    const s = window.localStorage && localStorage.getItem('zhong_genealogy');
+    if (s) {
+      const d = JSON.parse(s);
+      persons = d.persons || [];
+      addedPersons = d.added || [];
+      nextId = d.nextId || 200;
+      return;
+    }
+  } catch(e) {}
+  persons = JSON.parse(JSON.stringify(INITIAL_DATA));
+  addedPersons = [];
+  nextId = 200;
+}
+
+function saveData() {
+  try {
+    if (window.localStorage) {
+      localStorage.setItem('zhong_genealogy', JSON.stringify({
+        persons, added: addedPersons, nextId
+      }));
+    }
+  } catch(e) {}
+}
+
+function getById(id) { return persons.find(p => p.id === id); }
+function getChildren(id) { return persons.filter(p => p.parentId === id); }
+function getGenLabel(g) { return g === 0 ? '渡台祖' : `第${g}代`; }
+
+const BRANCH_COLORS = {
+  '頂番婆': '#8B4513',
+  '草湳底': '#2E7D32',
+  '埔姜崙': '#1565C0',
+  '全族': '#6B5B4F'
+};
+
+// ============ NAVIGATION ============
+function switchPage(pageName) {
+  document.querySelectorAll('.desktop-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.bottom-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+
+  document.querySelectorAll(`[data-page="${pageName}"]`).forEach(t => t.classList.add('active'));
+  document.getElementById('page-' + pageName).classList.add('active');
+
+  if (pageName === 'tree') drawTree();
+  if (pageName === 'search') renderSearch();
+  window.scrollTo(0, 0);
+}
+
+document.querySelectorAll('.desktop-tab, .bottom-tab').forEach(tab => {
+  tab.addEventListener('click', () => switchPage(tab.dataset.page));
+});
+
+// ============ TOAST ============
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ============ STATS ============
+function renderStats() {
+  const gens = [...new Set(persons.map(p => p.generation))].sort((a,b) => a-b);
+  const maxGen = Math.max(...gens);
+  const branches = [...new Set(persons.map(p => p.branch).filter(b => b !== '全族'))];
+  document.getElementById('stats-banner').innerHTML = `
+    <div class="stat-card"><div class="stat-num">${persons.length}</div><div class="stat-label">族人總數</div></div>
+    <div class="stat-card"><div class="stat-num">${maxGen}</div><div class="stat-label">傳承世代</div></div>
+    <div class="stat-card"><div class="stat-num">${branches.length}</div><div class="stat-label">主要支系</div></div>
+    <div class="stat-card"><div class="stat-num">~300</div><div class="stat-label">渡台年數</div></div>
+  `;
+}
+
+// ============ TREE VISUALIZATION ============
+function drawTree() {
+  const svg = document.getElementById('tree-svg');
+  const container = document.getElementById('tree-container');
+  const branchFilter = document.getElementById('branch-filter').value;
+  const genFilter = document.getElementById('gen-filter').value;
+  const searchText = document.getElementById('tree-search').value.trim();
+
+  const root = buildTreeLayout(branchFilter, genFilter, searchText);
+  if (!root) {
+    svg.innerHTML = '<text x="50%" y="100" text-anchor="middle" font-size="16" fill="#6B5B4F">無符合條件的資料</text>';
+    svg.setAttribute('width', 300);
+    svg.setAttribute('height', 200);
+    return;
+  }
+
+  // Responsive node sizing
+  const isMobile = window.innerWidth < 769;
+  const nodeW = isMobile ? 90 : 120;
+  const nodeH = isMobile ? 50 : 60;
+  const gapX = isMobile ? 12 : 20;
+  const gapY = isMobile ? 75 : 95;
+  const fontSize = isMobile ? 12 : 14;
+  const subFontSize = isMobile ? 9 : 10;
+
+  const positions = {};
+  let maxX = 0, maxY = 0;
+
+  function layoutTree(node, depth, startX) {
+    if (!node.children || node.children.length === 0) {
+      positions[node.id] = { x: startX, y: depth * (nodeH + gapY) };
+      maxX = Math.max(maxX, startX + nodeW);
+      maxY = Math.max(maxY, depth * (nodeH + gapY) + nodeH);
+      return startX + nodeW + gapX;
+    }
+    let nextX = startX;
+    for (const child of node.children) {
+      nextX = layoutTree(child, depth + 1, nextX);
+    }
+    const childPositions = node.children.map(c => positions[c.id].x);
+    const midX = (childPositions[0] + childPositions[childPositions.length - 1]) / 2;
+    positions[node.id] = { x: midX, y: depth * (nodeH + gapY) };
+    maxX = Math.max(maxX, nextX);
+    return nextX;
+  }
+
+  layoutTree(root, 0, 20);
+
+  const svgW = maxX + 40;
+  const svgH = maxY + 40;
+  svg.setAttribute('width', svgW);
+  svg.setAttribute('height', svgH);
+  svg.setAttribute('viewBox', `0 0 ${svgW} ${svgH}`);
+
+  let html = '';
+
+  function drawLinks(node) {
+    if (!node.children) return;
+    const pos = positions[node.id];
+    if (!pos) return;
+    const px = pos.x + nodeW / 2;
+    const py = pos.y + nodeH;
+    for (const child of node.children) {
+      const cpos = positions[child.id];
+      if (!cpos) continue;
+      const cx = cpos.x + nodeW / 2;
+      const cy = cpos.y;
+      const midY = py + (cy - py) / 2;
+      html += `<path d="M${px},${py} L${px},${midY} L${cx},${midY} L${cx},${cy}" fill="none" stroke="#D4C5B9" stroke-width="1.5"/>`;
+      drawLinks(child);
+    }
+  }
+  drawLinks(root);
+
+  function drawNodes(node) {
+    const pos = positions[node.id];
+    if (!pos) return;
+    const p = getById(node.id);
+    if (!p) return;
+    const color = BRANCH_COLORS[p.branch] || '#6B5B4F';
+    const isDeceased = p.deathYear != null;
+    const fillColor = isDeceased ? '#F5F0EB' : '#FFFFFF';
+    const nameColor = isDeceased ? '#8B7D72' : color;
+    let displayName = p.name;
+    const maxChars = isMobile ? 4 : 5;
+    if (displayName.length > maxChars) displayName = displayName.substring(0, maxChars) + '…';
+    let yearText = '';
+    if (p.birthYear) yearText = p.birthYear + (p.deathYear ? '-' + p.deathYear : '-');
+
+    html += `<g class="person-node" onclick="showDetail('${p.id}')" transform="translate(${pos.x},${pos.y})">
+      <rect class="person-rect" width="${nodeW}" height="${nodeH}" fill="${fillColor}" stroke="${color}"/>
+      <text x="${nodeW/2}" y="${isMobile ? 20 : 22}" text-anchor="middle" font-size="${fontSize}" font-weight="700" fill="${nameColor}" font-family="Noto Serif TC, PMingLiU, serif">${displayName}</text>
+      <text x="${nodeW/2}" y="${isMobile ? 34 : 38}" text-anchor="middle" font-size="${subFontSize}" fill="#8B7D72" font-family="sans-serif">${yearText}</text>
+      ${(!isMobile && p.spouse) ? `<text x="${nodeW/2}" y="52" text-anchor="middle" font-size="9" fill="#A0937D" font-family="sans-serif">配 ${p.spouse.length > 4 ? p.spouse.substring(0,4)+'…' : p.spouse}</text>` : ''}
+    </g>`;
+
+    // Toggle button for nodes with children
+    if (node.hasChildren) {
+      const toggleSize = isMobile ? 20 : 22;
+      const tx = pos.x + nodeW / 2 - toggleSize / 2;
+      const ty = pos.y + nodeH + 2;
+      const symbol = node.isCollapsed ? '▶' : '▼';
+      html += `<g class="tree-toggle-btn" onclick="event.stopPropagation(); toggleCollapse('${p.id}')">
+        <rect x="${tx}" y="${ty}" width="${toggleSize}" height="${toggleSize}" rx="4" fill="#F5F0EB" stroke="#D4C5B9" stroke-width="1"/>
+        <text x="${tx + toggleSize/2}" y="${ty + toggleSize/2 + 4}" text-anchor="middle" font-size="${isMobile ? 10 : 11}" fill="#6B5B4F">${symbol}</text>
+      </g>`;
+      // Collapsed badge showing descendant count
+      if (node.isCollapsed) {
+        const descCount = countDescendants(p.id);
+        html += `<g class="collapse-badge">
+          <rect x="${pos.x + nodeW - 8}" y="${pos.y - 8}" width="${descCount > 9 ? 28 : 22}" height="18" rx="9" fill="${color}"/>
+          <text x="${pos.x + nodeW - 8 + (descCount > 9 ? 14 : 11)}" y="${pos.y + 5}" text-anchor="middle" font-size="11" fill="#fff">+${descCount}</text>
+        </g>`;
+      }
+    }
+
+    if (node.children) node.children.forEach(drawNodes);
+  }
+  drawNodes(root);
+  svg.innerHTML = html;
+
+  // Auto-fit on first draw
+  if (treeScale === 1) {
+    const containerW = container.clientWidth;
+    if (svgW > containerW * 1.5) {
+      // Scroll to root
+      const rootPos = positions['p1'];
+      if (rootPos) {
+        setTimeout(() => {
+          container.scrollLeft = Math.max(0, rootPos.x - containerW / 2 + nodeW / 2);
+        }, 50);
+      }
+    }
+  }
+}
+
+function countDescendants(id) {
+  const p = getById(id);
+  if (!p || !p.childrenIds || p.childrenIds.length === 0) return 0;
+  let count = p.childrenIds.length;
+  for (const cid of p.childrenIds) count += countDescendants(cid);
+  return count;
+}
+
+function buildTreeLayout(branchFilter, genFilter, searchText) {
+  function buildNode(id) {
+    const p = getById(id);
+    if (!p) return null;
+    const isCollapsed = collapsedNodes.has(id);
+    const hasChildren = (p.childrenIds || []).length > 0;
+    const children = isCollapsed ? [] :
+      (p.childrenIds || []).map(cid => buildNode(cid)).filter(Boolean);
+    if (branchFilter !== 'all' && p.branch !== branchFilter && p.branch !== '全族' && children.length === 0 && !isCollapsed) return null;
+    if (genFilter !== 'all' && p.generation !== parseInt(genFilter) && children.length === 0 && !isCollapsed) return null;
+    if (searchText && !p.name.includes(searchText) && children.length === 0 && !isCollapsed) return null;
+    return { id: p.id, children, isCollapsed, hasChildren };
+  }
+  return buildNode('p1');
+}
+
+// Tree zoom controls
+document.getElementById('zoom-in').addEventListener('click', () => {
+  const svg = document.getElementById('tree-svg');
+  const w = parseFloat(svg.getAttribute('width'));
+  const h = parseFloat(svg.getAttribute('height'));
+  svg.setAttribute('width', w * 1.3);
+  svg.setAttribute('height', h * 1.3);
+  treeScale *= 1.3;
+});
+document.getElementById('zoom-out').addEventListener('click', () => {
+  const svg = document.getElementById('tree-svg');
+  const w = parseFloat(svg.getAttribute('width'));
+  const h = parseFloat(svg.getAttribute('height'));
+  svg.setAttribute('width', w / 1.3);
+  svg.setAttribute('height', h / 1.3);
+  treeScale /= 1.3;
+});
+document.getElementById('zoom-fit').addEventListener('click', () => {
+  treeScale = 1;
+  drawTree();
+});
+
+// Collapse/Expand functions
+function toggleCollapse(id) {
+  if (collapsedNodes.has(id)) {
+    collapsedNodes.delete(id);
+  } else {
+    collapsedNodes.add(id);
+  }
+  drawTree();
+}
+
+function expandAll() {
+  collapsedNodes.clear();
+  drawTree();
+}
+
+function collapseAll() {
+  persons.forEach(p => {
+    if (p.childrenIds && p.childrenIds.length > 0) {
+      collapsedNodes.add(p.id);
+    }
+  });
+  // Always keep root expanded
+  collapsedNodes.delete('p1');
+  drawTree();
+}
+
+document.getElementById('expand-all').addEventListener('click', expandAll);
+document.getElementById('collapse-all').addEventListener('click', collapseAll);
+
+// Filter event listeners
+document.getElementById('branch-filter').addEventListener('change', drawTree);
+document.getElementById('gen-filter').addEventListener('change', drawTree);
+document.getElementById('tree-search').addEventListener('input', drawTree);
+
+// ============ PERSON DETAIL MODAL ============
+function showDetail(id) {
+  const p = getById(id);
+  if (!p) return;
+  const overlay = document.getElementById('modal-overlay');
+  document.getElementById('modal-name').textContent = p.name;
+
+  const parent = p.parentId ? getById(p.parentId) : null;
+  const children = getChildren(p.id);
+
+  let html = `
+    <div class="field"><div class="field-label">世代</div><div class="field-value"><span class="gen-tag">${getGenLabel(p.generation)}</span></div></div>
+    <div class="field"><div class="field-label">支系</div><div class="field-value"><span class="branch-tag ${p.branch}">${p.branch}</span></div></div>
+    <div class="field"><div class="field-label">性別</div><div class="field-value">${p.gender === 'male' ? '男' : '女'}</div></div>
+  `;
+  if (p.birthYear || p.deathYear) {
+    html += `<div class="field"><div class="field-label">生卒年</div><div class="field-value">${p.birthYear || '不詳'} — ${p.deathYear || '在世'}`;
+    if (p.birthYear && p.deathYear) html += ` (享年${p.deathYear - p.birthYear}歲)`;
+    html += `</div></div>`;
+  }
+  if (p.spouse) {
+    html += `<div class="field"><div class="field-label">配偶</div><div class="field-value">${p.spouse}</div></div>`;
+  }
+  if (parent) {
+    html += `<div class="field"><div class="field-label">父親</div><div class="field-value"><a href="#" onclick="event.preventDefault();showDetail('${parent.id}')">${parent.name}</a></div></div>`;
+  }
+  if (children.length > 0) {
+    html += `<div class="field"><div class="field-label">子女 (${children.length}人)</div><div class="field-value" style="display:flex;flex-wrap:wrap;gap:8px;">`;
+    children.forEach(c => {
+      html += `<a href="#" onclick="event.preventDefault();showDetail('${c.id}')" style="margin-right:4px;">${c.name}</a>`;
+    });
+    html += `</div></div>`;
+  }
+  if (p.notes) {
+    html += `<div class="field"><div class="field-label">備註</div><div class="field-value">${p.notes}</div></div>`;
+  }
+
+  document.getElementById('modal-body').innerHTML = html;
+  overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+document.getElementById('modal-close').addEventListener('click', closeModal);
+document.getElementById('modal-overlay').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeModal();
+});
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+// ============ SEARCH ============
+function renderSearch() {
+  const input = document.getElementById('search-input');
+  const list = document.getElementById('person-list');
+  const count = document.getElementById('search-count');
+  const query = input.value.trim();
+
+  let results = persons;
+  if (query) {
+    results = persons.filter(p =>
+      p.name.includes(query) ||
+      (p.spouse && p.spouse.includes(query)) ||
+      p.branch.includes(query) ||
+      getGenLabel(p.generation).includes(query) ||
+      (p.notes && p.notes.includes(query))
+    );
+  }
+
+  results.sort((a, b) => a.generation - b.generation || (a.birthYear||9999) - (b.birthYear||9999));
+  count.textContent = `共 ${results.length} 位族人`;
+
+  list.innerHTML = results.map(p => {
+    const yearInfo = p.birthYear ? `${p.birthYear}${p.deathYear ? '-'+p.deathYear : '-'}` : '';
+    return `
+      <div class="person-card branch-${p.branch}" onclick="showDetail('${p.id}')">
+        <div class="pc-name">${p.name}</div>
+        <div class="pc-info">
+          <span class="gen-tag">${getGenLabel(p.generation)}</span>
+          <span class="branch-tag ${p.branch}">${p.branch}</span>
+          ${yearInfo ? `<span>${yearInfo}</span>` : ''}
+          ${p.spouse ? `<span>配 ${p.spouse}</span>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+document.getElementById('search-input').addEventListener('input', renderSearch);
+
+// ============ FILTERS ============
+function renderFilters() {
+  const container = document.getElementById('search-filters');
+  const branches = ['全部', '頂番婆', '草湳底', '埔姜崙'];
+  container.innerHTML = branches.map(b =>
+    `<button class="filter-chip ${b==='全部'?'active':''}" data-branch="${b}">${b}</button>`
+  ).join('');
+
+  container.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      container.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      const b = chip.dataset.branch;
+      const input = document.getElementById('search-input');
+      input.value = b === '全部' ? '' : b;
+      renderSearch();
+    });
+  });
+}
+
+// ============ EDIT ============
+function populateEditDropdowns() {
+  const genSelect = document.getElementById('edit-gen');
+  const genFilter = document.getElementById('gen-filter');
+  genSelect.innerHTML = '';
+  genFilter.innerHTML = '<option value="all">所有世代</option>';
+  for (let i = 0; i <= 12; i++) {
+    genSelect.innerHTML += `<option value="${i}">${getGenLabel(i)}</option>`;
+    genFilter.innerHTML += `<option value="${i}">${getGenLabel(i)}</option>`;
+  }
+
+  const parentSelect = document.getElementById('edit-parent');
+  parentSelect.innerHTML = '<option value="">-- 選擇父親 --</option>';
+  const editSelect = document.getElementById('edit-select');
+  editSelect.innerHTML = '<option value="">-- 選擇族人 --</option>';
+
+  const sorted = [...persons].sort((a,b) => a.generation - b.generation);
+  sorted.forEach(p => {
+    parentSelect.innerHTML += `<option value="${p.id}">${getGenLabel(p.generation)} ${p.name}</option>`;
+    editSelect.innerHTML += `<option value="${p.id}">${getGenLabel(p.generation)} ${p.name}</option>`;
+  });
+}
+
+document.getElementById('btn-add').addEventListener('click', () => {
+  const name = document.getElementById('edit-name').value.trim();
+  if (!name) { showToast('請輸入姓名'); return; }
+
+  const newPerson = {
+    id: 'p' + (nextId++),
+    name,
+    gender: document.getElementById('edit-gender').value,
+    generation: parseInt(document.getElementById('edit-gen').value),
+    branch: document.getElementById('edit-branch').value,
+    birthYear: document.getElementById('edit-birth').value ? parseInt(document.getElementById('edit-birth').value) : null,
+    deathYear: document.getElementById('edit-death').value ? parseInt(document.getElementById('edit-death').value) : null,
+    spouse: document.getElementById('edit-spouse').value.trim() || null,
+    childrenIds: [],
+    parentId: document.getElementById('edit-parent').value || null,
+    notes: document.getElementById('edit-notes').value.trim()
+  };
+
+  if (newPerson.parentId) {
+    const parent = getById(newPerson.parentId);
+    if (parent && !parent.childrenIds.includes(newPerson.id)) {
+      parent.childrenIds.push(newPerson.id);
+    }
+  }
+
+  persons.push(newPerson);
+  addedPersons.push(newPerson.id);
+  saveData();
+  ['edit-name','edit-birth','edit-death','edit-spouse','edit-notes'].forEach(id => document.getElementById(id).value = '');
+  populateEditDropdowns();
+  renderStats();
+  renderAddedList();
+  showToast(`已新增 ${name}`);
+});
+
+function renderAddedList() {
+  const list = document.getElementById('added-list');
+  const added = addedPersons.map(id => getById(id)).filter(Boolean);
+  if (added.length === 0) { list.innerHTML = '尚未新增任何族人'; return; }
+  list.innerHTML = added.map(p => `
+    <div style="padding:10px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:8px;">
+      <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;">${p.name} (${getGenLabel(p.generation)}, ${p.branch})</span>
+      <button class="btn btn-danger" style="padding:6px 14px;font-size:13px;flex-shrink:0;" onclick="removePerson('${p.id}')">刪除</button>
+    </div>
+  `).join('');
+}
+
+window.removePerson = function(id) {
+  const p = getById(id);
+  if (!p) return;
+  if (p.parentId) {
+    const parent = getById(p.parentId);
+    if (parent) parent.childrenIds = parent.childrenIds.filter(c => c !== id);
+  }
+  persons = persons.filter(pp => pp.id !== id);
+  addedPersons = addedPersons.filter(aid => aid !== id);
+  saveData();
+  populateEditDropdowns();
+  renderStats();
+  renderAddedList();
+  showToast(`已刪除 ${p.name}`);
+};
+
+document.getElementById('edit-select').addEventListener('change', (e) => {
+  const id = e.target.value;
+  const form = document.getElementById('edit-existing-form');
+  if (!id) { form.style.display = 'none'; return; }
+  const p = getById(id);
+  if (!p) return;
+  form.style.display = 'block';
+  document.getElementById('ex-name').value = p.name;
+  document.getElementById('ex-spouse').value = p.spouse || '';
+  document.getElementById('ex-birth').value = p.birthYear || '';
+  document.getElementById('ex-death').value = p.deathYear || '';
+  document.getElementById('ex-notes').value = p.notes || '';
+});
+
+document.getElementById('btn-save-edit').addEventListener('click', () => {
+  const id = document.getElementById('edit-select').value;
+  if (!id) return;
+  const p = getById(id);
+  if (!p) return;
+  p.name = document.getElementById('ex-name').value.trim() || p.name;
+  p.spouse = document.getElementById('ex-spouse').value.trim() || null;
+  p.birthYear = document.getElementById('ex-birth').value ? parseInt(document.getElementById('ex-birth').value) : null;
+  p.deathYear = document.getElementById('ex-death').value ? parseInt(document.getElementById('ex-death').value) : null;
+  p.notes = document.getElementById('ex-notes').value.trim();
+  saveData();
+  populateEditDropdowns();
+  showToast(`已更新 ${p.name}`);
+});
+
+// Export
+document.getElementById('btn-export').addEventListener('click', () => {
+  const data = JSON.stringify({ persons, exported: new Date().toISOString() }, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = '鐘氏族譜_' + new Date().toISOString().split('T')[0] + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('已匯出族譜資料');
+});
+
+// Import
+document.getElementById('btn-import').addEventListener('click', () => {
+  document.getElementById('file-import').click();
+});
+document.getElementById('file-import').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (data.persons && Array.isArray(data.persons)) {
+        persons = data.persons;
+        addedPersons = [];
+        saveData();
+        populateEditDropdowns();
+        renderStats();
+        drawTree();
+        renderSearch();
+        showToast('已匯入族譜資料');
+      } else {
+        showToast('檔案格式不正確');
+      }
+    } catch(err) {
+      showToast('讀取檔案失敗');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+// ============ WINDOW RESIZE ============
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    if (document.getElementById('page-tree').classList.contains('active')) {
+      treeScale = 1;
+      drawTree();
+    }
+  }, 300);
+});
+
+// ============ INIT ============
+loadData();
+renderStats();
+renderFilters();
+populateEditDropdowns();
+renderAddedList();
+drawTree();
+</script>
+</body>
+</html>

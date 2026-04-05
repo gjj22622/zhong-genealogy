@@ -1,0 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap');
+
+:root {
+  --primary: #8B4513;
+  --primary-light: #A0522D;
+  --secondary: #2E7D32;
+  --accent: #1565C0;
+  --bg: #FFF8F0;
+  --text: #3E2723;
+  --text-light: #5D4037;
+  --border: #D7CCC8;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Noto Serif TC', serif;
+  background-color: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
