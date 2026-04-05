@@ -6,7 +6,7 @@
 - [x] 1.4 建立資料庫模型：persons 表（id, name, gender, generation, branch, birth_year, death_year, spouse, parent_id, notes, children_ids, created_at, updated_at）
 - [x] 1.5 建立資料庫模型：submissions 表（id, user_id, type, target_person_id, data, status, admin_notes, reviewed_by, reviewed_at, created_at）
 - [x] 1.6 建立 Alembic 遷移腳本並執行初始遷移
-- [ ] 1.7 將 INITIAL_DATA（152 筆族人）匯入 PostgreSQL
+- [x] 1.7 將 INITIAL_DATA（152 筆族人）匯入 PostgreSQL
 
 ## 2. 認證系統
 
@@ -40,18 +40,18 @@
 
 ## 6. 前端：登入/註冊 UI
 
-- [ ] 6.1 在 鐘氏族譜.html 新增登入/註冊 Modal UI（大按鈕、長輩友善）
-- [ ] 6.2 實作前端 API 呼叫工具函式（fetch wrapper with JWT）
-- [ ] 6.3 實作登入流程：送出帳密 → 儲存 token → 更新 UI 狀態
-- [ ] 6.4 實作註冊流程：填寫表單 → 送出 → 顯示「等待審核」
-- [ ] 6.5 登入後顯示使用者名稱、登出按鈕
+- [x] 6.1 在 鐘氏族譜.html 新增登入/註冊 Modal UI（大按鈕、長輩友善）
+- [x] 6.2 實作前端 API 呼叫工具函式（fetch wrapper with JWT）
+- [x] 6.3 實作登入流程：送出帳密 → 儲存 token → 更新 UI 狀態
+- [x] 6.4 實作註冊流程：填寫表單 → 送出 → 顯示「等待審核」
+- [x] 6.5 登入後顯示使用者名稱、登出按鈕
 
 ## 7. 前端：提交功能改造
 
-- [ ] 7.1 修改「新增族人」表單：登入後送到 API submissions，未登入提示登入
-- [ ] 7.2 修改「編輯族人」表單：同上，改為提交而非直接修改
-- [ ] 7.3 新增「我的提交」頁面/區塊：顯示提交紀錄與審核狀態
-- [ ] 7.4 前端載入時從 GET /api/persons 取得資料，fallback 到 localStorage
+- [x] 7.1 修改「新增族人」表單：登入後送到 API submissions，未登入提示登入
+- [x] 7.2 修改「編輯族人」表單：同上，改為提交而非直接修改
+- [x] 7.3 新增「我的提交」頁面/區塊：顯示提交紀錄與審核狀態
+- [x] 7.4 前端載入時從 GET /api/persons 取得資料，fallback 到 localStorage
 
 ## 8. Admin 後台前端
 
@@ -64,7 +64,7 @@
 
 ## 9. 部署
 
-- [ ] 9.1 設定 Zeabur 後端部署（zbpack.json、環境變數）
+- [x] 9.1 設定 Zeabur 後端部署（zbpack.json、環境變數）
 - [ ] 9.2 設定 PostgreSQL 資料庫（Zeabur 或外部服務）
 - [ ] 9.3 前端 API_BASE_URL 設定為 Zeabur 後端網址
 - [ ] 9.4 測試完整流程：註冊 → 審核 → 登入 → 提交 → 審核通過 → 族譜更新

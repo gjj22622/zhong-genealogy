@@ -200,14 +200,14 @@ body::before {
   box-shadow: inset 0 0 6px rgba(184,52,42,0.15);
 }
 
-/* Theme toggle */
+/* Theme toggle — in seal area on desktop, hidden on mobile (use nav-seal spot) */
 .theme-toggle {
-  position: absolute; left: 8px; top: 50%; transform: translateY(-50%);
-  width: 40px; height: 40px;
+  position: absolute; right: 52px; top: 50%; transform: translateY(-50%);
+  width: 38px; height: 38px;
   border: none; border-radius: 50%;
   background: rgba(255,255,255,0.12);
   color: var(--paper);
-  font-size: 18px; cursor: pointer;
+  font-size: 17px; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   transition: background 0.2s;
   backdrop-filter: blur(4px);
@@ -910,6 +910,88 @@ body::before {
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+/* ===== AUTH MODAL ===== */
+.auth-overlay {
+  display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(26,24,20,0.6); backdrop-filter: blur(4px);
+  z-index: 2500; justify-content: center; align-items: center; padding: 16px;
+}
+.auth-overlay.show { display: flex; }
+.auth-card {
+  background: var(--card); border-radius: var(--radius-lg);
+  width: 100%; max-width: 420px; padding: 28px 24px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+  animation: fadeInUp 0.35s var(--ease-out);
+  max-height: 90vh; overflow-y: auto;
+}
+.auth-card h2 {
+  font-family: var(--font-display); font-size: 24px;
+  color: var(--bronze-dark); text-align: center; margin-bottom: 20px;
+}
+[data-theme="dark"] .auth-card h2 { color: var(--bronze); }
+.auth-card .form-group { margin-bottom: 14px; }
+.auth-tabs {
+  display: flex; margin-bottom: 20px; border-radius: var(--radius);
+  overflow: hidden; border: 1.5px solid var(--border);
+}
+.auth-tab {
+  flex: 1; padding: 12px; text-align: center; border: none;
+  background: var(--paper); color: var(--ink);
+  font-family: var(--font-body); font-size: 16px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+}
+.auth-tab.active {
+  background: var(--bronze); color: var(--paper);
+}
+.auth-close {
+  position: absolute; top: 12px; right: 16px;
+  background: none; border: none; font-size: 28px;
+  color: var(--ink-faint); cursor: pointer;
+  min-width: 44px; min-height: 44px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* User status bar in nav */
+.nav-user-btn {
+  position: absolute; left: 8px; top: 50%; transform: translateY(-50%);
+  height: 40px; border: none; border-radius: 20px;
+  background: rgba(255,255,255,0.15);
+  color: var(--paper); font-size: 14px; cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  padding: 0 14px 0 10px;
+  font-family: var(--font-body); font-weight: 600;
+  transition: background 0.2s;
+  backdrop-filter: blur(4px);
+  max-width: 120px; overflow: hidden;
+}
+.nav-user-btn:active { background: rgba(255,255,255,0.25); }
+.nav-user-btn .user-icon { font-size: 18px; }
+
+/* Submission status cards */
+.submission-card {
+  background: var(--card); border-radius: var(--radius);
+  padding: 14px; margin-bottom: 10px;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 1px 4px var(--shadow);
+}
+.submission-card .sub-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 6px;
+}
+.submission-card .sub-type {
+  font-weight: 700; font-size: 15px; color: var(--ink);
+}
+.submission-card .sub-status {
+  font-size: 13px; font-weight: 600; padding: 3px 10px;
+  border-radius: 12px;
+}
+.sub-status.pending { background: #FFF3CD; color: #856404; }
+.sub-status.approved { background: #D4EDDA; color: #155724; }
+.sub-status.rejected { background: #F8D7DA; color: #721C24; }
+.submission-card .sub-detail {
+  font-size: 14px; color: var(--ink-faint); line-height: 1.5;
+}
+
 /* ===== SECTION DIVIDER (bronze ornamental) ===== */
 .section-divider {
   display: flex; align-items: center; gap: 12px;
@@ -947,8 +1029,9 @@ body::before {
   .tree-controls select { min-width: 140px; flex: unset; }
   .tree-controls input { min-width: 220px; }
   .mobile-filter-panel { display: none !important; }
-  .theme-toggle { left: unset; right: 56px; }
+  .theme-toggle { right: 56px; }
   .nav-seal { right: 16px; }
+  .nav-user-btn { left: 16px; max-width: 160px; }
   .person-card:hover {
     box-shadow: 0 4px 20px var(--shadow-strong);
     transform: translateY(-2px);
@@ -1021,7 +1104,9 @@ body::before {
 <!-- TOP NAV — Bronze Header -->
 <nav class="nav">
   <div class="nav-inner-row">
-    <button class="theme-toggle" id="theme-toggle" title="切換深色模式" aria-label="切換深色模式">🌙</button>
+    <button class="nav-user-btn" id="nav-user-btn" title="登入/帳號">
+      <span class="user-icon">👤</span><span id="nav-user-name">登入</span>
+    </button>
     <div class="nav-title">
       <span class="nav-bell"><svg viewBox="0 0 64 72" fill="none" xmlns="http://www.w3.org/2000/svg">
       <!-- 鐘頂鈕 (Crown knob) -->
@@ -1340,9 +1425,13 @@ body::before {
         <input type="file" id="file-import" accept=".json" style="display:none">
       </div>
     </div>
+    <div class="edit-section reveal reveal-d1" id="my-submissions-section" style="display:none;">
+      <h3>我的提交紀錄</h3>
+      <div id="my-submissions-list" style="font-size:14px;color:var(--ink-faint);">載入中...</div>
+    </div>
     <div class="edit-section reveal reveal-d1">
-      <h3>已新增的族人</h3>
-      <div id="added-list" style="font-size:14px;color:var(--ink-faint);">尚未新增任何族人</div>
+      <h3>已新增的族人（本機）</h3>
+      <div id="added-list" style="font-size:14px;color:var(--ink-faint);">尚未新��任何族人</div>
     </div>
     <div class="edit-section reveal reveal-d2">
       <h3>編輯現有族人</h3>
@@ -1375,6 +1464,63 @@ body::before {
       <button class="modal-close" id="modal-close">&times;</button>
     </div>
     <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- Auth Modal -->
+<div class="auth-overlay" id="auth-overlay">
+  <div class="auth-card" style="position:relative;">
+    <button class="auth-close" id="auth-close">&times;</button>
+    <h2 id="auth-title">登入族譜系統</h2>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login">登入</button>
+      <button class="auth-tab" id="tab-register">註冊</button>
+    </div>
+    <!-- Login Form -->
+    <div id="auth-login-form">
+      <div class="form-group">
+        <label>帳號</label>
+        <input type="text" id="login-username" placeholder="輸入帳號">
+      </div>
+      <div class="form-group">
+        <label>密碼</label>
+        <input type="password" id="login-password" placeholder="輸入密碼">
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:8px;" id="btn-login">登入</button>
+    </div>
+    <!-- Register Form -->
+    <div id="auth-register-form" style="display:none;">
+      <div class="form-group">
+        <label>帳號 *</label>
+        <input type="text" id="reg-username" placeholder="自訂帳號（英文或數字）">
+      </div>
+      <div class="form-group">
+        <label>密碼 *（至少6字元）</label>
+        <input type="password" id="reg-password" placeholder="設定密碼">
+      </div>
+      <div class="form-group">
+        <label>真實姓名 *</label>
+        <input type="text" id="reg-display-name" placeholder="例：鐘○○">
+      </div>
+      <div class="form-group">
+        <label>手機號碼</label>
+        <input type="tel" id="reg-phone" placeholder="例：0912345678">
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="reg-email" placeholder="例：example@gmail.com">
+      </div>
+      <div class="form-group">
+        <label>Line ID</label>
+        <input type="text" id="reg-line-id" placeholder="例：zhong_family">
+      </div>
+      <div class="form-group">
+        <label>與族人的關係</label>
+        <textarea id="reg-relation" placeholder="例：我是鍾俊雄的孫子" style="min-height:60px;"></textarea>
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:8px;" id="btn-register">送出註冊申請</button>
+    </div>
+    <div id="auth-message" style="margin-top:12px;text-align:center;font-size:15px;color:var(--ink-faint);display:none;"></div>
   </div>
 </div>
 
@@ -2358,12 +2504,11 @@ function populateEditDropdowns() {
   });
 }
 
-document.getElementById('btn-add').addEventListener('click', () => {
+document.getElementById('btn-add').addEventListener('click', async () => {
   const name = document.getElementById('edit-name').value.trim();
   if (!name) { showToast('請輸入姓名'); return; }
 
-  const newPerson = {
-    id: 'p' + (nextId++),
+  const personData = {
     name,
     gender: document.getElementById('edit-gender').value,
     generation: parseInt(document.getElementById('edit-gen').value),
@@ -2371,18 +2516,38 @@ document.getElementById('btn-add').addEventListener('click', () => {
     birthYear: document.getElementById('edit-birth').value ? parseInt(document.getElementById('edit-birth').value) : null,
     deathYear: document.getElementById('edit-death').value ? parseInt(document.getElementById('edit-death').value) : null,
     spouse: document.getElementById('edit-spouse').value.trim() || null,
-    childrenIds: [],
     parentId: document.getElementById('edit-parent').value || null,
     notes: document.getElementById('edit-notes').value.trim()
   };
 
+  // If logged in and API available, submit to API for review
+  if (currentUser && API_BASE) {
+    const res = await apiFetch('/api/submissions', {
+      method: 'POST',
+      body: JSON.stringify({ type: 'add', data: personData })
+    });
+    if (res && res.ok) {
+      showToast(`已提交「${name}」，等待管理員審核`);
+      ['edit-name','edit-birth','edit-death','edit-spouse','edit-notes'].forEach(id => document.getElementById(id).value = '');
+      loadMySubmissions();
+      return;
+    } else {
+      showToast('提交失敗，已存入本機');
+    }
+  } else if (API_BASE && !currentUser) {
+    showToast('請先登入再提交');
+    document.getElementById('auth-overlay').classList.add('show');
+    return;
+  }
+
+  // Fallback: save locally
+  const newPerson = { ...personData, id: 'p' + (nextId++), childrenIds: [] };
   if (newPerson.parentId) {
     const parent = getById(newPerson.parentId);
     if (parent && !parent.childrenIds.includes(newPerson.id)) {
       parent.childrenIds.push(newPerson.id);
     }
   }
-
   persons.push(newPerson);
   addedPersons.push(newPerson.id);
   saveData();
@@ -2390,7 +2555,7 @@ document.getElementById('btn-add').addEventListener('click', () => {
   populateEditDropdowns();
   renderStats();
   renderAddedList();
-  showToast(`已新增 ${name}`);
+  showToast(`已新增 ${name}（本機）`);
 });
 
 function renderAddedList() {
@@ -2435,19 +2600,42 @@ document.getElementById('edit-select').addEventListener('change', (e) => {
   document.getElementById('ex-notes').value = p.notes || '';
 });
 
-document.getElementById('btn-save-edit').addEventListener('click', () => {
+document.getElementById('btn-save-edit').addEventListener('click', async () => {
   const id = document.getElementById('edit-select').value;
   if (!id) return;
   const p = getById(id);
   if (!p) return;
-  p.name = document.getElementById('ex-name').value.trim() || p.name;
-  p.spouse = document.getElementById('ex-spouse').value.trim() || null;
-  p.birthYear = document.getElementById('ex-birth').value ? parseInt(document.getElementById('ex-birth').value) : null;
-  p.deathYear = document.getElementById('ex-death').value ? parseInt(document.getElementById('ex-death').value) : null;
-  p.notes = document.getElementById('ex-notes').value.trim();
+
+  const editData = {
+    name: document.getElementById('ex-name').value.trim() || p.name,
+    spouse: document.getElementById('ex-spouse').value.trim() || null,
+    birthYear: document.getElementById('ex-birth').value ? parseInt(document.getElementById('ex-birth').value) : null,
+    deathYear: document.getElementById('ex-death').value ? parseInt(document.getElementById('ex-death').value) : null,
+    notes: document.getElementById('ex-notes').value.trim(),
+  };
+
+  // If logged in and API available, submit edit for review
+  if (currentUser && API_BASE) {
+    const res = await apiFetch('/api/submissions', {
+      method: 'POST',
+      body: JSON.stringify({ type: 'edit', target_person_id: p._dbId || null, data: editData })
+    });
+    if (res && res.ok) {
+      showToast(`已提交修改「${editData.name}」，等待管理員審核`);
+      loadMySubmissions();
+      return;
+    }
+  }
+
+  // Fallback: save locally
+  p.name = editData.name;
+  p.spouse = editData.spouse;
+  p.birthYear = editData.birthYear;
+  p.deathYear = editData.deathYear;
+  p.notes = editData.notes;
   saveData();
   populateEditDropdowns();
-  showToast(`已更新 ${p.name}`);
+  showToast(`已更新 ${p.name}（本機）`);
 });
 
 // Export
@@ -2503,6 +2691,210 @@ window.addEventListener('resize', () => {
     }
   }, 300);
 });
+
+// ============ API LAYER & AUTH ============
+const API_BASE = ''; // Set to Zeabur URL when deployed, e.g. 'https://your-backend.zeabur.app'
+let authToken = localStorage.getItem('zhong_auth_token') || null;
+let currentUser = null;
+
+async function apiFetch(path, options = {}) {
+  if (!API_BASE) return null; // API not configured yet
+  const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+  if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+  try {
+    const res = await fetch(API_BASE + path, { ...options, headers });
+    if (res.status === 401) { authToken = null; localStorage.removeItem('zhong_auth_token'); updateAuthUI(); }
+    return res;
+  } catch (e) { return null; }
+}
+
+function updateAuthUI() {
+  const btn = document.getElementById('nav-user-btn');
+  const nameEl = document.getElementById('nav-user-name');
+  const subSection = document.getElementById('my-submissions-section');
+  if (currentUser) {
+    nameEl.textContent = currentUser.display_name.length > 4 ? currentUser.display_name.substring(0,4) : currentUser.display_name;
+    btn.title = `${currentUser.display_name} (${currentUser.role})`;
+    if (subSection) subSection.style.display = 'block';
+  } else {
+    nameEl.textContent = '登入';
+    btn.title = '登入/帳號';
+    if (subSection) subSection.style.display = 'none';
+  }
+}
+
+async function checkAuthStatus() {
+  if (!authToken || !API_BASE) { updateAuthUI(); return; }
+  const res = await apiFetch('/api/auth/me');
+  if (res && res.ok) {
+    currentUser = await res.json();
+  } else {
+    currentUser = null;
+    authToken = null;
+    localStorage.removeItem('zhong_auth_token');
+  }
+  updateAuthUI();
+}
+
+// Auth Modal
+document.getElementById('nav-user-btn').addEventListener('click', () => {
+  if (currentUser) {
+    if (confirm(`已登入：${currentUser.display_name}\n\n要登出嗎？`)) {
+      authToken = null; currentUser = null;
+      localStorage.removeItem('zhong_auth_token');
+      updateAuthUI();
+      showToast('已登出');
+    }
+  } else {
+    document.getElementById('auth-overlay').classList.add('show');
+  }
+});
+document.getElementById('auth-close').addEventListener('click', () => {
+  document.getElementById('auth-overlay').classList.remove('show');
+});
+document.getElementById('auth-overlay').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) document.getElementById('auth-overlay').classList.remove('show');
+});
+
+// Auth tab switching
+document.getElementById('tab-login').addEventListener('click', () => {
+  document.getElementById('tab-login').classList.add('active');
+  document.getElementById('tab-register').classList.remove('active');
+  document.getElementById('auth-login-form').style.display = 'block';
+  document.getElementById('auth-register-form').style.display = 'none';
+  document.getElementById('auth-title').textContent = '登入族譜系統';
+  document.getElementById('auth-message').style.display = 'none';
+});
+document.getElementById('tab-register').addEventListener('click', () => {
+  document.getElementById('tab-register').classList.add('active');
+  document.getElementById('tab-login').classList.remove('active');
+  document.getElementById('auth-login-form').style.display = 'none';
+  document.getElementById('auth-register-form').style.display = 'block';
+  document.getElementById('auth-title').textContent = '���冊族譜帳號';
+  document.getElementById('auth-message').style.display = 'none';
+});
+
+// Login
+document.getElementById('btn-login').addEventListener('click', async () => {
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value;
+  if (!username || !password) { showToast('請輸入帳號和密碼'); return; }
+  const msgEl = document.getElementById('auth-message');
+  msgEl.style.display = 'block'; msgEl.style.color = 'var(--ink-faint)'; msgEl.textContent = '登入中...';
+
+  const res = await apiFetch('/api/auth/login', {
+    method: 'POST', body: JSON.stringify({ username, password })
+  });
+  if (!res) { msgEl.style.color = 'var(--danger)'; msgEl.textContent = 'API 尚未設定或無法連線'; return; }
+  const data = await res.json();
+  if (res.ok) {
+    authToken = data.access_token;
+    localStorage.setItem('zhong_auth_token', authToken);
+    if (data.refresh_token) localStorage.setItem('zhong_refresh_token', data.refresh_token);
+    currentUser = data.user;
+    updateAuthUI();
+    document.getElementById('auth-overlay').classList.remove('show');
+    showToast(`歡迎回來，${currentUser.display_name}`);
+    loadMySubmissions();
+  } else {
+    msgEl.style.color = 'var(--danger)'; msgEl.textContent = data.detail || '登入失敗';
+  }
+});
+
+// Register
+document.getElementById('btn-register').addEventListener('click', async () => {
+  const username = document.getElementById('reg-username').value.trim();
+  const password = document.getElementById('reg-password').value;
+  const displayName = document.getElementById('reg-display-name').value.trim();
+  if (!username || !password || !displayName) { showToast('請填寫帳號、密碼和姓名'); return; }
+  if (password.length < 6) { showToast('密碼至少需 6 個字元'); return; }
+
+  const msgEl = document.getElementById('auth-message');
+  msgEl.style.display = 'block'; msgEl.style.color = 'var(--ink-faint)'; msgEl.textContent = '送出中...';
+
+  const res = await apiFetch('/api/auth/register', {
+    method: 'POST',
+    body: JSON.stringify({
+      username,
+      password,
+      display_name: displayName,
+      phone: document.getElementById('reg-phone').value.trim() || null,
+      email: document.getElementById('reg-email').value.trim() || null,
+      line_id: document.getElementById('reg-line-id').value.trim() || null,
+      relation_claim: document.getElementById('reg-relation').value.trim() || null,
+    })
+  });
+  if (!res) { msgEl.style.color = 'var(--danger)'; msgEl.textContent = 'API 尚未設定或無法連線'; return; }
+  const data = await res.json();
+  if (res.ok) {
+    msgEl.style.color = 'var(--patina)';
+    msgEl.textContent = '✓ 註冊成功！等待管理員審核後即可登入。';
+    ['reg-username','reg-password','reg-display-name','reg-phone','reg-email','reg-line-id','reg-relation'].forEach(id => document.getElementById(id).value = '');
+  } else {
+    msgEl.style.color = 'var(--danger)'; msgEl.textContent = data.detail || '註��失敗';
+  }
+});
+
+// Load my submissions
+async function loadMySubmissions() {
+  if (!currentUser || !API_BASE) return;
+  const listEl = document.getElementById('my-submissions-list');
+  const res = await apiFetch('/api/submissions/mine');
+  if (!res || !res.ok) { listEl.textContent = '無法載入提交紀錄'; return; }
+  const subs = await res.json();
+  if (subs.length === 0) { listEl.textContent = '尚無提交紀錄'; return; }
+  listEl.innerHTML = subs.map(s => {
+    const typeName = s.type === 'add' ? '新增族人' : '修改族人';
+    const name = s.data.name || '(未命名)';
+    const date = new Date(s.created_at).toLocaleDateString('zh-TW');
+    return `<div class="submission-card">
+      <div class="sub-header">
+        <span class="sub-type">${typeName}：${name}</span>
+        <span class="sub-status ${s.status}">${s.status === 'pending' ? '審核中' : s.status === 'approved' ? '已通過' : '已退回'}</span>
+      </div>
+      <div class="sub-detail">提交日期：${date}${s.admin_notes ? '<br>管理員備註：' + s.admin_notes : ''}</div>
+    </div>`;
+  }).join('');
+}
+
+// Try loading data from API
+async function loadFromAPI() {
+  if (!API_BASE) return false;
+  try {
+    const res = await apiFetch('/api/persons');
+    if (res && res.ok) {
+      const apiPersons = await res.json();
+      if (apiPersons.length > 0) {
+        // Map API format to frontend format
+        persons = apiPersons.map(p => ({
+          id: p.old_id || ('db' + p.id),
+          name: p.name,
+          gender: p.gender || 'male',
+          generation: p.generation || 0,
+          branch: p.branch || '全族',
+          birthYear: p.birth_year ? parseInt(p.birth_year) || null : null,
+          deathYear: p.death_year ? parseInt(p.death_year) || null : null,
+          spouse: p.spouse,
+          childrenIds: p.children_ids || [],
+          parentId: null, // Will be resolved
+          notes: p.bio || '',
+          _dbId: p.id,
+          _fatherId: p.father_id,
+        }));
+        // Resolve parentId from father_id
+        const dbIdMap = {};
+        persons.forEach(p => { if (p._dbId) dbIdMap[p._dbId] = p.id; });
+        persons.forEach(p => {
+          if (p._fatherId) p.parentId = dbIdMap[p._fatherId] || null;
+        });
+        // Cache to localStorage
+        saveData();
+        return true;
+      }
+    }
+  } catch (e) { /* fallback to localStorage */ }
+  return false;
+}
 
 // ============ MOBILE FILTER PANEL ============
 function initMobileFilters() {
@@ -2564,6 +2956,19 @@ populateEditDropdowns();
 renderAddedList();
 initMobileFilters();
 drawTree();
+
+// Async: check auth status & try loading from API
+(async () => {
+  await checkAuthStatus();
+  const loaded = await loadFromAPI();
+  if (loaded) {
+    collapseByDefault();
+    renderStats();
+    populateEditDropdowns();
+    drawTree();
+  }
+  if (currentUser) loadMySubmissions();
+})();
 </script>
 </body>
 </html>
