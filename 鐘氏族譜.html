@@ -5,431 +5,952 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
 <title>鐘氏族譜 — 福建泉州安溪渡台家族</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
+/* ============================================================
+   鐘鼎傳世 — ZHONG CLAN GENEALOGY THEME
+   Aesthetic: Ancient bronze bell (鐘鼎) meets modern Taiwan UX
+   ============================================================ */
+
 :root {
-  --primary: #8B4513;
-  --primary-light: #D2B48C;
-  --primary-dark: #5C3317;
-  --bg: #FFF8F0;
-  --bg-card: #FFFFFF;
-  --text: #2C1810;
-  --text-light: #6B5B4F;
-  --accent-green: #2E7D32;
-  --accent-blue: #1565C0;
-  --accent-red: #C62828;
-  --border: #D4C5B9;
-  --shadow: rgba(139,69,19,0.1);
-  --branch-top: #8B4513;
-  --branch-cao: #2E7D32;
-  --branch-pu: #1565C0;
-  --gen-badge: #F5E6D3;
+  /* === Bronze / Patina palette === */
+  --bronze:        #8B7225;
+  --bronze-light:  #C4A94D;
+  --bronze-dark:   #5C4A14;
+  --patina:        #2D5F4A;
+  --patina-light:  #4A8B72;
+  --patina-muted:  #3D6E5A;
+  --ink:           #151210;
+  --ink-light:     #302820;
+  --ink-faint:     #5A5048;
+  --vermillion:    #B8342A;
+  --vermillion-soft:#D4564D;
+
+  /* === Paper / Surface === */
+  --paper:         #F5F0E6;
+  --paper-warm:    #EDE5D5;
+  --paper-deep:    #E3D9C6;
+  --card:          #FDFAF4;
+  --card-hover:    #FAF5EB;
+
+  /* === Branch colors (LOCKED) === */
+  --branch-top:    #8B4513;
+  --branch-cao:    #2E7D32;
+  --branch-pu:     #1565C0;
+
+  /* === Functional === */
+  --border:        #C9BDA8;
+  --border-light:  #DDD4C4;
+  --shadow:        rgba(90, 70, 30, 0.12);
+  --shadow-strong: rgba(90, 70, 30, 0.22);
+  --gen-badge:     #EDE5D5;
+  --danger:        #C62828;
+
+  /* === Layout === */
   --nav-h: 56px;
-  --bottom-h: 60px;
+  --bottom-h: 64px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --radius: 12px;
+  --radius-lg: 20px;
+
+  /* === Typography === */
+  --font-display: "LXGW WenKai TC", "Noto Serif TC", "PMingLiU", serif;
+  --font-body: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+
+  /* === Transitions === */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+/* === Dark Mode === */
+[data-theme="dark"] {
+  --bronze:        #C4A94D;
+  --bronze-light:  #D4BE6A;
+  --bronze-dark:   #8B7225;
+  --patina:        #5AAF8A;
+  --patina-light:  #7CCFAA;
+  --ink:           #F0EBE0;
+  --ink-light:     #D4CABC;
+  --ink-faint:     #AEA494;
+  --paper:         #1A1814;
+  --paper-warm:    #22201A;
+  --paper-deep:    #2A2720;
+  --card:          #2A2720;
+  --card-hover:    #333026;
+  --border:        #4A4438;
+  --border-light:  #3D3830;
+  --shadow:        rgba(0,0,0,0.3);
+  --shadow-strong: rgba(0,0,0,0.5);
+  --gen-badge:     #3D3830;
+  --vermillion:    #E06058;
+}
+
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html { scroll-behavior: smooth; }
 body {
-  font-family: "Noto Serif TC", "Source Han Serif TC", "PMingLiU", serif;
-  background: var(--bg); color: var(--text);
+  font-family: var(--font-body);
+  font-size: 17px; line-height: 1.7;
+  background: var(--paper);
+  color: var(--ink);
   min-height: 100vh; min-height: 100dvh;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  transition: background 0.4s var(--ease-out), color 0.4s var(--ease-out);
 }
 
-/* ===== TOP NAV ===== */
+/* === Cloud-Thunder Pattern (雲雷紋) background === */
+body::before {
+  content: '';
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none; z-index: 0;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%238B7225' stroke-width='1'%3E%3Cpath d='M30 5 L30 15 L20 15 L20 25 L10 25 L10 35 L20 35 L20 45 L30 45 L30 55'/%3E%3Cpath d='M5 30 L15 30 L15 20 L25 20 L25 10 L35 10 L35 20 L45 20 L45 30 L55 30'/%3E%3Crect x='22' y='22' width='16' height='16' rx='2'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 60px 60px;
+}
+[data-theme="dark"] body::before { opacity: 0.04; }
+
+/* ===== STAGGERED REVEAL ANIMATION ===== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes inkReveal {
+  from { opacity: 0; transform: scale(0.96); filter: blur(4px); }
+  to   { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+@keyframes bellRing {
+  0%, 100% { transform: rotate(0deg); }
+  15% { transform: rotate(6deg); }
+  30% { transform: rotate(-5deg); }
+  45% { transform: rotate(3deg); }
+  60% { transform: rotate(-2deg); }
+  75% { transform: rotate(1deg); }
+}
+@keyframes rippleOut {
+  from { transform: scale(0); opacity: 0.5; }
+  to   { transform: scale(4); opacity: 0; }
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+@keyframes slideDown {
+  from { transform: translateY(0); }
+  to   { transform: translateY(100%); }
+}
+.reveal {
+  animation: fadeInUp 0.6s var(--ease-out) both;
+}
+.reveal-d1 { animation-delay: 0.08s; }
+.reveal-d2 { animation-delay: 0.16s; }
+.reveal-d3 { animation-delay: 0.24s; }
+.reveal-d4 { animation-delay: 0.32s; }
+
+/* ===== TOP NAV — Bronze Header ===== */
 .nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
-  color: #FFF8F0;
-  box-shadow: 0 2px 12px var(--shadow);
+  background: linear-gradient(135deg, var(--bronze-dark) 0%, var(--bronze) 50%, var(--patina-muted) 100%);
+  color: var(--paper);
+  box-shadow: 0 2px 16px var(--shadow-strong);
   height: var(--nav-h);
   display: flex; align-items: center; justify-content: center;
   padding: 0 16px;
+  transition: background 0.4s var(--ease-out);
+}
+[data-theme="dark"] .nav {
+  background: linear-gradient(135deg, #2A2720 0%, #3D3830 50%, #2D3A34 100%);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.4);
+}
+.nav-inner-row {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; max-width: 1200px; position: relative;
 }
 .nav-title {
-  font-size: 20px; font-weight: 700; letter-spacing: 2px;
-  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 700; letter-spacing: 4px;
+  display: flex; align-items: center; gap: 10px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
-.nav-title .icon { font-size: 22px; }
+.nav-bell {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px;
+  animation: bellRing 4s ease-in-out infinite;
+  transform-origin: top center;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+}
+.nav-bell svg { width: 28px; height: 28px; }
 
-/* ===== BOTTOM TAB BAR (mobile-first) ===== */
+/* Seal stamp (印章) — vermillion red seal */
+.nav-seal {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  width: 38px; height: 38px;
+  border: 2px solid rgba(184,52,42,0.7);
+  border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 15px; font-weight: 700;
+  color: rgba(230,80,70,0.9);
+  letter-spacing: 1px;
+  writing-mode: vertical-rl;
+  line-height: 1;
+  cursor: default;
+  background: rgba(184,52,42,0.08);
+  box-shadow: inset 0 0 6px rgba(184,52,42,0.15);
+}
+
+/* Theme toggle */
+.theme-toggle {
+  position: absolute; left: 8px; top: 50%; transform: translateY(-50%);
+  width: 40px; height: 40px;
+  border: none; border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  color: var(--paper);
+  font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+  backdrop-filter: blur(4px);
+}
+.theme-toggle:active { background: rgba(255,255,255,0.25); }
+
+/* ===== BOTTOM TAB BAR (Mobile — LINE-style) ===== */
 .bottom-tabs {
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 1000;
-  background: var(--bg-card);
-  border-top: 1px solid var(--border);
+  background: var(--card);
+  border-top: 1px solid var(--border-light);
   display: flex;
   padding-bottom: var(--safe-bottom);
-  box-shadow: 0 -2px 12px var(--shadow);
+  box-shadow: 0 -4px 20px var(--shadow);
+  transition: background 0.4s var(--ease-out);
 }
 .bottom-tab {
   flex: 1; display: flex; flex-direction: column; align-items: center;
   justify-content: center;
-  padding: 8px 4px 6px; gap: 2px;
+  padding: 8px 4px 8px; gap: 3px;
   background: transparent; border: none;
-  color: var(--text-light);
-  font-size: 11px; font-family: inherit;
-  cursor: pointer; transition: color 0.2s;
+  color: var(--ink-faint);
+  font-size: 13px; font-weight: 500;
+  font-family: var(--font-body);
+  cursor: pointer; transition: all 0.25s var(--ease-out);
   -webkit-user-select: none; user-select: none;
-  min-height: 52px;
+  min-height: 56px;
+  position: relative;
 }
-.bottom-tab .tab-icon { font-size: 22px; line-height: 1; }
-.bottom-tab.active { color: var(--primary); font-weight: 600; }
-.bottom-tab:active { background: rgba(139,69,19,0.06); }
+.bottom-tab .tab-icon {
+  font-size: 24px; line-height: 1;
+  transition: transform 0.25s var(--ease-spring);
+}
+.bottom-tab.active {
+  color: var(--bronze);
+  font-weight: 700;
+}
+.bottom-tab.active .tab-icon { transform: scale(1.12); }
+.bottom-tab.active::after {
+  content: '';
+  position: absolute; top: 0; left: 25%; right: 25%;
+  height: 3px; border-radius: 0 0 3px 3px;
+  background: var(--bronze);
+}
+.bottom-tab:active {
+  background: rgba(139, 114, 37, 0.06);
+}
+/* Ripple on tap */
+.bottom-tab .ripple {
+  position: absolute; border-radius: 50%;
+  background: rgba(139, 114, 37, 0.15);
+  width: 20px; height: 20px;
+  pointer-events: none;
+  animation: rippleOut 0.5s ease-out forwards;
+}
 
-/* ===== MAIN ===== */
+/* ===== DESKTOP TABS ===== */
+.desktop-tabs {
+  display: none;
+  gap: 2px; padding: 0 20px;
+  max-width: 1200px; margin: 0 auto;
+}
+.desktop-tab {
+  padding: 12px 24px; background: transparent; border: none;
+  color: rgba(245,240,230,0.6); font-size: 17px;
+  font-family: var(--font-display); font-weight: 400;
+  cursor: pointer; border-bottom: 3px solid transparent;
+  transition: all 0.25s var(--ease-out); white-space: nowrap;
+  letter-spacing: 1px;
+}
+.desktop-tab:hover { color: rgba(245,240,230,0.9); }
+.desktop-tab.active {
+  color: var(--paper); font-weight: 700;
+  border-bottom-color: var(--bronze-light);
+}
+
+/* ===== MAIN CONTENT ===== */
 .main {
+  position: relative; z-index: 1;
   padding-top: calc(var(--nav-h) + 8px);
-  padding-bottom: calc(var(--bottom-h) + var(--safe-bottom) + 16px);
+  padding-bottom: calc(var(--bottom-h) + var(--safe-bottom) + 20px);
   min-height: 100vh; min-height: 100dvh;
 }
-.page { display: none; padding: 12px; max-width: 1200px; margin: 0 auto; }
+.page { display: none; padding: 14px; max-width: 1200px; margin: 0 auto; }
 .page.active { display: block; }
 
-/* ===== STATS BANNER ===== */
+/* ===== STATS BANNER — Bronze Cards ===== */
 .stats-banner {
   display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: 8px; margin-bottom: 14px;
+  gap: 8px; margin-bottom: 16px;
 }
 .stat-card {
-  background: var(--bg-card); border-radius: 10px; padding: 12px 6px; text-align: center;
-  box-shadow: 0 1px 6px var(--shadow);
+  background: var(--card);
+  border-radius: var(--radius); padding: 14px 8px; text-align: center;
+  box-shadow: 0 2px 8px var(--shadow);
+  border: 1px solid var(--border-light);
+  position: relative; overflow: hidden;
+  transition: transform 0.2s var(--ease-spring), box-shadow 0.2s;
 }
-.stat-card .stat-num { font-size: 22px; font-weight: 700; color: var(--primary); }
-.stat-card .stat-label { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+.stat-card:active { transform: scale(0.97); }
+/* Bronze accent bar */
+.stat-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--bronze), var(--patina));
+}
+.stat-card .stat-num {
+  font-family: var(--font-display);
+  font-size: 26px; font-weight: 700; color: var(--bronze);
+  line-height: 1.1;
+}
+.stat-card .stat-label {
+  font-size: 13px; color: var(--ink-faint); margin-top: 4px;
+  letter-spacing: 0.5px; font-weight: 500;
+}
 
 /* ===== TREE CONTROLS ===== */
 .tree-controls {
-  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;
+  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;
 }
 .tree-controls select, .tree-controls input {
-  padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px;
-  font-family: inherit; font-size: 14px; background: var(--bg-card);
-  color: var(--text); min-height: 44px; /* touch target */
+  padding: 10px 14px; border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-family: var(--font-body); font-size: 16px;
+  background: var(--card); color: var(--ink);
+  min-height: 48px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  appearance: none;
 }
-.tree-controls select { flex: 1; min-width: 0; }
-.tree-controls input { flex: 2; min-width: 0; }
+.tree-controls select {
+  flex: 1; min-width: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B6357' fill='none' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+.tree-controls input {
+  flex: 2; min-width: 0;
+}
+.tree-controls select:focus, .tree-controls input:focus {
+  outline: none; border-color: var(--bronze);
+  box-shadow: 0 0 0 3px rgba(139,114,37,0.12);
+}
 
+/* Legend */
 .legend {
-  display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;
-  font-size: 12px; align-items: center;
+  display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;
+  font-size: 15px; align-items: center; color: var(--ink-faint); font-weight: 500;
 }
-.legend-item { display: flex; align-items: center; gap: 4px; }
-.legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+.legend-item { display: flex; align-items: center; gap: 5px; }
+.legend-dot {
+  width: 12px; height: 12px; border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--paper), 0 0 0 3px currentColor;
+}
 
-/* ===== TREE CONTAINER (touch zoom/pan) ===== */
+/* ===== TREE WRAPPER ===== */
 .tree-wrapper {
-  position: relative; width: 100%; border-radius: 12px;
-  box-shadow: 0 2px 12px var(--shadow); overflow: hidden;
-  background: var(--bg-card); min-height: 60vh;
+  position: relative; width: 100%; border-radius: var(--radius-lg);
+  box-shadow: 0 4px 24px var(--shadow);
+  overflow: hidden; background: var(--card);
+  border: 1px solid var(--border-light);
+  min-height: 60vh;
 }
+/* Decorative bronze corner ornaments */
+.tree-wrapper::before, .tree-wrapper::after {
+  content: ''; position: absolute; z-index: 5; pointer-events: none;
+  width: 40px; height: 40px;
+  border-color: var(--bronze-light);
+  opacity: 0.3;
+}
+.tree-wrapper::before {
+  top: 8px; left: 8px;
+  border-top: 2px solid; border-left: 2px solid;
+}
+.tree-wrapper::after {
+  bottom: 8px; right: 8px;
+  border-bottom: 2px solid; border-right: 2px solid;
+}
+
 .tree-zoom-controls {
-  position: absolute; top: 10px; right: 10px; z-index: 10;
-  display: flex; flex-direction: column; gap: 4px;
+  position: absolute; top: 12px; right: 12px; z-index: 10;
+  display: flex; flex-direction: column; gap: 6px;
 }
 .tree-zoom-controls button {
-  width: 40px; height: 40px; border-radius: 8px;
-  border: 1px solid var(--border); background: var(--bg-card);
-  font-size: 20px; cursor: pointer; color: var(--text);
+  width: 42px; height: 42px; border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--card); color: var(--ink);
+  font-size: 20px; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 1px 4px var(--shadow);
+  box-shadow: 0 2px 8px var(--shadow);
+  transition: all 0.15s;
+  font-family: var(--font-body);
 }
-.tree-zoom-controls button:active { background: var(--gen-badge); }
-.tree-toggle-btn { cursor: pointer; }
-.tree-toggle-btn:hover rect { fill: #E8E0D8; }
-.collapse-badge {
-  font-family: sans-serif; font-weight: 700; pointer-events: none;
+.tree-zoom-controls button:active {
+  background: var(--paper-warm);
+  transform: scale(0.92);
 }
+
 .tree-collapse-actions {
   display: flex; gap: 6px; margin-left: auto;
 }
 .tree-collapse-actions button {
-  padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border);
-  background: var(--bg-card); font-size: 13px; cursor: pointer; color: var(--text);
-  white-space: nowrap;
+  padding: 10px 16px; border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--card); font-size: 15px; cursor: pointer;
+  color: var(--ink); white-space: nowrap;
+  font-family: var(--font-body);
+  transition: all 0.15s;
 }
-.tree-collapse-actions button:active { background: var(--gen-badge); }
+.tree-collapse-actions button:active {
+  background: var(--paper-warm);
+  transform: scale(0.96);
+}
+
+.tree-toggle-btn { cursor: pointer; }
+.tree-toggle-btn:hover rect { fill: var(--paper-warm); }
+.collapse-badge { font-family: var(--font-body); font-weight: 700; pointer-events: none; }
+
 .tree-container {
-  width: 100%; height: 100%; overflow: auto;
-  -webkit-overflow-scrolling: touch;
+  width: 100%; height: 100%;
+  overflow: hidden;
   min-height: 60vh;
   cursor: grab;
-  touch-action: pan-x pan-y;
+  touch-action: none;
+  user-select: none; -webkit-user-select: none;
 }
-.tree-container:active { cursor: grabbing; }
-.tree-svg { min-width: 100%; min-height: 500px; }
+.tree-container.dragging { cursor: grabbing; }
+.tree-svg {
+  display: block;
+  transform-origin: 0 0;
+}
+/* Zoom level indicator */
+.tree-zoom-level {
+  position: absolute; bottom: 12px; left: 12px; z-index: 10;
+  background: var(--card); border: 1px solid var(--border-light);
+  border-radius: 8px; padding: 4px 10px;
+  font-size: 13px; color: var(--ink-faint); font-weight: 500;
+  pointer-events: none; opacity: 0; transition: opacity 0.3s;
+  font-family: var(--font-body);
+}
+.tree-zoom-level.visible { opacity: 1; }
 
-/* ===== PERSON NODE (SVG) ===== */
+/* Person node in SVG */
 .person-node { cursor: pointer; }
-.person-rect { rx: 8; ry: 8; stroke-width: 2; }
+.person-rect { rx: 10; ry: 10; stroke-width: 2; }
 
-/* ===== DETAIL MODAL ===== */
+/* ===== DETAIL MODAL — Bottom Sheet ===== */
 .modal-overlay {
   display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5); z-index: 2000;
+  background: rgba(26,24,20,0.55);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  z-index: 2000;
   justify-content: center; align-items: flex-end;
   padding: 0;
+  transition: background 0.3s;
 }
 .modal-overlay.show { display: flex; }
 .modal {
-  background: var(--bg-card); border-radius: 20px 20px 0 0;
+  background: var(--card);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   width: 100%; max-height: 88vh;
-  overflow-y: auto; box-shadow: 0 -4px 32px rgba(0,0,0,0.15);
-  -webkit-overflow-scrolling: touch;
-  animation: slideUp 0.3s ease;
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.2);
+  animation: slideUp 0.35s var(--ease-out);
+  will-change: transform;
+  transition: background 0.4s var(--ease-out);
 }
-@keyframes slideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
+.modal.closing { animation: slideDown 0.3s var(--ease-out) forwards; }
 .modal-handle {
-  width: 36px; height: 4px; background: var(--border); border-radius: 2px;
-  margin: 10px auto 0;
+  width: 40px; height: 5px; background: var(--border);
+  border-radius: 3px; margin: 12px auto 0; cursor: grab;
 }
 .modal-header {
-  padding: 12px 20px 10px;
+  padding: 14px 20px 12px;
   display: flex; justify-content: space-between; align-items: center;
-  position: sticky; top: 0; background: var(--bg-card); z-index: 1;
-  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; background: var(--card); z-index: 1;
+  border-bottom: 1px solid var(--border-light);
 }
-.modal-header h2 { font-size: 20px; color: var(--primary-dark); }
+.modal-header h2 {
+  font-family: var(--font-display);
+  font-size: 24px; color: var(--bronze-dark);
+  letter-spacing: 1px;
+}
+[data-theme="dark"] .modal-header h2 { color: var(--bronze); }
 .modal-close {
   background: none; border: none; font-size: 28px;
-  cursor: pointer; color: var(--text-light); padding: 4px 12px;
+  cursor: pointer; color: var(--ink-faint); padding: 4px 12px;
   min-width: 44px; min-height: 44px;
   display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; transition: background 0.15s;
 }
-.modal-body { padding: 16px 20px 32px; }
-.modal-body .field { margin-bottom: 14px; }
+.modal-close:active { background: var(--paper-warm); }
+.modal-body { padding: 16px 20px 36px; }
+.modal-body .field { margin-bottom: 16px; }
 .modal-body .field-label {
-  font-size: 12px; color: var(--text-light); margin-bottom: 3px;
-  font-weight: 600; letter-spacing: 1px;
+  font-size: 14px; color: var(--ink-faint); margin-bottom: 5px;
+  font-weight: 700; letter-spacing: 1.5px;
 }
-.modal-body .field-value { font-size: 15px; color: var(--text); line-height: 1.5; }
+.modal-body .field-value {
+  font-size: 18px; color: var(--ink); line-height: 1.7;
+}
 .modal-body .field-value a {
-  color: var(--primary); text-decoration: underline;
-  text-underline-offset: 2px; padding: 2px 0;
+  color: var(--bronze); text-decoration: none;
+  border-bottom: 1px dashed var(--bronze-light);
+  padding: 2px 0; transition: border-color 0.2s;
 }
+.modal-body .field-value a:active { border-bottom-color: var(--bronze); }
+
+/* Tags */
 .branch-tag {
-  display: inline-block; padding: 2px 10px; border-radius: 12px;
-  font-size: 12px; font-weight: 600; color: #fff;
+  display: inline-block; padding: 4px 14px; border-radius: 14px;
+  font-size: 14px; font-weight: 600; color: #fff;
+  letter-spacing: 0.5px;
 }
 .branch-tag.頂番婆 { background: var(--branch-top); }
 .branch-tag.草湳底 { background: var(--branch-cao); }
 .branch-tag.埔姜崙 { background: var(--branch-pu); }
-.branch-tag.全族 { background: var(--text-light); }
+.branch-tag.全族 { background: var(--ink-faint); }
 .gen-tag {
-  display: inline-block; padding: 2px 10px; border-radius: 12px;
-  font-size: 12px; background: var(--gen-badge); color: var(--primary-dark);
-  font-weight: 600;
+  display: inline-block; padding: 4px 14px; border-radius: 14px;
+  font-size: 14px; background: var(--gen-badge); color: var(--bronze-dark);
+  font-weight: 700; letter-spacing: 0.5px;
 }
+[data-theme="dark"] .gen-tag { color: var(--bronze-light); }
 
 /* ===== SEARCH PAGE ===== */
-.search-box { position: relative; margin-bottom: 12px; }
+.search-box { position: relative; margin-bottom: 14px; }
 .search-box input {
-  width: 100%; padding: 14px 16px 14px 44px;
-  border: 2px solid var(--border); border-radius: 12px;
-  font-size: 16px; font-family: inherit;
-  background: var(--bg-card); transition: border-color 0.2s;
-  min-height: 50px;
+  width: 100%; padding: 14px 16px 14px 48px;
+  border: 2px solid var(--border); border-radius: var(--radius-lg);
+  font-size: 16px; font-family: var(--font-body);
+  background: var(--card); color: var(--ink);
+  transition: border-color 0.25s, box-shadow 0.25s;
+  min-height: 52px;
 }
-.search-box input:focus { outline: none; border-color: var(--primary); }
+.search-box input:focus {
+  outline: none; border-color: var(--bronze);
+  box-shadow: 0 0 0 4px rgba(139,114,37,0.1);
+}
 .search-box .search-icon {
-  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
-  font-size: 20px; color: var(--text-light);
+  position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+  font-size: 20px; color: var(--ink-faint);
 }
-.search-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+
+.search-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
 .filter-chip {
-  padding: 8px 16px; border-radius: 20px;
-  border: 1px solid var(--border); background: var(--bg-card);
-  font-size: 14px; cursor: pointer; font-family: inherit;
-  transition: all 0.2s; color: var(--text);
-  min-height: 40px;
+  padding: 10px 20px; border-radius: 24px;
+  border: 1.5px solid var(--border); background: var(--card);
+  font-size: 16px; cursor: pointer; font-family: var(--font-body);
+  transition: all 0.2s var(--ease-out); color: var(--ink);
+  min-height: 46px; font-weight: 500;
 }
-.filter-chip.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-.person-list { display: flex; flex-direction: column; gap: 8px; }
+.filter-chip:active { transform: scale(0.95); }
+.filter-chip.active {
+  background: var(--bronze); color: var(--paper);
+  border-color: var(--bronze); font-weight: 700;
+}
+
+.person-list { display: flex; flex-direction: column; gap: 12px; }
 .person-card {
-  background: var(--bg-card); border-radius: 12px; padding: 14px;
-  box-shadow: 0 1px 6px var(--shadow); cursor: pointer;
-  border-left: 4px solid var(--primary);
-  transition: all 0.15s; active: scale(0.98);
+  background: var(--card);
+  border-radius: var(--radius); padding: 0;
+  box-shadow: 0 2px 10px var(--shadow);
+  cursor: pointer;
+  border: 1px solid var(--border-light);
+  transition: all 0.2s var(--ease-out);
+  position: relative; overflow: hidden;
+  display: flex; align-items: stretch;
 }
-.person-card:active { transform: scale(0.98); }
+/* Colored side accent bar */
+.person-card .pc-accent {
+  width: 6px; flex-shrink: 0;
+  background: var(--bronze);
+  border-radius: var(--radius) 0 0 var(--radius);
+}
+.person-card .pc-body {
+  flex: 1; min-width: 0; padding: 16px 16px 14px;
+  display: flex; align-items: center; gap: 14px;
+}
+/* Avatar circle with generation number */
+.person-card .pc-avatar {
+  width: 48px; height: 48px; flex-shrink: 0;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 18px; font-weight: 700;
+  color: #fff;
+  background: var(--bronze);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  position: relative;
+}
+.person-card .pc-avatar .pc-gen-num {
+  position: absolute; bottom: -2px; right: -4px;
+  background: var(--card); color: var(--ink);
+  font-size: 10px; font-weight: 700;
+  width: 20px; height: 20px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  border: 1.5px solid var(--border);
+  font-family: var(--font-body);
+}
+.person-card .pc-content { flex: 1; min-width: 0; }
 .person-card .pc-name {
-  font-size: 17px; font-weight: 700; color: var(--primary-dark);
+  font-family: var(--font-display);
+  font-size: 20px; font-weight: 700; color: var(--ink);
   margin-bottom: 4px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.person-card .pc-sub {
+  font-size: 14px; color: var(--ink-faint); line-height: 1.4;
+  display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center;
+}
+.person-card .pc-sub .pc-year {
+  font-family: var(--font-body); font-weight: 500;
+  color: var(--ink-light);
+}
+.person-card .pc-sub .pc-spouse {
+  color: var(--ink-faint);
 }
 .person-card .pc-info {
-  font-size: 12px; color: var(--text-light);
+  font-size: 14px; color: var(--ink-faint);
   display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+  margin-top: 6px;
 }
-.person-card.branch-頂番婆 { border-left-color: var(--branch-top); }
-.person-card.branch-草湳底 { border-left-color: var(--branch-cao); }
-.person-card.branch-埔姜崙 { border-left-color: var(--branch-pu); }
+/* Arrow indicator */
+.person-card .pc-arrow {
+  flex-shrink: 0; font-size: 18px; color: var(--border);
+  padding-right: 14px;
+  transition: transform 0.2s;
+}
+.person-card:active { transform: scale(0.98); box-shadow: 0 1px 4px var(--shadow); }
+.person-card:active .pc-arrow { transform: translateX(3px); }
+/* Branch-specific accent colors */
+.person-card.branch-頂番婆 .pc-accent { background: var(--branch-top); }
+.person-card.branch-頂番婆 .pc-avatar { background: var(--branch-top); }
+.person-card.branch-草湳底 .pc-accent { background: var(--branch-cao); }
+.person-card.branch-草湳底 .pc-avatar { background: var(--branch-cao); }
+.person-card.branch-埔姜崙 .pc-accent { background: var(--branch-pu); }
+.person-card.branch-埔姜崙 .pc-avatar { background: var(--branch-pu); }
 
 /* ===== STORY PAGE ===== */
 .story-section {
-  background: var(--bg-card); border-radius: 12px; padding: 20px 16px;
-  box-shadow: 0 2px 12px var(--shadow); margin-bottom: 16px;
+  background: var(--card);
+  border-radius: var(--radius-lg); padding: 24px 20px;
+  box-shadow: 0 4px 16px var(--shadow);
+  margin-bottom: 18px;
+  border: 1px solid var(--border-light);
+  position: relative;
+}
+/* Decorative corner mark */
+.story-section::before {
+  content: '';
+  position: absolute; top: 12px; right: 12px;
+  width: 24px; height: 24px;
+  border-top: 2px solid var(--bronze-light);
+  border-right: 2px solid var(--bronze-light);
+  opacity: 0.3;
 }
 .story-section h2 {
-  font-size: 20px; color: var(--primary-dark); margin-bottom: 14px;
-  padding-bottom: 8px; border-bottom: 2px solid var(--primary-light);
+  font-family: var(--font-display);
+  font-size: 24px; color: var(--bronze-dark);
+  margin-bottom: 18px; padding-bottom: 10px;
+  border-bottom: 2px solid var(--border-light);
+  letter-spacing: 2px;
+  position: relative;
+}
+[data-theme="dark"] .story-section h2 { color: var(--bronze); }
+/* Bronze accent line under h2 */
+.story-section h2::after {
+  content: '';
+  position: absolute; bottom: -2px; left: 0;
+  width: 60px; height: 2px;
+  background: linear-gradient(90deg, var(--bronze), transparent);
 }
 .story-section p {
-  font-size: 15px; line-height: 1.9; margin-bottom: 10px;
+  font-size: 17px; line-height: 2.1; margin-bottom: 14px;
   text-indent: 2em; text-align: justify;
+  color: var(--ink);
 }
 .story-section .author {
-  text-align: right; font-size: 14px; color: var(--text-light);
-  margin-top: 16px; font-style: italic;
+  text-align: right; font-size: 16px; color: var(--ink-faint);
+  margin-top: 20px; font-style: italic;
+  font-family: var(--font-display);
 }
-.timeline { position: relative; padding-left: 20px; border-left: 3px solid var(--primary-light); }
-.timeline-item { position: relative; margin-bottom: 20px; padding-left: 16px; }
+
+/* Timeline */
+.timeline { position: relative; padding-left: 24px; border-left: 3px solid var(--bronze-light); }
+.timeline-item { position: relative; margin-bottom: 24px; padding-left: 18px; }
 .timeline-item::before {
-  content: ''; position: absolute; left: -28px; top: 5px;
-  width: 12px; height: 12px; border-radius: 50%;
-  background: var(--primary); border: 3px solid var(--bg);
+  content: ''; position: absolute; left: -32px; top: 5px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--bronze); border: 3px solid var(--paper);
+  box-shadow: 0 0 0 2px var(--bronze-light);
 }
-.timeline-item .tl-year { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 3px; }
-.timeline-item .tl-event { font-size: 14px; color: var(--text); line-height: 1.6; }
+.timeline-item .tl-year {
+  font-family: var(--font-display);
+  font-size: 16px; font-weight: 700; color: var(--bronze-dark);
+  margin-bottom: 4px;
+}
+[data-theme="dark"] .timeline-item .tl-year { color: var(--bronze); }
+.timeline-item .tl-event {
+  font-size: 16px; color: var(--ink); line-height: 1.8;
+}
+
+/* Branch grid */
 .branch-grid {
-  display: grid; grid-template-columns: 1fr; gap: 12px;
+  display: grid; grid-template-columns: 1fr; gap: 14px;
 }
 .branch-box {
-  padding: 14px; border-radius: 8px; border-width: 2px; border-style: solid;
+  padding: 18px; border-radius: var(--radius);
+  border-width: 2px; border-style: solid;
+  background: var(--card);
+  transition: transform 0.2s var(--ease-spring);
 }
-.branch-box h3 { margin-bottom: 6px; font-size: 16px; }
-.branch-box p { font-size: 13px; line-height: 1.6; text-indent: 0; margin: 0; }
+.branch-box:active { transform: scale(0.98); }
+.branch-box h3 {
+  font-family: var(--font-display);
+  margin-bottom: 8px; font-size: 19px;
+}
+.branch-box p { font-size: 16px; line-height: 1.8; text-indent: 0; margin: 0; color: var(--ink); }
 
 /* ===== EDIT PAGE ===== */
 .edit-section {
-  background: var(--bg-card); border-radius: 12px; padding: 16px;
-  box-shadow: 0 2px 12px var(--shadow); margin-bottom: 14px;
+  background: var(--card);
+  border-radius: var(--radius-lg); padding: 20px;
+  box-shadow: 0 4px 16px var(--shadow);
+  margin-bottom: 16px;
+  border: 1px solid var(--border-light);
 }
-.edit-section h3 { font-size: 17px; color: var(--primary-dark); margin-bottom: 14px; }
-.form-group { margin-bottom: 12px; }
+.edit-section h3 {
+  font-family: var(--font-display);
+  font-size: 21px; color: var(--bronze-dark);
+  margin-bottom: 16px; letter-spacing: 1px;
+}
+[data-theme="dark"] .edit-section h3 { color: var(--bronze); }
+.form-group { margin-bottom: 14px; }
 .form-group label {
-  display: block; font-size: 13px; font-weight: 600;
-  color: var(--text-light); margin-bottom: 4px;
+  display: block; font-size: 15px; font-weight: 600;
+  color: var(--ink-faint); margin-bottom: 5px;
+  letter-spacing: 0.5px;
 }
 .form-group input, .form-group select, .form-group textarea {
-  width: 100%; padding: 12px;
-  border: 1px solid var(--border); border-radius: 8px;
-  font-size: 16px; font-family: inherit;
-  background: var(--bg); color: var(--text);
+  width: 100%; padding: 12px 14px;
+  border: 1.5px solid var(--border); border-radius: var(--radius);
+  font-size: 16px; font-family: var(--font-body);
+  background: var(--paper); color: var(--ink);
   min-height: 48px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  outline: none; border-color: var(--bronze);
+  box-shadow: 0 0 0 3px rgba(139,114,37,0.1);
 }
 .form-group textarea { min-height: 80px; resize: vertical; }
-.form-row { display: flex; gap: 10px; }
-.form-row .form-group { flex: 1; }
-.btn {
-  padding: 12px 20px; border: none; border-radius: 8px;
-  font-size: 15px; font-family: inherit; cursor: pointer;
-  font-weight: 600; transition: all 0.2s;
-  min-height: 48px;
+.form-group select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B6357' fill='none' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
 }
-.btn-primary { background: var(--primary); color: #fff; }
-.btn-primary:active { background: var(--primary-dark); }
-.btn-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
-.btn-danger { background: var(--accent-red); color: #fff; }
-.btn-group { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+.form-row { display: flex; gap: 12px; }
+.form-row .form-group { flex: 1; }
+
+.btn {
+  padding: 14px 24px; border: none; border-radius: var(--radius);
+  font-size: 17px; font-family: var(--font-body); cursor: pointer;
+  font-weight: 600; transition: all 0.2s var(--ease-out);
+  min-height: 50px; letter-spacing: 0.5px;
+  position: relative; overflow: hidden;
+}
+.btn:active { transform: scale(0.96); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--bronze), var(--bronze-dark));
+  color: var(--paper);
+  box-shadow: 0 2px 8px rgba(139,114,37,0.3);
+}
+.btn-primary:active { box-shadow: 0 1px 4px rgba(139,114,37,0.2); }
+.btn-secondary {
+  background: var(--paper); color: var(--ink);
+  border: 1.5px solid var(--border);
+}
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-group { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
 
 /* ===== TOAST ===== */
 .toast {
-  position: fixed; bottom: calc(var(--bottom-h) + var(--safe-bottom) + 16px);
-  left: 50%; transform: translateX(-50%);
-  background: var(--primary-dark); color: #fff; padding: 12px 24px;
-  border-radius: 8px; font-size: 14px; z-index: 3000;
-  opacity: 0; transition: opacity 0.3s; pointer-events: none;
-  white-space: nowrap;
+  position: fixed; bottom: calc(var(--bottom-h) + var(--safe-bottom) + 20px);
+  left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--ink); color: var(--paper);
+  padding: 14px 28px; border-radius: var(--radius);
+  font-size: 16px; font-weight: 500; z-index: 3000;
+  opacity: 0; transition: all 0.35s var(--ease-out);
+  pointer-events: none; white-space: nowrap;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  letter-spacing: 0.5px;
 }
-.toast.show { opacity: 1; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* ====== DESKTOP ====== */
+/* ===== SECTION DIVIDER (bronze ornamental) ===== */
+.section-divider {
+  display: flex; align-items: center; gap: 12px;
+  margin: 20px 0 16px; color: var(--ink-faint); font-size: 12px;
+}
+.section-divider::before, .section-divider::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+}
+
+/* ====== DESKTOP (>= 769px) ====== */
 @media (min-width: 769px) {
   .bottom-tabs { display: none; }
   .nav {
-    height: auto; flex-direction: column; align-items: stretch;
-    padding: 0;
+    height: auto; flex-direction: column; align-items: stretch; padding: 0;
   }
   .nav-inner-row {
     max-width: 1200px; margin: 0 auto; width: 100%;
     display: flex; align-items: center; justify-content: space-between;
-    padding: 12px 20px 0;
+    padding: 14px 24px 0;
   }
-  .desktop-tabs {
-    display: flex; gap: 4px; padding: 0 20px;
-    max-width: 1200px; margin: 0 auto;
-  }
-  .desktop-tab {
-    padding: 10px 20px; background: transparent; border: none;
-    color: rgba(255,248,240,0.7); font-size: 15px; font-family: inherit;
-    cursor: pointer; border-bottom: 3px solid transparent;
-    transition: all 0.2s; white-space: nowrap;
-  }
-  .desktop-tab:hover { color: #FFF8F0; }
-  .desktop-tab.active { color: #FFF8F0; border-bottom-color: var(--primary-light); font-weight: 600; }
-  .main {
-    padding-top: 108px;
-    padding-bottom: 40px;
-  }
-  .page { padding: 16px 20px; }
+  .desktop-tabs { display: flex; }
+  .main { padding-top: 112px; padding-bottom: 40px; }
+  .page { padding: 20px 24px; }
   .stats-banner { gap: 16px; }
-  .stat-card .stat-num { font-size: 28px; }
-  .modal-overlay { align-items: center; padding: 20px; }
-  .modal { border-radius: 16px; max-width: 520px; max-height: 85vh; }
+  .stat-card .stat-num { font-size: 32px; }
+  .stat-card .stat-label { font-size: 12px; }
+  .modal-overlay { align-items: center; padding: 24px; }
+  .modal {
+    border-radius: var(--radius-lg); max-width: 560px; max-height: 85vh;
+  }
   .modal-handle { display: none; }
   .branch-grid { grid-template-columns: repeat(3, 1fr); }
   .toast { bottom: 40px; }
-  .tree-controls select { min-width: 130px; flex: unset; }
-  .tree-controls input { min-width: 200px; }
+  .tree-controls select { min-width: 140px; flex: unset; }
+  .tree-controls input { min-width: 220px; }
+  .theme-toggle { left: unset; right: 56px; }
+  .nav-seal { right: 16px; }
+  .person-card:hover {
+    box-shadow: 0 4px 20px var(--shadow-strong);
+    transform: translateY(-2px);
+    border-color: var(--border);
+  }
+  .person-card:hover .pc-arrow { transform: translateX(3px); color: var(--ink-faint); }
 }
+
+/* ====== MOBILE (<= 768px) ====== */
 @media (max-width: 768px) {
   .desktop-tabs { display: none; }
-  .nav-inner-row { display: flex; align-items: center; justify-content: center; width: 100%; }
-  .nav-title { font-size: 18px; }
+  .nav-inner-row {
+    display: flex; align-items: center; justify-content: center; width: 100%;
+  }
+  .nav-title { font-size: 19px; letter-spacing: 3px; }
   .main { padding-top: calc(var(--nav-h) + 4px); }
   .form-row { flex-direction: column; gap: 0; }
   .stats-banner { grid-template-columns: repeat(2, 1fr); }
+  .story-section { padding: 20px 16px; }
+  .story-section p { font-size: 16px; line-height: 2; }
 }
+
 @media (max-width: 380px) {
   .stats-banner { grid-template-columns: repeat(2, 1fr); gap: 6px; }
   .stat-card { padding: 10px 4px; }
-  .stat-card .stat-num { font-size: 20px; }
+  .stat-card .stat-num { font-size: 22px; }
   .stat-card .stat-label { font-size: 10px; }
   .tree-controls { gap: 6px; }
   .page { padding: 10px 8px; }
+  .nav-title { font-size: 17px; letter-spacing: 2px; }
 }
 
-/* Print */
+/* ====== PRINT ====== */
 @media print {
-  .nav, .bottom-tabs, .tree-controls, .search-box, .search-filters, .edit-section, .tree-zoom-controls, .tree-toggle-btn, .collapse-badge { display: none; }
+  .nav, .bottom-tabs, .tree-controls, .search-box, .search-filters,
+  .edit-section, .tree-zoom-controls, .tree-toggle-btn, .collapse-badge,
+  .theme-toggle, .nav-seal { display: none; }
   .main { padding: 0; }
   .page { display: block !important; }
+  body::before { display: none; }
 }
+
+/* ===== SCROLL BAR STYLING ===== */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--border); border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--ink-faint); }
 </style>
 </head>
 <body>
 
-<!-- TOP NAV -->
+<!-- TOP NAV — Bronze Header -->
 <nav class="nav">
   <div class="nav-inner-row">
-    <div class="nav-title"><span class="icon">🏛</span> 鐘氏族譜</div>
+    <button class="theme-toggle" id="theme-toggle" title="切換深色模式" aria-label="切換深色模式">🌙</button>
+    <div class="nav-title">
+      <span class="nav-bell"><svg viewBox="0 0 64 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- 鐘頂鈕 (Crown knob) -->
+      <ellipse cx="32" cy="6" rx="6" ry="4" fill="#D4BE6A"/>
+      <rect x="29" y="8" width="6" height="4" rx="1" fill="#C4A94D"/>
+      <!-- 鐘身 (Bell body) — bronze gradient -->
+      <defs>
+        <linearGradient id="bellBronze" x1="12" y1="12" x2="52" y2="58">
+          <stop offset="0%" stop-color="#D4BE6A"/>
+          <stop offset="35%" stop-color="#C4A94D"/>
+          <stop offset="65%" stop-color="#8B7225"/>
+          <stop offset="100%" stop-color="#5C4A14"/>
+        </linearGradient>
+        <linearGradient id="bellHighlight" x1="20" y1="15" x2="32" y2="50">
+          <stop offset="0%" stop-color="rgba(255,255,255,0.25)"/>
+          <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+        </linearGradient>
+      </defs>
+      <!-- 鐘身主體 -->
+      <path d="M32 12 C20 12, 10 28, 10 48 L10 52 C10 54, 12 56, 14 56 L50 56 C52 56, 54 54, 54 52 L54 48 C54 28, 44 12, 32 12Z" fill="url(#bellBronze)" stroke="#5C4A14" stroke-width="1"/>
+      <!-- 光澤高光 -->
+      <path d="M32 14 C22 14, 14 28, 13 46 L13 48 C20 48, 26 14, 32 14Z" fill="url(#bellHighlight)"/>
+      <!-- 雲雷紋帶 (Cloud-thunder pattern band) -->
+      <rect x="14" y="30" width="36" height="3" rx="1" fill="#5C4A14" opacity="0.3"/>
+      <rect x="12" y="38" width="40" height="3" rx="1" fill="#5C4A14" opacity="0.25"/>
+      <!-- 底邊裝飾 (Bottom rim) -->
+      <rect x="8" y="54" width="48" height="4" rx="2" fill="#8B7225" stroke="#5C4A14" stroke-width="0.5"/>
+      <!-- 鐘舌 (Clapper) -->
+      <line x1="32" y1="42" x2="32" y2="60" stroke="#5C4A14" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="32" cy="62" r="4" fill="#8B7225" stroke="#5C4A14" stroke-width="1"/>
+      <!-- 銅綠鏽 (Patina spots) -->
+      <circle cx="20" cy="36" r="2" fill="#4A8B72" opacity="0.2"/>
+      <circle cx="42" cy="28" r="1.5" fill="#4A8B72" opacity="0.15"/>
+      <circle cx="38" cy="46" r="2.5" fill="#4A8B72" opacity="0.12"/>
+    </svg></span> 鐘氏族譜
+    </div>
+    <div class="nav-seal">鐘<br>氏</div>
   </div>
   <div class="desktop-tabs">
     <button class="desktop-tab active" data-page="tree">族譜圖</button>
-    <button class="desktop-tab" data-page="search">搜尋</button>
+    <button class="desktop-tab" data-page="search">搜尋族人</button>
     <button class="desktop-tab" data-page="story">家族故事</button>
-    <button class="desktop-tab" data-page="edit">新增/編輯</button>
+    <button class="desktop-tab" data-page="edit">新增編輯</button>
   </div>
 </nav>
 
-<!-- BOTTOM TAB BAR (mobile) -->
+<!-- BOTTOM TAB BAR (mobile — LINE style) -->
 <div class="bottom-tabs">
   <button class="bottom-tab active" data-page="tree">
-    <span class="tab-icon">🌳</span>族譜圖
+    <span class="tab-icon">🌳</span>族譜
   </button>
   <button class="bottom-tab" data-page="search">
     <span class="tab-icon">🔍</span>搜尋
@@ -443,10 +964,10 @@ body {
 </div>
 
 <div class="main">
-  <!-- TREE PAGE -->
+  <!-- ===== TREE PAGE ===== -->
   <div class="page active" id="page-tree">
-    <div class="stats-banner" id="stats-banner"></div>
-    <div class="tree-controls">
+    <div class="stats-banner reveal" id="stats-banner"></div>
+    <div class="tree-controls reveal reveal-d1">
       <select id="branch-filter">
         <option value="all">所有支系</option>
         <option value="頂番婆">頂番婆</option>
@@ -462,37 +983,39 @@ body {
         <button id="collapse-all" title="收合全部">收合全部</button>
       </div>
     </div>
-    <div class="legend">
-      <div class="legend-item"><div class="legend-dot" style="background:var(--branch-top)"></div>頂番婆</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--branch-cao)"></div>草湳底</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--branch-pu)"></div>埔姜崙</div>
+    <div class="legend reveal reveal-d2">
+      <div class="legend-item"><div class="legend-dot" style="color:var(--branch-top);background:var(--branch-top)"></div>頂番婆</div>
+      <div class="legend-item"><div class="legend-dot" style="color:var(--branch-cao);background:var(--branch-cao)"></div>草湳底</div>
+      <div class="legend-item"><div class="legend-dot" style="color:var(--branch-pu);background:var(--branch-pu)"></div>埔姜崙</div>
     </div>
-    <div class="tree-wrapper">
+    <div class="tree-wrapper reveal reveal-d3">
       <div class="tree-zoom-controls">
         <button id="zoom-in" title="放大">+</button>
         <button id="zoom-out" title="縮小">−</button>
-        <button id="zoom-fit" title="適合螢幕">⊡</button>
+        <button id="zoom-fit" title="自動適配">⊡</button>
+        <button id="zoom-center" title="回到根節點">⌖</button>
       </div>
+      <div class="tree-zoom-level" id="tree-zoom-level">100%</div>
       <div class="tree-container" id="tree-container">
         <svg class="tree-svg" id="tree-svg"></svg>
       </div>
     </div>
   </div>
 
-  <!-- SEARCH PAGE -->
+  <!-- ===== SEARCH PAGE ===== -->
   <div class="page" id="page-search">
-    <div class="search-box">
+    <div class="search-box reveal">
       <span class="search-icon">🔍</span>
       <input type="text" id="search-input" placeholder="輸入姓名、世代或支系搜尋...">
     </div>
-    <div class="search-filters" id="search-filters"></div>
-    <div id="search-count" style="font-size:13px;color:var(--text-light);margin-bottom:10px;"></div>
+    <div class="search-filters reveal reveal-d1" id="search-filters"></div>
+    <div id="search-count" style="font-size:15px;color:var(--ink-faint);margin-bottom:12px;font-weight:500;"></div>
     <div class="person-list" id="person-list"></div>
   </div>
 
-  <!-- STORY PAGE -->
+  <!-- ===== STORY PAGE ===== -->
   <div class="page" id="page-story">
-    <div class="story-section">
+    <div class="story-section reveal">
       <h2>修譜緣由</h2>
       <p>族譜乃氏族之譜系。家譜乃世系及事實之文獻。修譜之意義，在於使世系不亂、承先啟後、長幼有序、尊敬長輩，使後代子孫能知自己之所出。</p>
       <p>吾鐘氏祖先渡台之前，唐山祖籍乃「福建省泉州府安溪縣南光堂」。舊有簡譜中無記載何世橫渡黑水溝來台，而據載有關清朝開放禁令渡台，是雍正、乾隆年間(西元一七二三～一七九五年)，推算可能是鄭成功據台後，康熙年間由大陸來台謀生，大約三百年前左右。</p>
@@ -504,7 +1027,7 @@ body {
       <p>願與吾鐘氏族人共勉之。</p>
       <div class="author">八代裔孫 鐘俊雄 敬述<br>民國一百零七年三月廿七日 於彰化市</div>
     </div>
-    <div class="story-section">
+    <div class="story-section reveal reveal-d1">
       <h2>遷徙歷史</h2>
       <div class="timeline">
         <div class="timeline-item"><div class="tl-year">清康熙年間（約1700年代）</div><div class="tl-event">開基祖母攜二子由福建泉州安溪經廈門、鹿港渡海來台，定居彰化秀水鄉埔姜崙務農。</div></div>
@@ -517,7 +1040,7 @@ body {
         <div class="timeline-item"><div class="tl-year">2018年（民國107年）</div><div class="tl-event">族譜編撰完成，記錄十代約一百五十餘位族人。</div></div>
       </div>
     </div>
-    <div class="story-section">
+    <div class="story-section reveal reveal-d2">
       <h2>三大支系</h2>
       <div class="branch-grid">
         <div class="branch-box" style="border-color:var(--branch-top);">
@@ -536,9 +1059,9 @@ body {
     </div>
   </div>
 
-  <!-- EDIT PAGE -->
+  <!-- ===== EDIT PAGE ===== -->
   <div class="page" id="page-edit">
-    <div class="edit-section">
+    <div class="edit-section reveal">
       <h3>新增族人</h3>
       <div class="form-row">
         <div class="form-group">
@@ -593,11 +1116,11 @@ body {
         <input type="file" id="file-import" accept=".json" style="display:none">
       </div>
     </div>
-    <div class="edit-section">
+    <div class="edit-section reveal reveal-d1">
       <h3>已新增的族人</h3>
-      <div id="added-list" style="font-size:14px;color:var(--text-light);">尚未新增任何族人</div>
+      <div id="added-list" style="font-size:14px;color:var(--ink-faint);">尚未新增任何族人</div>
     </div>
-    <div class="edit-section">
+    <div class="edit-section reveal reveal-d2">
       <h3>編輯現有族人</h3>
       <div class="form-group">
         <label>選擇要編輯的族人</label>
@@ -621,8 +1144,8 @@ body {
 
 <!-- Detail Modal -->
 <div class="modal-overlay" id="modal-overlay">
-  <div class="modal">
-    <div class="modal-handle"></div>
+  <div class="modal" id="modal-sheet">
+    <div class="modal-handle" id="modal-handle"></div>
     <div class="modal-header">
       <h2 id="modal-name"></h2>
       <button class="modal-close" id="modal-close">&times;</button>
@@ -797,7 +1320,9 @@ let persons = [];
 let addedPersons = [];
 let nextId = 200;
 let treeScale = 1;
-let collapsedNodes = new Set(); // track collapsed node IDs
+let collapsedNodes = new Set();
+let lastPositions = {};
+let lastNodeW = 128;
 
 function loadData() {
   try {
@@ -833,8 +1358,35 @@ const BRANCH_COLORS = {
   '頂番婆': '#8B4513',
   '草湳底': '#2E7D32',
   '埔姜崙': '#1565C0',
-  '全族': '#6B5B4F'
+  '全族': '#6B6357'
 };
+
+// ============ DARK MODE ============
+function initTheme() {
+  const saved = localStorage.getItem('zhong_theme');
+  if (saved === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.getElementById('theme-toggle').textContent = '☀️';
+  }
+}
+
+document.getElementById('theme-toggle').addEventListener('click', () => {
+  const btn = document.getElementById('theme-toggle');
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  if (isDark) {
+    document.documentElement.removeAttribute('data-theme');
+    btn.textContent = '🌙';
+    localStorage.setItem('zhong_theme', 'light');
+  } else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    btn.textContent = '☀️';
+    localStorage.setItem('zhong_theme', 'dark');
+  }
+  // Redraw tree to pick up new colors
+  if (document.getElementById('page-tree').classList.contains('active')) {
+    drawTree();
+  }
+});
 
 // ============ NAVIGATION ============
 function switchPage(pageName) {
@@ -850,7 +1402,22 @@ function switchPage(pageName) {
   window.scrollTo(0, 0);
 }
 
-document.querySelectorAll('.desktop-tab, .bottom-tab').forEach(tab => {
+// Tab click with ripple effect
+document.querySelectorAll('.bottom-tab').forEach(tab => {
+  tab.addEventListener('click', (e) => {
+    // Ripple
+    const ripple = document.createElement('span');
+    ripple.className = 'ripple';
+    const rect = tab.getBoundingClientRect();
+    ripple.style.left = (e.clientX - rect.left - 10) + 'px';
+    ripple.style.top = (e.clientY - rect.top - 10) + 'px';
+    tab.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 500);
+
+    switchPage(tab.dataset.page);
+  });
+});
+document.querySelectorAll('.desktop-tab').forEach(tab => {
   tab.addEventListener('click', () => switchPage(tab.dataset.page));
 });
 
@@ -859,7 +1426,7 @@ function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2000);
+  setTimeout(() => t.classList.remove('show'), 2200);
 }
 
 // ============ STATS ============
@@ -882,23 +1449,23 @@ function drawTree() {
   const branchFilter = document.getElementById('branch-filter').value;
   const genFilter = document.getElementById('gen-filter').value;
   const searchText = document.getElementById('tree-search').value.trim();
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
 
   const root = buildTreeLayout(branchFilter, genFilter, searchText);
   if (!root) {
-    svg.innerHTML = '<text x="50%" y="100" text-anchor="middle" font-size="16" fill="#6B5B4F">無符合條件的資料</text>';
+    svg.innerHTML = `<text x="50%" y="100" text-anchor="middle" font-size="16" fill="${isDark ? '#9B9184' : '#6B6357'}" font-family="LXGW WenKai TC, serif">無符合條件的資料</text>`;
     svg.setAttribute('width', 300);
     svg.setAttribute('height', 200);
     return;
   }
 
-  // Responsive node sizing
   const isMobile = window.innerWidth < 769;
-  const nodeW = isMobile ? 90 : 120;
-  const nodeH = isMobile ? 50 : 60;
-  const gapX = isMobile ? 12 : 20;
-  const gapY = isMobile ? 75 : 95;
-  const fontSize = isMobile ? 12 : 14;
-  const subFontSize = isMobile ? 9 : 10;
+  const nodeW = isMobile ? 94 : 128;
+  const nodeH = isMobile ? 52 : 64;
+  const gapX = isMobile ? 14 : 22;
+  const gapY = isMobile ? 78 : 100;
+  const fontSize = isMobile ? 14 : 16;
+  const subFontSize = isMobile ? 10 : 12;
 
   const positions = {};
   let maxX = 0, maxY = 0;
@@ -928,9 +1495,30 @@ function drawTree() {
   svg.setAttribute('width', svgW);
   svg.setAttribute('height', svgH);
   svg.setAttribute('viewBox', `0 0 ${svgW} ${svgH}`);
+  panZoom.svgW = svgW;
+  panZoom.svgH = svgH;
+  lastPositions = positions;
+  lastNodeW = nodeW;
 
-  let html = '';
+  // Colors for dark mode
+  const linkColor = isDark ? '#4A4438' : '#C9BDA8';
+  const paperBg = isDark ? '#2A2720' : '#FDFAF4';
+  const deceasedBg = isDark ? '#22201A' : '#F0EBE3';
+  const deceasedText = isDark ? '#7A7268' : '#8B7D72';
+  const subText = isDark ? '#7A7268' : '#8B7D72';
+  const spouseText = isDark ? '#6B6357' : '#A0937D';
+  const toggleBg = isDark ? '#333026' : '#F0EBE3';
+  const toggleBorder = isDark ? '#4A4438' : '#C9BDA8';
+  const toggleText = isDark ? '#9B9184' : '#6B6357';
 
+  // SVG filter for subtle node shadow
+  let html = `<defs>
+    <filter id="nodeShadow" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,0.12)"/>
+    </filter>
+  </defs>`;
+
+  // Draw connecting lines with elegant curves
   function drawLinks(node) {
     if (!node.children) return;
     const pos = positions[node.id];
@@ -943,45 +1531,45 @@ function drawTree() {
       const cx = cpos.x + nodeW / 2;
       const cy = cpos.y;
       const midY = py + (cy - py) / 2;
-      html += `<path d="M${px},${py} L${px},${midY} L${cx},${midY} L${cx},${cy}" fill="none" stroke="#D4C5B9" stroke-width="1.5"/>`;
+      html += `<path d="M${px},${py} L${px},${midY} L${cx},${midY} L${cx},${cy}" fill="none" stroke="${linkColor}" stroke-width="1.5" stroke-dasharray="none"/>`;
       drawLinks(child);
     }
   }
   drawLinks(root);
 
+  // Draw nodes
   function drawNodes(node) {
     const pos = positions[node.id];
     if (!pos) return;
     const p = getById(node.id);
     if (!p) return;
-    const color = BRANCH_COLORS[p.branch] || '#6B5B4F';
+    const color = BRANCH_COLORS[p.branch] || '#6B6357';
     const isDeceased = p.deathYear != null;
-    const fillColor = isDeceased ? '#F5F0EB' : '#FFFFFF';
-    const nameColor = isDeceased ? '#8B7D72' : color;
+    const fillColor = isDeceased ? deceasedBg : paperBg;
+    const nameColor = isDeceased ? deceasedText : color;
     let displayName = p.name;
     const maxChars = isMobile ? 4 : 5;
     if (displayName.length > maxChars) displayName = displayName.substring(0, maxChars) + '…';
     let yearText = '';
     if (p.birthYear) yearText = p.birthYear + (p.deathYear ? '-' + p.deathYear : '-');
 
-    html += `<g class="person-node" onclick="showDetail('${p.id}')" transform="translate(${pos.x},${pos.y})">
+    html += `<g class="person-node" onclick="showDetail('${p.id}')" transform="translate(${pos.x},${pos.y})" filter="url(#nodeShadow)">
       <rect class="person-rect" width="${nodeW}" height="${nodeH}" fill="${fillColor}" stroke="${color}"/>
-      <text x="${nodeW/2}" y="${isMobile ? 20 : 22}" text-anchor="middle" font-size="${fontSize}" font-weight="700" fill="${nameColor}" font-family="Noto Serif TC, PMingLiU, serif">${displayName}</text>
-      <text x="${nodeW/2}" y="${isMobile ? 34 : 38}" text-anchor="middle" font-size="${subFontSize}" fill="#8B7D72" font-family="sans-serif">${yearText}</text>
-      ${(!isMobile && p.spouse) ? `<text x="${nodeW/2}" y="52" text-anchor="middle" font-size="9" fill="#A0937D" font-family="sans-serif">配 ${p.spouse.length > 4 ? p.spouse.substring(0,4)+'…' : p.spouse}</text>` : ''}
+      <text x="${nodeW/2}" y="${isMobile ? 22 : 24}" text-anchor="middle" font-size="${fontSize}" font-weight="700" fill="${nameColor}" font-family="LXGW WenKai TC, PMingLiU, serif">${displayName}</text>
+      <text x="${nodeW/2}" y="${isMobile ? 37 : 42}" text-anchor="middle" font-size="${subFontSize}" fill="${subText}" font-family="Noto Sans TC, sans-serif">${yearText}</text>
+      ${(!isMobile && p.spouse) ? `<text x="${nodeW/2}" y="56" text-anchor="middle" font-size="11" fill="${spouseText}" font-family="Noto Sans TC, sans-serif">配 ${p.spouse.length > 4 ? p.spouse.substring(0,4)+'…' : p.spouse}</text>` : ''}
     </g>`;
 
-    // Toggle button for nodes with children
+    // Toggle button for collapse/expand
     if (node.hasChildren) {
-      const toggleSize = isMobile ? 20 : 22;
+      const toggleSize = isMobile ? 22 : 24;
       const tx = pos.x + nodeW / 2 - toggleSize / 2;
-      const ty = pos.y + nodeH + 2;
+      const ty = pos.y + nodeH + 3;
       const symbol = node.isCollapsed ? '▶' : '▼';
       html += `<g class="tree-toggle-btn" onclick="event.stopPropagation(); toggleCollapse('${p.id}')">
-        <rect x="${tx}" y="${ty}" width="${toggleSize}" height="${toggleSize}" rx="4" fill="#F5F0EB" stroke="#D4C5B9" stroke-width="1"/>
-        <text x="${tx + toggleSize/2}" y="${ty + toggleSize/2 + 4}" text-anchor="middle" font-size="${isMobile ? 10 : 11}" fill="#6B5B4F">${symbol}</text>
+        <rect x="${tx}" y="${ty}" width="${toggleSize}" height="${toggleSize}" rx="6" fill="${toggleBg}" stroke="${toggleBorder}" stroke-width="1"/>
+        <text x="${tx + toggleSize/2}" y="${ty + toggleSize/2 + 4}" text-anchor="middle" font-size="${isMobile ? 10 : 11}" fill="${toggleText}">${symbol}</text>
       </g>`;
-      // Collapsed badge showing descendant count
       if (node.isCollapsed) {
         const descCount = countDescendants(p.id);
         html += `<g class="collapse-badge">
@@ -996,19 +1584,10 @@ function drawTree() {
   drawNodes(root);
   svg.innerHTML = html;
 
-  // Auto-fit on first draw
-  if (treeScale === 1) {
-    const containerW = container.clientWidth;
-    if (svgW > containerW * 1.5) {
-      // Scroll to root
-      const rootPos = positions['p1'];
-      if (rootPos) {
-        setTimeout(() => {
-          container.scrollLeft = Math.max(0, rootPos.x - containerW / 2 + nodeW / 2);
-        }, 50);
-      }
-    }
-  }
+  // Auto-fit: fit tree to container on every draw
+  setTimeout(() => {
+    panZoom.fitToView();
+  }, 30);
 }
 
 function countDescendants(id) {
@@ -1035,50 +1614,240 @@ function buildTreeLayout(branchFilter, genFilter, searchText) {
   return buildNode('p1');
 }
 
-// Tree zoom controls
-document.getElementById('zoom-in').addEventListener('click', () => {
-  const svg = document.getElementById('tree-svg');
-  const w = parseFloat(svg.getAttribute('width'));
-  const h = parseFloat(svg.getAttribute('height'));
-  svg.setAttribute('width', w * 1.3);
-  svg.setAttribute('height', h * 1.3);
-  treeScale *= 1.3;
-});
-document.getElementById('zoom-out').addEventListener('click', () => {
-  const svg = document.getElementById('tree-svg');
-  const w = parseFloat(svg.getAttribute('width'));
-  const h = parseFloat(svg.getAttribute('height'));
-  svg.setAttribute('width', w / 1.3);
-  svg.setAttribute('height', h / 1.3);
-  treeScale /= 1.3;
-});
-document.getElementById('zoom-fit').addEventListener('click', () => {
-  treeScale = 1;
-  drawTree();
-});
+// ============ PAN & ZOOM ENGINE ============
+const panZoom = {
+  scale: 1,
+  panX: 0,
+  panY: 0,
+  svgW: 0,
+  svgH: 0,
+  minScale: 0.15,
+  maxScale: 3,
+  isDragging: false,
+  startX: 0,
+  startY: 0,
+  startPanX: 0,
+  startPanY: 0,
+  // Pinch state
+  lastPinchDist: 0,
+  lastPinchCenterX: 0,
+  lastPinchCenterY: 0,
+  // Zoom indicator timer
+  zoomTimer: null,
 
-// Collapse/Expand functions
-function toggleCollapse(id) {
-  if (collapsedNodes.has(id)) {
-    collapsedNodes.delete(id);
-  } else {
-    collapsedNodes.add(id);
+  apply() {
+    const svg = document.getElementById('tree-svg');
+    svg.style.transform = `translate(${this.panX}px, ${this.panY}px) scale(${this.scale})`;
+  },
+
+  showZoomLevel() {
+    const el = document.getElementById('tree-zoom-level');
+    el.textContent = Math.round(this.scale * 100) + '%';
+    el.classList.add('visible');
+    clearTimeout(this.zoomTimer);
+    this.zoomTimer = setTimeout(() => el.classList.remove('visible'), 1200);
+  },
+
+  zoomTo(newScale, centerX, centerY) {
+    const container = document.getElementById('tree-container');
+    const rect = container.getBoundingClientRect();
+    // Default center = container center
+    if (centerX === undefined) centerX = rect.width / 2;
+    if (centerY === undefined) centerY = rect.height / 2;
+
+    newScale = Math.max(this.minScale, Math.min(this.maxScale, newScale));
+    const ratio = newScale / this.scale;
+    // Adjust pan so zoom centers on pointer
+    this.panX = centerX - (centerX - this.panX) * ratio;
+    this.panY = centerY - (centerY - this.panY) * ratio;
+    this.scale = newScale;
+    this.apply();
+    this.showZoomLevel();
+  },
+
+  fitToView() {
+    const container = document.getElementById('tree-container');
+    const cw = container.clientWidth;
+    const ch = container.clientHeight;
+    if (this.svgW === 0 || this.svgH === 0) return;
+    const scaleX = (cw - 24) / this.svgW;
+    const scaleY = (ch - 24) / this.svgH;
+    this.scale = Math.min(scaleX, scaleY, 1.2);
+    this.scale = Math.max(this.minScale, this.scale);
+    // Center the tree
+    this.panX = (cw - this.svgW * this.scale) / 2;
+    this.panY = (ch - this.svgH * this.scale) / 2;
+    this.panY = Math.max(12, this.panY);
+    this.apply();
+    this.showZoomLevel();
+  },
+
+  centerOnRoot(positions, nodeW) {
+    const container = document.getElementById('tree-container');
+    const cw = container.clientWidth;
+    const ch = container.clientHeight;
+    const rootPos = positions['p1'];
+    if (!rootPos) return;
+    // Center the root node in view
+    const rootCenterX = rootPos.x + nodeW / 2;
+    const rootCenterY = rootPos.y + 30;
+    this.panX = cw / 2 - rootCenterX * this.scale;
+    this.panY = Math.min(ch / 3, 60) - rootCenterY * this.scale + 40;
+    this.apply();
+  },
+
+  reset() {
+    this.scale = 1;
+    this.panX = 0;
+    this.panY = 0;
   }
-  drawTree();
-}
+};
 
-function expandAll() {
-  collapsedNodes.clear();
-  drawTree();
-}
+// Mouse drag to pan
+(function() {
+  const container = document.getElementById('tree-container');
 
-function collapseAll() {
-  persons.forEach(p => {
-    if (p.childrenIds && p.childrenIds.length > 0) {
-      collapsedNodes.add(p.id);
+  container.addEventListener('mousedown', (e) => {
+    if (e.target.closest('.tree-toggle-btn, .person-node, .tree-zoom-controls')) return;
+    panZoom.isDragging = true;
+    panZoom.startX = e.clientX;
+    panZoom.startY = e.clientY;
+    panZoom.startPanX = panZoom.panX;
+    panZoom.startPanY = panZoom.panY;
+    container.classList.add('dragging');
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!panZoom.isDragging) return;
+    panZoom.panX = panZoom.startPanX + (e.clientX - panZoom.startX);
+    panZoom.panY = panZoom.startPanY + (e.clientY - panZoom.startY);
+    panZoom.apply();
+  });
+
+  document.addEventListener('mouseup', () => {
+    panZoom.isDragging = false;
+    container.classList.remove('dragging');
+  });
+
+  // Mouse wheel to zoom
+  container.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const rect = container.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    const delta = e.deltaY > 0 ? 0.85 : 1.18;
+    panZoom.zoomTo(panZoom.scale * delta, mouseX, mouseY);
+  }, { passive: false });
+
+  // Touch: drag with 1 finger, pinch with 2
+  let touchStarted = false;
+
+  // Touch: 1-finger pan, 2-finger pinch-zoom
+  // Track movement to distinguish tap vs drag
+  let touchMoved = false;
+  let touchStartTime = 0;
+
+  container.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+      panZoom.isDragging = true;
+      panZoom.startX = e.touches[0].clientX;
+      panZoom.startY = e.touches[0].clientY;
+      panZoom.startPanX = panZoom.panX;
+      panZoom.startPanY = panZoom.panY;
+      touchMoved = false;
+      touchStartTime = Date.now();
+      touchStarted = true;
+    } else if (e.touches.length === 2) {
+      panZoom.isDragging = false;
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      panZoom.lastPinchDist = Math.hypot(dx, dy);
+      const rect = container.getBoundingClientRect();
+      panZoom.lastPinchCenterX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
+      panZoom.lastPinchCenterY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
+      panZoom.startPanX = panZoom.panX;
+      panZoom.startPanY = panZoom.panY;
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  container.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 1 && panZoom.isDragging) {
+      const dx = e.touches[0].clientX - panZoom.startX;
+      const dy = e.touches[0].clientY - panZoom.startY;
+      // Only start panning after a small threshold (distinguish tap from drag)
+      if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+        touchMoved = true;
+        panZoom.panX = panZoom.startPanX + dx;
+        panZoom.panY = panZoom.startPanY + dy;
+        panZoom.apply();
+        e.preventDefault();
+      }
+    } else if (e.touches.length === 2) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const dist = Math.hypot(dx, dy);
+      const rect = container.getBoundingClientRect();
+      const cx = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
+      const cy = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
+
+      if (panZoom.lastPinchDist > 0) {
+        const ratio = dist / panZoom.lastPinchDist;
+        panZoom.zoomTo(panZoom.scale * ratio, cx, cy);
+      }
+      panZoom.lastPinchDist = dist;
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  container.addEventListener('touchend', (e) => {
+    if (e.touches.length < 2) {
+      panZoom.lastPinchDist = 0;
+    }
+    if (e.touches.length === 0) {
+      // If it was a short tap without moving, simulate click on the element
+      if (!touchMoved && (Date.now() - touchStartTime < 300)) {
+        const touch = e.changedTouches[0];
+        const target = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (target) {
+          const node = target.closest('.person-node');
+          const toggle = target.closest('.tree-toggle-btn');
+          if (node) node.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+          else if (toggle) toggle.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        }
+      }
+      panZoom.isDragging = false;
+      touchStarted = false;
     }
   });
-  // Always keep root expanded
+})();
+
+// Zoom buttons
+document.getElementById('zoom-in').addEventListener('click', () => {
+  panZoom.zoomTo(panZoom.scale * 1.3);
+});
+document.getElementById('zoom-out').addEventListener('click', () => {
+  panZoom.zoomTo(panZoom.scale / 1.3);
+});
+document.getElementById('zoom-fit').addEventListener('click', () => {
+  panZoom.fitToView();
+});
+document.getElementById('zoom-center').addEventListener('click', () => {
+  panZoom.centerOnRoot(lastPositions, lastNodeW);
+});
+
+// Collapse/Expand
+function toggleCollapse(id) {
+  if (collapsedNodes.has(id)) collapsedNodes.delete(id);
+  else collapsedNodes.add(id);
+  drawTree();
+}
+function expandAll() { collapsedNodes.clear(); drawTree(); }
+function collapseAll() {
+  persons.forEach(p => {
+    if (p.childrenIds && p.childrenIds.length > 0) collapsedNodes.add(p.id);
+  });
   collapsedNodes.delete('p1');
   drawTree();
 }
@@ -1086,7 +1855,7 @@ function collapseAll() {
 document.getElementById('expand-all').addEventListener('click', expandAll);
 document.getElementById('collapse-all').addEventListener('click', collapseAll);
 
-// Filter event listeners
+// Filter listeners
 document.getElementById('branch-filter').addEventListener('change', drawTree);
 document.getElementById('gen-filter').addEventListener('change', drawTree);
 document.getElementById('tree-search').addEventListener('input', drawTree);
@@ -1131,16 +1900,56 @@ function showDetail(id) {
   document.getElementById('modal-body').innerHTML = html;
   overlay.classList.add('show');
   document.body.style.overflow = 'hidden';
+  // Reset closing state
+  document.getElementById('modal-sheet').classList.remove('closing');
+}
+
+function closeModal() {
+  const sheet = document.getElementById('modal-sheet');
+  const overlay = document.getElementById('modal-overlay');
+  sheet.classList.add('closing');
+  setTimeout(() => {
+    overlay.classList.remove('show');
+    sheet.classList.remove('closing');
+    document.body.style.overflow = '';
+  }, 280);
 }
 
 document.getElementById('modal-close').addEventListener('click', closeModal);
 document.getElementById('modal-overlay').addEventListener('click', (e) => {
   if (e.target === e.currentTarget) closeModal();
 });
-function closeModal() {
-  document.getElementById('modal-overlay').classList.remove('show');
-  document.body.style.overflow = '';
-}
+
+// Swipe-down to dismiss modal
+(function() {
+  const handle = document.getElementById('modal-handle');
+  const sheet = document.getElementById('modal-sheet');
+  let startY = 0, currentY = 0, isDragging = false;
+
+  handle.addEventListener('touchstart', (e) => {
+    startY = e.touches[0].clientY;
+    isDragging = true;
+    sheet.style.transition = 'none';
+  });
+
+  document.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+    currentY = e.touches[0].clientY;
+    const dy = Math.max(0, currentY - startY);
+    sheet.style.transform = `translateY(${dy}px)`;
+  });
+
+  document.addEventListener('touchend', () => {
+    if (!isDragging) return;
+    isDragging = false;
+    sheet.style.transition = '';
+    const dy = currentY - startY;
+    if (dy > 100) {
+      closeModal();
+    }
+    sheet.style.transform = '';
+  });
+})();
 
 // ============ SEARCH ============
 function renderSearch() {
@@ -1163,16 +1972,33 @@ function renderSearch() {
   results.sort((a, b) => a.generation - b.generation || (a.birthYear||9999) - (b.birthYear||9999));
   count.textContent = `共 ${results.length} 位族人`;
 
-  list.innerHTML = results.map(p => {
+  list.innerHTML = results.map((p, i) => {
     const yearInfo = p.birthYear ? `${p.birthYear}${p.deathYear ? '-'+p.deathYear : '-'}` : '';
+    const delay = Math.min(i * 0.03, 0.3);
+    const initial = p.name.replace(/^(鍾|鐘)/, '').charAt(0) || p.name.charAt(0);
+    const genderIcon = p.gender === 'female' ? '♀' : '♂';
+    const genNum = p.generation === 0 ? '祖' : p.generation;
+    const isDeceased = p.deathYear != null;
     return `
-      <div class="person-card branch-${p.branch}" onclick="showDetail('${p.id}')">
-        <div class="pc-name">${p.name}</div>
-        <div class="pc-info">
-          <span class="gen-tag">${getGenLabel(p.generation)}</span>
-          <span class="branch-tag ${p.branch}">${p.branch}</span>
-          ${yearInfo ? `<span>${yearInfo}</span>` : ''}
-          ${p.spouse ? `<span>配 ${p.spouse}</span>` : ''}
+      <div class="person-card branch-${p.branch}" onclick="showDetail('${p.id}')" style="animation:fadeInUp 0.4s var(--ease-out) ${delay}s both;">
+        <div class="pc-accent"></div>
+        <div class="pc-body">
+          <div class="pc-avatar" title="${getGenLabel(p.generation)}">
+            ${initial}
+            <span class="pc-gen-num">${genNum}</span>
+          </div>
+          <div class="pc-content">
+            <div class="pc-name">${p.name}${isDeceased ? ' <span style="font-size:13px;color:var(--ink-faint);font-weight:400;">已故</span>' : ''}</div>
+            <div class="pc-sub">
+              ${yearInfo ? `<span class="pc-year">${genderIcon} ${yearInfo}</span>` : `<span class="pc-year">${genderIcon}</span>`}
+              ${p.spouse ? `<span class="pc-spouse">配偶 ${p.spouse}</span>` : ''}
+            </div>
+            <div class="pc-info">
+              <span class="branch-tag ${p.branch}">${p.branch}</span>
+              <span class="gen-tag">${getGenLabel(p.generation)}</span>
+            </div>
+          </div>
+          <span class="pc-arrow">›</span>
         </div>
       </div>
     `;
@@ -1264,9 +2090,9 @@ function renderAddedList() {
   const added = addedPersons.map(id => getById(id)).filter(Boolean);
   if (added.length === 0) { list.innerHTML = '尚未新增任何族人'; return; }
   list.innerHTML = added.map(p => `
-    <div style="padding:10px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:8px;">
-      <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;">${p.name} (${getGenLabel(p.generation)}, ${p.branch})</span>
-      <button class="btn btn-danger" style="padding:6px 14px;font-size:13px;flex-shrink:0;" onclick="removePerson('${p.id}')">刪除</button>
+    <div style="padding:12px 0;border-bottom:1px solid var(--border-light);display:flex;justify-content:space-between;align-items:center;gap:10px;">
+      <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;font-family:var(--font-display);">${p.name} (${getGenLabel(p.generation)}, ${p.branch})</span>
+      <button class="btn btn-danger" style="padding:6px 14px;font-size:13px;flex-shrink:0;min-height:36px;" onclick="removePerson('${p.id}')">刪除</button>
     </div>
   `).join('');
 }
@@ -1365,13 +2191,13 @@ window.addEventListener('resize', () => {
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => {
     if (document.getElementById('page-tree').classList.contains('active')) {
-      treeScale = 1;
       drawTree();
     }
   }, 300);
 });
 
 // ============ INIT ============
+initTheme();
 loadData();
 renderStats();
 renderFilters();
