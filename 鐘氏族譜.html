@@ -954,18 +954,19 @@ body::before {
 /* User status bar in nav */
 .nav-user-btn {
   position: absolute; left: 8px; top: 50%; transform: translateY(-50%);
-  height: 40px; border: none; border-radius: 20px;
+  height: 38px; border: none; border-radius: 20px;
   background: rgba(255,255,255,0.15);
-  color: var(--paper); font-size: 14px; cursor: pointer;
-  display: flex; align-items: center; gap: 6px;
-  padding: 0 14px 0 10px;
+  color: var(--paper); font-size: 13px; cursor: pointer;
+  display: flex; align-items: center; gap: 5px;
+  padding: 0 12px 0 8px;
   font-family: var(--font-body); font-weight: 600;
   transition: background 0.2s;
   backdrop-filter: blur(4px);
-  max-width: 120px; overflow: hidden;
+  max-width: 100px; overflow: hidden;
+  white-space: nowrap;
 }
 .nav-user-btn:active { background: rgba(255,255,255,0.25); }
-.nav-user-btn .user-icon { font-size: 18px; }
+.nav-user-btn .user-icon { font-size: 16px; }
 
 /* Submission status cards */
 .submission-card {
@@ -1010,8 +1011,9 @@ body::before {
   }
   .nav-inner-row {
     max-width: 1200px; margin: 0 auto; width: 100%;
-    display: flex; align-items: center; justify-content: space-between;
+    display: flex; align-items: center; justify-content: center;
     padding: 14px 24px 0;
+    position: relative;
   }
   .desktop-tabs { display: flex; }
   .main { padding-top: 112px; padding-bottom: 40px; }
@@ -1029,9 +1031,10 @@ body::before {
   .tree-controls select { min-width: 140px; flex: unset; }
   .tree-controls input { min-width: 220px; }
   .mobile-filter-panel { display: none !important; }
-  .theme-toggle { right: 56px; }
-  .nav-seal { right: 16px; }
-  .nav-user-btn { left: 16px; max-width: 160px; }
+  /* Desktop nav: user left, theme+seal right, all absolute within nav-inner-row */
+  .nav-user-btn { left: 0; max-width: 160px; font-size: 14px; height: 40px; padding: 0 16px 0 10px; }
+  .theme-toggle { right: 52px; }
+  .nav-seal { right: 0; }
   .person-card:hover {
     box-shadow: 0 4px 20px var(--shadow-strong);
     transform: translateY(-2px);
