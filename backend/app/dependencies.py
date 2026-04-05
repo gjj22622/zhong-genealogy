@@ -37,6 +37,6 @@ def get_optional_user(
 
 
 def require_admin(user: User = Depends(get_current_user)) -> User:
-    if not user.is_admin:
+    if user.role != "admin":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="需要管理員權限")
     return user

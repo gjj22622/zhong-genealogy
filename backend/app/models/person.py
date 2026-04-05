@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Text
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Text, DateTime, func
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship
 
 from app.database import Base
@@ -17,7 +18,10 @@ class Person(Base):
     death_year = Column(String(50))
     is_alive = Column(Boolean, default=True)
     spouse = Column(String(50))
-    bio = Column(Text, comment="簡介")
+    bio = Column(Text, comment="簡介/備註")
     father_id = Column(Integer, ForeignKey("persons.id"), nullable=True)
+    children_ids = Column(ARRAY(String), nullable=True, comment="子女 old_id 列表")
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     father = relationship("Person", remote_side=[id], backref="children")
