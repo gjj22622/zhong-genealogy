@@ -49,7 +49,7 @@
 
   /* === Layout === */
   --nav-h: 56px;
-  --bottom-h: 64px;
+  --bottom-h: 76px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --radius: 12px;
   --radius-lg: 20px;
@@ -214,46 +214,49 @@ body::before {
 }
 .theme-toggle:active { background: rgba(255,255,255,0.25); }
 
-/* ===== BOTTOM TAB BAR (Mobile — LINE-style) ===== */
+/* ===== BOTTOM TAB BAR (Mobile — 長輩友善大尺寸) ===== */
 .bottom-tabs {
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 1000;
   background: var(--card);
   border-top: 1px solid var(--border-light);
   display: flex;
+  padding: 0 4px;
   padding-bottom: var(--safe-bottom);
-  box-shadow: 0 -4px 20px var(--shadow);
+  box-shadow: 0 -4px 24px var(--shadow-strong);
   transition: background 0.4s var(--ease-out);
 }
 .bottom-tab {
   flex: 1; display: flex; flex-direction: column; align-items: center;
   justify-content: center;
-  padding: 8px 4px 8px; gap: 3px;
+  padding: 10px 4px 10px; gap: 4px;
   background: transparent; border: none;
   color: var(--ink-faint);
-  font-size: 13px; font-weight: 500;
+  font-size: 14px; font-weight: 600;
   font-family: var(--font-body);
   cursor: pointer; transition: all 0.25s var(--ease-out);
   -webkit-user-select: none; user-select: none;
-  min-height: 56px;
+  min-height: 68px;
   position: relative;
+  letter-spacing: 0.5px;
 }
 .bottom-tab .tab-icon {
-  font-size: 24px; line-height: 1;
+  font-size: 30px; line-height: 1;
   transition: transform 0.25s var(--ease-spring);
 }
 .bottom-tab.active {
   color: var(--bronze);
   font-weight: 700;
 }
-.bottom-tab.active .tab-icon { transform: scale(1.12); }
+.bottom-tab.active .tab-icon { transform: scale(1.15); }
 .bottom-tab.active::after {
   content: '';
-  position: absolute; top: 0; left: 25%; right: 25%;
-  height: 3px; border-radius: 0 0 3px 3px;
-  background: var(--bronze);
+  position: absolute; top: 0; left: 20%; right: 20%;
+  height: 3.5px; border-radius: 0 0 4px 4px;
+  background: linear-gradient(90deg, var(--bronze), var(--bronze-light));
 }
 .bottom-tab:active {
-  background: rgba(139, 114, 37, 0.06);
+  background: rgba(139, 114, 37, 0.08);
+  transform: scale(0.95);
 }
 /* Ripple on tap */
 .bottom-tab .ripple {
@@ -328,6 +331,7 @@ body::before {
 .tree-controls {
   display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;
 }
+/* Desktop: keep select dropdowns */
 .tree-controls select, .tree-controls input {
   padding: 10px 14px; border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -351,6 +355,93 @@ body::before {
   outline: none; border-color: var(--bronze);
   box-shadow: 0 0 0 3px rgba(139,114,37,0.12);
 }
+
+/* ===== MOBILE FILTER PANEL (replaces tiny selects) ===== */
+.mobile-filter-panel {
+  display: none;
+  flex-direction: column; gap: 14px;
+  margin-bottom: 14px;
+}
+.mobile-filter-label {
+  font-family: var(--font-display);
+  font-size: 15px; font-weight: 700; color: var(--ink-faint);
+  letter-spacing: 1px; margin-bottom: 2px;
+}
+/* Large segmented buttons for branch selection */
+.mobile-branch-btns {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.mobile-branch-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 16px 10px;
+  border-radius: var(--radius); border: 2px solid var(--border);
+  background: var(--card); color: var(--ink);
+  font-family: var(--font-display); font-size: 17px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s var(--ease-out);
+  min-height: 56px;
+  position: relative; overflow: hidden;
+}
+.mobile-branch-btn .branch-dot {
+  width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0;
+}
+.mobile-branch-btn.active {
+  border-color: var(--bronze);
+  background: var(--paper-warm);
+  box-shadow: 0 0 0 1px var(--bronze);
+}
+.mobile-branch-btn:active { transform: scale(0.96); }
+/* Generation: horizontal scroll pills */
+.mobile-gen-scroll {
+  display: flex; gap: 8px;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+.mobile-gen-scroll::-webkit-scrollbar { display: none; }
+.mobile-gen-pill {
+  flex-shrink: 0;
+  padding: 12px 20px;
+  border-radius: 24px; border: 2px solid var(--border);
+  background: var(--card); color: var(--ink);
+  font-family: var(--font-body); font-size: 16px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s var(--ease-out);
+  white-space: nowrap; min-height: 48px;
+  display: flex; align-items: center;
+}
+.mobile-gen-pill.active {
+  background: var(--bronze); color: var(--paper);
+  border-color: var(--bronze);
+}
+.mobile-gen-pill:active { transform: scale(0.95); }
+/* Search bar in mobile panel */
+.mobile-search-input {
+  width: 100%; padding: 14px 16px;
+  border: 2px solid var(--border); border-radius: var(--radius);
+  font-family: var(--font-body); font-size: 17px;
+  background: var(--card); color: var(--ink);
+  min-height: 54px;
+  transition: border-color 0.2s;
+}
+.mobile-search-input::placeholder { color: var(--ink-faint); }
+.mobile-search-input:focus {
+  outline: none; border-color: var(--bronze);
+  box-shadow: 0 0 0 3px rgba(139,114,37,0.1);
+}
+/* Action row: expand/collapse */
+.mobile-actions {
+  display: flex; gap: 10px;
+}
+.mobile-action-btn {
+  flex: 1; padding: 14px 10px;
+  border-radius: var(--radius); border: 1.5px solid var(--border);
+  background: var(--card); color: var(--ink);
+  font-family: var(--font-body); font-size: 15px; font-weight: 600;
+  cursor: pointer; transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 50px;
+}
+.mobile-action-btn:active { transform: scale(0.96); background: var(--paper-warm); }
 
 /* Legend */
 .legend {
@@ -842,6 +933,7 @@ body::before {
   .toast { bottom: 40px; }
   .tree-controls select { min-width: 140px; flex: unset; }
   .tree-controls input { min-width: 220px; }
+  .mobile-filter-panel { display: none !important; }
   .theme-toggle { left: unset; right: 56px; }
   .nav-seal { right: 16px; }
   .person-card:hover {
@@ -859,21 +951,37 @@ body::before {
     display: flex; align-items: center; justify-content: center; width: 100%;
   }
   .nav-title { font-size: 19px; letter-spacing: 3px; }
-  .main { padding-top: calc(var(--nav-h) + 4px); }
+  .main {
+    padding-top: calc(var(--nav-h) + 4px);
+    padding-bottom: calc(var(--bottom-h) + var(--safe-bottom) + 24px);
+  }
+  .page { padding: 12px 12px; }
   .form-row { flex-direction: column; gap: 0; }
-  .stats-banner { grid-template-columns: repeat(2, 1fr); }
+  .stats-banner { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .stat-card { padding: 16px 10px; }
+  .stat-card .stat-num { font-size: 28px; }
+  .stat-card .stat-label { font-size: 13px; }
   .story-section { padding: 20px 16px; }
   .story-section p { font-size: 16px; line-height: 2; }
+  /* Hide desktop tree controls, show mobile panel */
+  .tree-controls { display: none !important; }
+  .legend { display: none !important; }
+  .mobile-filter-panel { display: flex; }
+  /* Bottom tabs extra size */
+  .bottom-tabs { padding: 0 2px; }
 }
 
 @media (max-width: 380px) {
-  .stats-banner { grid-template-columns: repeat(2, 1fr); gap: 6px; }
-  .stat-card { padding: 10px 4px; }
-  .stat-card .stat-num { font-size: 22px; }
-  .stat-card .stat-label { font-size: 10px; }
-  .tree-controls { gap: 6px; }
+  .stats-banner { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .stat-card { padding: 12px 6px; }
+  .stat-card .stat-num { font-size: 24px; }
+  .stat-card .stat-label { font-size: 12px; }
   .page { padding: 10px 8px; }
   .nav-title { font-size: 17px; letter-spacing: 2px; }
+  .mobile-branch-btns { gap: 8px; }
+  .mobile-branch-btn { padding: 14px 8px; font-size: 16px; }
+  .bottom-tab { font-size: 13px; }
+  .bottom-tab .tab-icon { font-size: 26px; }
 }
 
 /* ====== PRINT ====== */
@@ -967,6 +1075,7 @@ body::before {
   <!-- ===== TREE PAGE ===== -->
   <div class="page active" id="page-tree">
     <div class="stats-banner reveal" id="stats-banner"></div>
+    <!-- Desktop: classic controls -->
     <div class="tree-controls reveal reveal-d1">
       <select id="branch-filter">
         <option value="all">所有支系</option>
@@ -987,6 +1096,38 @@ body::before {
       <div class="legend-item"><div class="legend-dot" style="color:var(--branch-top);background:var(--branch-top)"></div>頂番婆</div>
       <div class="legend-item"><div class="legend-dot" style="color:var(--branch-cao);background:var(--branch-cao)"></div>草湳底</div>
       <div class="legend-item"><div class="legend-dot" style="color:var(--branch-pu);background:var(--branch-pu)"></div>埔姜崙</div>
+    </div>
+
+    <!-- Mobile: 大按鈕篩選面板 (長輩友善) -->
+    <div class="mobile-filter-panel reveal reveal-d1">
+      <div>
+        <div class="mobile-filter-label">選擇支系</div>
+        <div class="mobile-branch-btns" id="m-branch-btns">
+          <button class="mobile-branch-btn active" data-branch="all">
+            <span class="branch-dot" style="background:var(--bronze)"></span>全部支系
+          </button>
+          <button class="mobile-branch-btn" data-branch="頂番婆">
+            <span class="branch-dot" style="background:var(--branch-top)"></span>頂番婆
+          </button>
+          <button class="mobile-branch-btn" data-branch="草湳底">
+            <span class="branch-dot" style="background:var(--branch-cao)"></span>草湳底
+          </button>
+          <button class="mobile-branch-btn" data-branch="埔姜崙">
+            <span class="branch-dot" style="background:var(--branch-pu)"></span>埔姜崙
+          </button>
+        </div>
+      </div>
+      <div>
+        <div class="mobile-filter-label">選擇世代</div>
+        <div class="mobile-gen-scroll" id="m-gen-scroll"></div>
+      </div>
+      <div>
+        <input type="text" class="mobile-search-input" id="m-tree-search" placeholder="🔍 搜尋族人姓名...">
+      </div>
+      <div class="mobile-actions">
+        <button class="mobile-action-btn" id="m-expand-all">📖 展開全部</button>
+        <button class="mobile-action-btn" id="m-collapse-all">📕 收合全部</button>
+      </div>
     </div>
     <div class="tree-wrapper reveal reveal-d3">
       <div class="tree-zoom-controls">
@@ -2196,13 +2337,65 @@ window.addEventListener('resize', () => {
   }, 300);
 });
 
+// ============ MOBILE FILTER PANEL ============
+function initMobileFilters() {
+  // Branch buttons
+  document.querySelectorAll('#m-branch-btns .mobile-branch-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#m-branch-btns .mobile-branch-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('branch-filter').value = btn.dataset.branch;
+      drawTree();
+    });
+  });
+
+  // Generation pills — populate dynamically
+  const genScroll = document.getElementById('m-gen-scroll');
+  genScroll.innerHTML = '<button class="mobile-gen-pill active" data-gen="all">全部</button>';
+  for (let i = 0; i <= 10; i++) {
+    const label = i === 0 ? '渡台祖' : `第${i}代`;
+    genScroll.innerHTML += `<button class="mobile-gen-pill" data-gen="${i}">${label}</button>`;
+  }
+  genScroll.querySelectorAll('.mobile-gen-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      genScroll.querySelectorAll('.mobile-gen-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      document.getElementById('gen-filter').value = pill.dataset.gen;
+      drawTree();
+    });
+  });
+
+  // Mobile search
+  document.getElementById('m-tree-search').addEventListener('input', (e) => {
+    document.getElementById('tree-search').value = e.target.value;
+    drawTree();
+  });
+
+  // Mobile expand/collapse
+  document.getElementById('m-expand-all').addEventListener('click', expandAll);
+  document.getElementById('m-collapse-all').addEventListener('click', collapseAll);
+}
+
+// ============ DEFAULT: START COLLAPSED ============
+function collapseByDefault() {
+  persons.forEach(p => {
+    if (p.childrenIds && p.childrenIds.length > 0) {
+      collapsedNodes.add(p.id);
+    }
+  });
+  // Keep root expanded
+  collapsedNodes.delete('p1');
+}
+
 // ============ INIT ============
 initTheme();
 loadData();
+collapseByDefault();
 renderStats();
 renderFilters();
 populateEditDropdowns();
 renderAddedList();
+initMobileFilters();
 drawTree();
 </script>
 </body>
