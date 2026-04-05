@@ -1,32 +1,32 @@
 ## 1. 專案初始化與基礎架構
 
-- [ ] 1.1 建立前端專案：Vite + React + TypeScript，設定 ESLint、路由（React Router）
-- [ ] 1.2 建立後端專案：Python FastAPI，設定專案結構（routers / models / schemas / services）
-- [ ] 1.3 設定 PostgreSQL 資料庫連線，建立 SQLAlchemy 模型與 Alembic 遷移設定
+- [x] 1.1 建立前端專案：Vite + React + TypeScript，設定 ESLint、路由（React Router）
+- [x] 1.2 建立後端專案：Python FastAPI，設定專案結構（routers / models / schemas / services）
+- [x] 1.3 設定 PostgreSQL 資料庫連線，建立 SQLAlchemy 模型與 Alembic 遷移設定
 - [ ] 1.4 設定 Zeabur 部署配置（zbpack.json），前後端分離部署
-- [ ] 1.5 建立 .env.example 與環境變數文件
+- [x] 1.5 建立 .env.example 與環境變數文件
 
 ## 2. 資料庫模型與資料遷移
 
-- [ ] 2.1 設計並建立資料庫模型：Person（族人）、User（使用者）、AddRequest（新增申請）、EditRequest（修改請求）
-- [ ] 2.2 撰寫 Alembic 遷移腳本，建立所有資料表
-- [ ] 2.3 撰寫資料遷移腳本：從 鐘氏族譜.html 擷取 INITIAL_DATA 並匯入 PostgreSQL
-- [ ] 2.4 撰寫資料驗證腳本：驗證父子關係完整性、無孤立節點
+- [x] 2.1 設計並建立資料庫模型：Person（族人）、User（使用者）、AddRequest（新增申請）、EditRequest（修改請求）
+- [x] 2.2 撰寫 Alembic 遷移腳本，建立所有資料表
+- [x] 2.3 撰寫資料遷移腳本：從 鐘氏族譜.html 擷取 INITIAL_DATA 並匯入 PostgreSQL
+- [x] 2.4 撰寫資料驗證腳本：驗證父子關係完整性、無孤立節點
 
 ## 3. 使用者認證系統
 
-- [ ] 3.1 實作使用者註冊 API（POST /api/auth/register），含家族註冊碼驗證
-- [ ] 3.2 實作登入 API（POST /api/auth/login），發放 JWT Token
-- [ ] 3.3 實作 JWT 驗證中介層，解析 Token 取得使用者資訊與角色
-- [ ] 3.4 實作初始管理員設定邏輯（透過 ADMIN_EMAIL 環境變數）
+- [x] 3.1 實作使用者註冊 API（POST /api/auth/register），含家族註冊碼驗證
+- [x] 3.2 實作登入 API（POST /api/auth/login），發放 JWT Token
+- [x] 3.3 實作 JWT 驗證中介層，解析 Token 取得使用者資訊與角色
+- [x] 3.4 實作初始管理員設定邏輯（透過 ADMIN_EMAIL 環境變數）
 - [ ] 3.5 前端：建立登入/註冊頁面元件，實作 Token 儲存與自動附加至 API 請求
 
 ## 4. 族人資料 API
 
-- [ ] 4.1 實作族人列表 API（GET /api/persons），支援支系與世代篩選
-- [ ] 4.2 實作族人詳情 API（GET /api/persons/{id}）
-- [ ] 4.3 實作族譜樹結構 API（GET /api/tree），回傳巢狀樹結構供前端渲染
-- [ ] 4.4 實作統計 API（GET /api/stats），回傳總人數、世代數、支系數、在世人數
+- [x] 4.1 實作族人列表 API（GET /api/persons），支援支系與世代篩選
+- [x] 4.2 實作族人詳情 API（GET /api/persons/{id}）
+- [x] 4.3 實作族譜樹結構 API（GET /api/tree），回傳巢狀樹結構供前端渲染
+- [x] 4.4 實作統計 API（GET /api/stats），回傳總人數、世代數、支系數、在世人數
 
 ## 5. 前端族譜樹視覺化
 
