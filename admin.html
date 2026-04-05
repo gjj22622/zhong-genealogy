@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+<title>鐘氏族譜 — 管理面板</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   鐘鼎傳世 — 管理面板主題
+   ============================================================ */
+:root {
+  --bronze: #8B7225;
+  --bronze-light: #C4A94D;
+  --bronze-dark: #5C4A14;
+  --patina: #2D5F4A;
+  --patina-light: #4A8B72;
+  --ink: #151210;
+  --ink-light: #302820;
+  --ink-faint: #5A5048;
+  --vermillion: #B8342A;
+  --paper: #F5F0E6;
+  --paper-warm: #EDE5D5;
+  --paper-deep: #E3D9C6;
+  --card: #FDFAF4;
+  --card-hover: #FAF5EB;
+  --border: #C9BDA8;
+  --border-light: #DDD4C4;
+  --shadow: rgba(90, 70, 30, 0.12);
+  --shadow-strong: rgba(90, 70, 30, 0.22);
+  --danger: #C62828;
+  --success: #2E7D32;
+  --warning: #E65100;
+  --radius: 12px;
+  --radius-lg: 20px;
+  --font-display: "LXGW WenKai TC", "Noto Serif TC", serif;
+  --font-body: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* === 頂部導覽 === */
+.admin-header {
+  background: linear-gradient(135deg, var(--ink) 0%, var(--ink-light) 100%);
+  color: var(--paper);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px var(--shadow-strong);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.admin-header h1 {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.admin-header h1 .icon { font-size: 1.6rem; }
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.9rem;
+}
+.header-right .user-name {
+  color: var(--bronze-light);
+  font-weight: 500;
+}
+.btn-logout {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.3);
+  color: var(--paper);
+  padding: 6px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-family: var(--font-body);
+  transition: all 0.2s;
+}
+.btn-logout:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.5); }
+
+/* === 登入表單 === */
+.login-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+.login-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 48px 40px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 8px 32px var(--shadow-strong);
+  text-align: center;
+}
+.login-card h2 {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  color: var(--bronze-dark);
+  margin-bottom: 8px;
+}
+.login-card .subtitle {
+  color: var(--ink-faint);
+  font-size: 0.9rem;
+  margin-bottom: 32px;
+}
+.login-card .emblem {
+  font-size: 3rem;
+  margin-bottom: 16px;
+  display: block;
+}
+.form-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+.form-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--ink-faint);
+  margin-bottom: 6px;
+}
+.form-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: var(--font-body);
+  background: var(--paper);
+  color: var(--ink);
+  transition: border-color 0.2s;
+}
+.form-input:focus {
+  outline: none;
+  border-color: var(--bronze);
+  box-shadow: 0 0 0 3px rgba(139,114,37,0.15);
+}
+.btn-primary {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--bronze) 0%, var(--bronze-dark) 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all 0.2s;
+  min-height: 48px;
+}
+.btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.login-error {
+  color: var(--danger);
+  font-size: 0.85rem;
+  margin-top: 12px;
+  min-height: 20px;
+}
+
+/* === Tab 導覽 === */
+.tab-nav {
+  display: flex;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.tab-btn {
+  padding: 14px 24px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--ink-faint);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+  min-height: 48px;
+}
+.tab-btn:hover { color: var(--ink); background: var(--paper); }
+.tab-btn.active {
+  color: var(--bronze-dark);
+  border-bottom-color: var(--bronze);
+  font-weight: 600;
+}
+
+/* === 統計卡片 === */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  padding: 24px;
+}
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  text-align: center;
+  box-shadow: 0 2px 8px var(--shadow);
+  transition: transform 0.2s;
+}
+.stat-card:hover { transform: translateY(-2px); }
+.stat-card .stat-icon { font-size: 2rem; margin-bottom: 8px; }
+.stat-card .stat-value {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--bronze-dark);
+}
+.stat-card .stat-label {
+  font-size: 0.85rem;
+  color: var(--ink-faint);
+  margin-top: 4px;
+}
+
+/* === 內容面板 === */
+.tab-content { display: none; padding: 24px; }
+.tab-content.active { display: block; }
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.panel-header h2 {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--ink-light);
+}
+
+/* === 搜尋列 === */
+.search-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.search-bar .form-input {
+  width: auto;
+  min-width: 220px;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+}
+.search-bar select.form-input { min-width: 140px; }
+
+/* === 表格 === */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 2px 8px var(--shadow);
+}
+.data-table thead {
+  background: var(--paper-deep);
+}
+.data-table th {
+  padding: 12px 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink-faint);
+  text-align: left;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.data-table td {
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  border-top: 1px solid var(--border-light);
+  vertical-align: middle;
+}
+.data-table tbody tr { transition: background 0.15s; }
+.data-table tbody tr:hover { background: var(--card-hover); }
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: var(--radius);
+  -webkit-overflow-scrolling: touch;
+}
+
+/* === 狀態標籤 === */
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.badge-pending { background: #FFF3E0; color: var(--warning); }
+.badge-approved { background: #E8F5E9; color: var(--success); }
+.badge-rejected { background: #FFEBEE; color: var(--danger); }
+.badge-active { background: #E8F5E9; color: var(--success); }
+.badge-suspended { background: #FFEBEE; color: var(--danger); }
+.badge-admin { background: #E3F2FD; color: #1565C0; }
+.badge-member { background: var(--paper-warm); color: var(--ink-faint); }
+
+/* === 按鈕 === */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  min-height: 44px;
+  min-width: 44px;
+  justify-content: center;
+}
+.btn-approve { background: #E8F5E9; color: var(--success); }
+.btn-approve:hover { background: #C8E6C9; }
+.btn-reject { background: #FFEBEE; color: var(--danger); }
+.btn-reject:hover { background: #FFCDD2; }
+.btn-edit { background: #FFF3E0; color: var(--warning); }
+.btn-edit:hover { background: #FFE0B2; }
+.btn-delete { background: #FFEBEE; color: var(--danger); }
+.btn-delete:hover { background: #FFCDD2; }
+.btn-save { background: var(--patina); color: #fff; }
+.btn-save:hover { background: var(--patina-light); }
+.btn-cancel { background: var(--paper-deep); color: var(--ink-faint); }
+.btn-cancel:hover { background: var(--border); }
+.btn-sm { padding: 6px 12px; font-size: 0.8rem; min-height: 36px; }
+.action-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* === Modal === */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.25s var(--ease-out);
+}
+.modal-overlay.open { opacity: 1; visibility: visible; }
+.modal {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 600px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+  transform: translateY(20px);
+  transition: transform 0.25s var(--ease-out);
+}
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.modal-header h3 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--ink-light);
+}
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--ink-faint);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-close:hover { background: var(--paper); }
+.modal-body { padding: 24px; }
+.modal-body .form-group { margin-bottom: 16px; }
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* === 空狀態 === */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--ink-faint);
+}
+.empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+.empty-state p { font-size: 0.95rem; }
+
+/* === 載入動畫 === */
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: var(--ink-faint);
+}
+.spinner {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--bronze);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* === 提交詳情 === */
+.submission-detail { margin-bottom: 16px; }
+.submission-detail .field-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+.submission-detail .field-value {
+  font-size: 0.95rem;
+  padding: 8px 12px;
+  background: var(--paper);
+  border-radius: 6px;
+  border: 1px solid var(--border-light);
+}
+
+/* === Toast 通知 === */
+.toast-container {
+  position: fixed;
+  top: 80px;
+  right: 24px;
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.toast {
+  padding: 14px 20px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  animation: slideIn 0.3s var(--ease-out);
+  max-width: 360px;
+}
+.toast-success { background: #E8F5E9; color: var(--success); border-left: 4px solid var(--success); }
+.toast-error { background: #FFEBEE; color: var(--danger); border-left: 4px solid var(--danger); }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+/* === 分頁 === */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 12px 0;
+}
+.pagination .btn {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px 14px;
+}
+.pagination .page-info {
+  font-size: 0.85rem;
+  color: var(--ink-faint);
+  padding: 0 8px;
+}
+
+/* === 響應式 === */
+@media (max-width: 768px) {
+  .admin-header { padding: 12px 16px; }
+  .admin-header h1 { font-size: 1.1rem; }
+  .stats-row { padding: 16px; gap: 12px; grid-template-columns: 1fr 1fr; }
+  .tab-content { padding: 16px; }
+  .tab-nav { padding: 0 12px; }
+  .tab-btn { padding: 12px 16px; font-size: 0.85rem; }
+  .panel-header { flex-direction: column; align-items: flex-start; }
+  .search-bar { width: 100%; }
+  .search-bar .form-input { width: 100%; min-width: unset; }
+  .data-table th, .data-table td { padding: 10px 12px; font-size: 0.82rem; }
+  .modal { max-width: 95vw; }
+  .toast-container { right: 12px; left: 12px; }
+  .toast { max-width: 100%; }
+}
+@media (max-width: 480px) {
+  .stats-row { grid-template-columns: 1fr; }
+  .stat-card .stat-value { font-size: 1.8rem; }
+}
+
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- ============ 登入表單 ============ -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-card">
+    <span class="emblem">🔔</span>
+    <h2>鐘氏族譜</h2>
+    <p class="subtitle">管理面板登入</p>
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="loginEmail">電子信箱</label>
+        <input type="email" id="loginEmail" class="form-input" placeholder="admin@example.com" required autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="loginPassword">密碼</label>
+        <input type="password" id="loginPassword" class="form-input" placeholder="請輸入密碼" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn-primary" id="loginBtn">登入</button>
+      <div class="login-error" id="loginError"></div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ 主介面 ============ -->
+<div class="admin-app hidden" id="adminApp">
+
+  <!-- 頂部導覽 -->
+  <header class="admin-header">
+    <h1><span class="icon">🔔</span>鐘鼎傳世 · 管理面板</h1>
+    <div class="header-right">
+      <span class="user-name" id="currentUser"></span>
+      <button class="btn-logout" onclick="logout()">登出</button>
+    </div>
+  </header>
+
+  <!-- 統計卡片 -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon">📋</div>
+      <div class="stat-value" id="statPending">-</div>
+      <div class="stat-label">待審核提交</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-value" id="statUsers">-</div>
+      <div class="stat-label">註冊會員</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🏛️</div>
+      <div class="stat-value" id="statPersons">-</div>
+      <div class="stat-label">族人資料</div>
+    </div>
+  </div>
+
+  <!-- Tab 導覽 -->
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-tab="submissions">審核提交</button>
+    <button class="tab-btn" data-tab="users">會員管理</button>
+    <button class="tab-btn" data-tab="persons">族人管理</button>
+  </nav>
+
+  <!-- ========== 審核提交面板 ========== -->
+  <div class="tab-content active" id="tab-submissions">
+    <div class="panel-header">
+      <h2>審核提交</h2>
+      <div class="search-bar">
+        <select class="form-input" id="submissionFilter" onchange="loadSubmissions()">
+          <option value="pending">待審核</option>
+          <option value="approved">已核准</option>
+          <option value="rejected">已駁回</option>
+          <option value="">全部</option>
+        </select>
+      </div>
+    </div>
+    <div id="submissionsContainer">
+      <div class="loading"><div class="spinner"></div><p>載入中...</p></div>
+    </div>
+  </div>
+
+  <!-- ========== 會員管理面板 ========== -->
+  <div class="tab-content" id="tab-users">
+    <div class="panel-header">
+      <h2>會員管理</h2>
+      <div class="search-bar">
+        <input type="text" class="form-input" id="userSearch" placeholder="搜尋會員名稱或信箱..." oninput="filterUsers()">
+      </div>
+    </div>
+    <div id="usersContainer">
+      <div class="loading"><div class="spinner"></div><p>載入中...</p></div>
+    </div>
+  </div>
+
+  <!-- ========== 族人管理面板 ========== -->
+  <div class="tab-content" id="tab-persons">
+    <div class="panel-header">
+      <h2>族人管理</h2>
+      <div class="search-bar">
+        <input type="text" class="form-input" id="personSearch" placeholder="搜尋姓名..." oninput="filterPersons()">
+        <select class="form-input" id="personBranch" onchange="filterPersons()">
+          <option value="">全部支系</option>
+          <option value="頂番婆">頂番婆</option>
+          <option value="草湳底">草湳底</option>
+          <option value="埔姜崙">埔姜崙</option>
+        </select>
+      </div>
+    </div>
+    <div id="personsContainer">
+      <div class="loading"><div class="spinner"></div><p>載入中...</p></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ 審核 Modal ============ -->
+<div class="modal-overlay" id="reviewModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>審核提交</h3>
+      <button class="modal-close" onclick="closeModal('reviewModal')">&times;</button>
+    </div>
+    <div class="modal-body" id="reviewModalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-cancel" onclick="closeModal('reviewModal')">取消</button>
+      <button class="btn btn-reject" onclick="handleSubmission('rejected')">駁回</button>
+      <button class="btn btn-approve" onclick="handleSubmission('approved')">核准</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 編輯會員 Modal ============ -->
+<div class="modal-overlay" id="userModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>編輯會員</h3>
+      <button class="modal-close" onclick="closeModal('userModal')">&times;</button>
+    </div>
+    <div class="modal-body" id="userModalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-cancel" onclick="closeModal('userModal')">取消</button>
+      <button class="btn btn-save" onclick="saveUser()">儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 編輯族人 Modal ============ -->
+<div class="modal-overlay" id="personModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="personModalTitle">編輯族人</h3>
+      <button class="modal-close" onclick="closeModal('personModal')">&times;</button>
+    </div>
+    <div class="modal-body" id="personModalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-cancel" onclick="closeModal('personModal')">取消</button>
+      <button class="btn btn-save" onclick="savePerson()">儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast 通知容器 -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* ============================================================
+   鐘氏族譜管理面板 — JavaScript
+   ============================================================ */
+
+const API_BASE = '';
+let token = localStorage.getItem('admin_token') || '';
+let currentAdmin = null;
+
+// 資料快取
+let allUsers = [];
+let allPersons = [];
+let currentSubmissionId = null;
+let currentUserId = null;
+let currentPersonId = null;
+
+// === API 工具 ===
+async function api(path, options = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  const resp = await fetch(`${API_BASE}${path}`, { ...options, headers: { ...headers, ...(options.headers || {}) } });
+  if (resp.status === 401) {
+    token = '';
+    localStorage.removeItem('admin_token');
+    showLogin();
+    throw new Error('認證已過期，請重新登入');
+  }
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({ detail: '操作失敗' }));
+    throw new Error(err.detail || `HTTP ${resp.status}`);
+  }
+  if (resp.status === 204) return null;
+  return resp.json();
+}
+
+// === Toast 通知 ===
+function toast(message, type = 'success') {
+  const container = document.getElementById('toastContainer');
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  el.textContent = message;
+  container.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity 0.3s'; setTimeout(() => el.remove(), 300); }, 3500);
+}
+
+// === Modal 控制 ===
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// === 認證 ===
+function showLogin() {
+  document.getElementById('loginOverlay').classList.remove('hidden');
+  document.getElementById('adminApp').classList.add('hidden');
+}
+
+function showApp() {
+  document.getElementById('loginOverlay').classList.add('hidden');
+  document.getElementById('adminApp').classList.remove('hidden');
+}
+
+async function checkAuth() {
+  if (!token) { showLogin(); return; }
+  try {
+    const me = await api('/api/auth/me');
+    if (me.role !== 'admin') {
+      token = '';
+      localStorage.removeItem('admin_token');
+      showLogin();
+      toast('您沒有管理員權限', 'error');
+      return;
+    }
+    currentAdmin = me;
+    document.getElementById('currentUser').textContent = me.display_name || me.email;
+    showApp();
+    loadDashboard();
+  } catch {
+    showLogin();
+  }
+}
+
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const errEl = document.getElementById('loginError');
+  const btn = document.getElementById('loginBtn');
+
+  errEl.textContent = '';
+  btn.disabled = true;
+  btn.textContent = '登入中...';
+
+  try {
+    const data = await fetch(`${API_BASE}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    }).then(async r => {
+      if (!r.ok) {
+        const err = await r.json().catch(() => ({}));
+        throw new Error(err.detail || '登入失敗');
+      }
+      return r.json();
+    });
+
+    token = data.access_token;
+    localStorage.setItem('admin_token', token);
+    await checkAuth();
+  } catch (err) {
+    errEl.textContent = err.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '登入';
+  }
+});
+
+function logout() {
+  token = '';
+  localStorage.removeItem('admin_token');
+  currentAdmin = null;
+  showLogin();
+}
+
+// === Tab 切換 ===
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+
+    // 載入對應資料
+    if (btn.dataset.tab === 'submissions') loadSubmissions();
+    if (btn.dataset.tab === 'users') loadUsers();
+    if (btn.dataset.tab === 'persons') loadPersons();
+  });
+});
+
+// === Dashboard 統計 ===
+async function loadDashboard() {
+  loadSubmissions();
+  loadUsers();
+  loadPersons();
+}
+
+// === 審核提交 ===
+async function loadSubmissions() {
+  const container = document.getElementById('submissionsContainer');
+  const status = document.getElementById('submissionFilter').value;
+  container.innerHTML = '<div class="loading"><div class="spinner"></div><p>載入中...</p></div>';
+
+  try {
+    const query = status ? `?status=${status}` : '';
+    const submissions = await api(`/api/admin/submissions${query}`);
+
+    // 更新統計
+    if (status === 'pending' || !status) {
+      const pendingCount = status === 'pending' ? submissions.length : submissions.filter(s => s.status === 'pending').length;
+      document.getElementById('statPending').textContent = pendingCount;
+    }
+
+    if (!submissions.length) {
+      container.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>目前沒有提交記錄</p></div>';
+      return;
+    }
+
+    let html = '<div class="table-wrapper"><table class="data-table"><thead><tr>';
+    html += '<th>提交者</th><th>類型</th><th>目標</th><th>狀態</th><th>提交時間</th><th>操作</th>';
+    html += '</tr></thead><tbody>';
+
+    submissions.forEach(s => {
+      const statusClass = s.status === 'pending' ? 'badge-pending' : s.status === 'approved' ? 'badge-approved' : 'badge-rejected';
+      const statusText = s.status === 'pending' ? '待審核' : s.status === 'approved' ? '已核准' : '已駁回';
+      const time = s.created_at ? new Date(s.created_at).toLocaleDateString('zh-TW') : '-';
+      html += `<tr>
+        <td>${escHtml(s.submitted_by_name || s.submitted_by || '-')}</td>
+        <td>${escHtml(s.type || s.submission_type || '-')}</td>
+        <td>${escHtml(s.target_name || s.person_name || '-')}</td>
+        <td><span class="badge ${statusClass}">${statusText}</span></td>
+        <td>${time}</td>
+        <td class="action-btns">
+          <button class="btn btn-edit btn-sm" onclick="reviewSubmission('${s.id}')">檢視</button>
+        </td>
+      </tr>`;
+    });
+
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
+  } catch (err) {
+    container.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${escHtml(err.message)}</p></div>`;
+  }
+}
+
+async function reviewSubmission(id) {
+  currentSubmissionId = id;
+  const body = document.getElementById('reviewModalBody');
+  body.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  openModal('reviewModal');
+
+  try {
+    // 嘗試獲取單個提交的詳情，如果沒有此 API 就從列表中找
+    let sub;
+    try {
+      sub = await api(`/api/admin/submissions/${id}`);
+    } catch {
+      const allSubs = await api('/api/admin/submissions');
+      sub = allSubs.find(s => s.id == id);
+    }
+
+    if (!sub) { body.innerHTML = '<p>找不到此提交</p>'; return; }
+
+    const data = sub.data || sub.modified_data || {};
+    let html = '';
+
+    html += `<div class="submission-detail">
+      <div class="field-label">提交者</div>
+      <div class="field-value">${escHtml(sub.submitted_by_name || sub.submitted_by || '-')}</div>
+    </div>`;
+    html += `<div class="submission-detail">
+      <div class="field-label">類型</div>
+      <div class="field-value">${escHtml(sub.type || sub.submission_type || '-')}</div>
+    </div>`;
+
+    // 可編輯的資料欄位
+    const fields = ['name', 'gender', 'generation', 'branch', 'birthYear', 'deathYear', 'spouse', 'notes'];
+    fields.forEach(f => {
+      if (data[f] !== undefined) {
+        html += `<div class="form-group">
+          <label>${fieldLabel(f)}</label>
+          <input type="text" class="form-input" id="review_${f}" value="${escAttr(data[f] ?? '')}">
+        </div>`;
+      }
+    });
+
+    html += `<div class="form-group">
+      <label>管理員備註</label>
+      <textarea class="form-input" id="reviewNotes" rows="3" placeholder="可選：輸入審核備註"></textarea>
+    </div>`;
+
+    body.innerHTML = html;
+  } catch (err) {
+    body.innerHTML = `<p>載入失敗：${escHtml(err.message)}</p>`;
+  }
+}
+
+async function handleSubmission(action) {
+  if (!currentSubmissionId) return;
+  const notes = document.getElementById('reviewNotes')?.value || '';
+
+  // 收集修改後的資料
+  const modifiedData = {};
+  const fields = ['name', 'gender', 'generation', 'branch', 'birthYear', 'deathYear', 'spouse', 'notes'];
+  fields.forEach(f => {
+    const el = document.getElementById(`review_${f}`);
+    if (el) modifiedData[f] = el.value;
+  });
+
+  try {
+    await api(`/api/admin/submissions/${currentSubmissionId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ action, admin_notes: notes, modified_data: modifiedData })
+    });
+    closeModal('reviewModal');
+    toast(action === 'approved' ? '已核准此提交' : '已駁回此提交');
+    loadSubmissions();
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+}
+
+// === 會員管理 ===
+async function loadUsers() {
+  const container = document.getElementById('usersContainer');
+  container.innerHTML = '<div class="loading"><div class="spinner"></div><p>載入中...</p></div>';
+
+  try {
+    allUsers = await api('/api/admin/users');
+    document.getElementById('statUsers').textContent = allUsers.length;
+    renderUsers(allUsers);
+  } catch (err) {
+    container.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${escHtml(err.message)}</p></div>`;
+  }
+}
+
+function filterUsers() {
+  const q = document.getElementById('userSearch').value.trim().toLowerCase();
+  const filtered = allUsers.filter(u =>
+    (u.display_name || '').toLowerCase().includes(q) ||
+    (u.email || '').toLowerCase().includes(q)
+  );
+  renderUsers(filtered);
+}
+
+function renderUsers(users) {
+  const container = document.getElementById('usersContainer');
+  if (!users.length) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">👥</div><p>沒有符合條件的會員</p></div>';
+    return;
+  }
+
+  let html = '<div class="table-wrapper"><table class="data-table"><thead><tr>';
+  html += '<th>名稱</th><th>信箱</th><th>角色</th><th>狀態</th><th>註冊時間</th><th>操作</th>';
+  html += '</tr></thead><tbody>';
+
+  users.forEach(u => {
+    const roleClass = u.role === 'admin' ? 'badge-admin' : 'badge-member';
+    const roleText = u.role === 'admin' ? '管理員' : '一般會員';
+    const statusClass = u.status === 'active' ? 'badge-active' : 'badge-suspended';
+    const statusText = u.status === 'active' ? '啟用中' : '已停權';
+    const time = u.created_at ? new Date(u.created_at).toLocaleDateString('zh-TW') : '-';
+
+    html += `<tr>
+      <td><strong>${escHtml(u.display_name || '-')}</strong></td>
+      <td>${escHtml(u.email || '-')}</td>
+      <td><span class="badge ${roleClass}">${roleText}</span></td>
+      <td><span class="badge ${statusClass}">${statusText}</span></td>
+      <td>${time}</td>
+      <td class="action-btns">
+        <button class="btn btn-edit btn-sm" onclick="editUser('${u.id}')">編輯</button>
+      </td>
+    </tr>`;
+  });
+
+  html += '</tbody></table></div>';
+  container.innerHTML = html;
+}
+
+function editUser(id) {
+  currentUserId = id;
+  const user = allUsers.find(u => u.id == id);
+  if (!user) return;
+
+  const body = document.getElementById('userModalBody');
+  body.innerHTML = `
+    <div class="form-group">
+      <label>名稱</label>
+      <input type="text" class="form-input" value="${escAttr(user.display_name || '')}" disabled>
+    </div>
+    <div class="form-group">
+      <label>信箱</label>
+      <input type="text" class="form-input" value="${escAttr(user.email || '')}" disabled>
+    </div>
+    <div class="form-group">
+      <label>角色</label>
+      <select class="form-input" id="editUserRole">
+        <option value="member" ${user.role === 'member' ? 'selected' : ''}>一般會員</option>
+        <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>管理員</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>狀態</label>
+      <select class="form-input" id="editUserStatus">
+        <option value="active" ${user.status === 'active' ? 'selected' : ''}>啟用中</option>
+        <option value="suspended" ${user.status === 'suspended' ? 'selected' : ''}>已停權</option>
+      </select>
+    </div>
+  `;
+  openModal('userModal');
+}
+
+async function saveUser() {
+  if (!currentUserId) return;
+  const role = document.getElementById('editUserRole').value;
+  const status = document.getElementById('editUserStatus').value;
+
+  try {
+    await api(`/api/admin/users/${currentUserId}?role=${role}&status=${status}`, { method: 'PUT' });
+    closeModal('userModal');
+    toast('會員資料已更新');
+    loadUsers();
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+}
+
+// === 族人管理 ===
+async function loadPersons() {
+  const container = document.getElementById('personsContainer');
+  container.innerHTML = '<div class="loading"><div class="spinner"></div><p>載入中...</p></div>';
+
+  try {
+    allPersons = await api('/api/persons');
+    // 如果 API 回傳物件包 data 欄位
+    if (allPersons && allPersons.data) allPersons = allPersons.data;
+    if (!Array.isArray(allPersons)) allPersons = [];
+    document.getElementById('statPersons').textContent = allPersons.length;
+    renderPersons(allPersons);
+  } catch (err) {
+    container.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${escHtml(err.message)}</p></div>`;
+  }
+}
+
+function filterPersons() {
+  const q = document.getElementById('personSearch').value.trim().toLowerCase();
+  const branch = document.getElementById('personBranch').value;
+  const filtered = allPersons.filter(p =>
+    (!q || (p.name || '').toLowerCase().includes(q)) &&
+    (!branch || p.branch === branch)
+  );
+  renderPersons(filtered);
+}
+
+function renderPersons(persons) {
+  const container = document.getElementById('personsContainer');
+  if (!persons.length) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">🏛️</div><p>沒有符合條件的族人</p></div>';
+    return;
+  }
+
+  let html = '<div class="table-wrapper"><table class="data-table"><thead><tr>';
+  html += '<th>姓名</th><th>性別</th><th>世代</th><th>支系</th><th>生年</th><th>卒年</th><th>配偶</th><th>操作</th>';
+  html += '</tr></thead><tbody>';
+
+  persons.forEach(p => {
+    const branchColors = { '頂番婆': '#8B4513', '草湳底': '#2E7D32', '埔姜崙': '#1565C0' };
+    const branchStyle = branchColors[p.branch] ? `color:${branchColors[p.branch]};font-weight:600` : '';
+
+    html += `<tr>
+      <td><strong>${escHtml(p.name || '-')}</strong></td>
+      <td>${p.gender === 'M' || p.gender === '男' ? '男' : p.gender === 'F' || p.gender === '女' ? '女' : '-'}</td>
+      <td>第 ${p.generation ?? '-'} 代</td>
+      <td><span style="${branchStyle}">${escHtml(p.branch || '-')}</span></td>
+      <td>${p.birthYear || '-'}</td>
+      <td>${p.deathYear || '-'}</td>
+      <td>${escHtml(p.spouse || '-')}</td>
+      <td class="action-btns">
+        <button class="btn btn-edit btn-sm" onclick="editPerson('${p.id}')">編輯</button>
+        <button class="btn btn-delete btn-sm" onclick="deletePerson('${p.id}', '${escAttr(p.name || '')}')">刪除</button>
+      </td>
+    </tr>`;
+  });
+
+  html += '</tbody></table></div>';
+  container.innerHTML = html;
+}
+
+function editPerson(id) {
+  currentPersonId = id;
+  const person = allPersons.find(p => p.id == id);
+  if (!person) return;
+
+  document.getElementById('personModalTitle').textContent = `編輯族人 — ${person.name || ''}`;
+  const body = document.getElementById('personModalBody');
+  body.innerHTML = `
+    <div class="form-group">
+      <label>姓名</label>
+      <input type="text" class="form-input" id="editPersonName" value="${escAttr(person.name || '')}">
+    </div>
+    <div class="form-group">
+      <label>性別</label>
+      <select class="form-input" id="editPersonGender">
+        <option value="M" ${person.gender === 'M' || person.gender === '男' ? 'selected' : ''}>男</option>
+        <option value="F" ${person.gender === 'F' || person.gender === '女' ? 'selected' : ''}>女</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>世代</label>
+      <input type="number" class="form-input" id="editPersonGen" value="${person.generation ?? ''}">
+    </div>
+    <div class="form-group">
+      <label>支系</label>
+      <select class="form-input" id="editPersonBranch">
+        <option value="頂番婆" ${person.branch === '頂番婆' ? 'selected' : ''}>頂番婆</option>
+        <option value="草湳底" ${person.branch === '草湳底' ? 'selected' : ''}>草湳底</option>
+        <option value="埔姜崙" ${person.branch === '埔姜崙' ? 'selected' : ''}>埔姜崙</option>
+        <option value="全族" ${person.branch === '全族' ? 'selected' : ''}>全族</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>出生年</label>
+      <input type="text" class="form-input" id="editPersonBirth" value="${escAttr(person.birthYear || '')}">
+    </div>
+    <div class="form-group">
+      <label>卒年</label>
+      <input type="text" class="form-input" id="editPersonDeath" value="${escAttr(person.deathYear || '')}">
+    </div>
+    <div class="form-group">
+      <label>配偶</label>
+      <input type="text" class="form-input" id="editPersonSpouse" value="${escAttr(person.spouse || '')}">
+    </div>
+    <div class="form-group">
+      <label>備註</label>
+      <textarea class="form-input" id="editPersonNotes" rows="3">${escHtml(person.notes || '')}</textarea>
+    </div>
+  `;
+  openModal('personModal');
+}
+
+async function savePerson() {
+  if (!currentPersonId) return;
+
+  const data = {
+    name: document.getElementById('editPersonName').value.trim(),
+    gender: document.getElementById('editPersonGender').value,
+    generation: parseInt(document.getElementById('editPersonGen').value) || 0,
+    branch: document.getElementById('editPersonBranch').value,
+    birthYear: document.getElementById('editPersonBirth').value.trim() || null,
+    deathYear: document.getElementById('editPersonDeath').value.trim() || null,
+    spouse: document.getElementById('editPersonSpouse').value.trim() || null,
+    notes: document.getElementById('editPersonNotes').value.trim() || null,
+  };
+
+  if (!data.name) { toast('姓名為必填欄位', 'error'); return; }
+
+  try {
+    await api(`/api/admin/persons/${currentPersonId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ data })
+    });
+    closeModal('personModal');
+    toast('族人資料已更新');
+    loadPersons();
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+}
+
+async function deletePerson(id, name) {
+  if (!confirm(`確定要刪除「${name}」的資料嗎？此操作無法復原。`)) return;
+
+  try {
+    await api(`/api/admin/persons/${id}`, { method: 'DELETE' });
+    toast(`已刪除「${name}」`);
+    loadPersons();
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+}
+
+// === 工具函式 ===
+function escHtml(s) {
+  if (s == null) return '';
+  const d = document.createElement('div');
+  d.textContent = String(s);
+  return d.innerHTML;
+}
+
+function escAttr(s) {
+  if (s == null) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function fieldLabel(f) {
+  const map = {
+    name: '姓名', gender: '性別', generation: '世代', branch: '支系',
+    birthYear: '出生年', deathYear: '卒年', spouse: '配偶', notes: '備註'
+  };
+  return map[f] || f;
+}
+
+// === 初始化 ===
+checkAuth();
+</script>
+</body>
+</html>
