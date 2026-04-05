@@ -544,6 +544,19 @@ body::before {
 /* Person node in SVG */
 .person-node { cursor: pointer; }
 .person-rect { rx: 10; ry: 10; stroke-width: 2; }
+/* Highlight pulse for locate-in-tree */
+@keyframes locatePulse {
+  0% { stroke-width: 2; filter: drop-shadow(0 0 0 transparent); }
+  25% { stroke-width: 4; filter: drop-shadow(0 0 12px rgba(184,52,42,0.6)); }
+  50% { stroke-width: 2; filter: drop-shadow(0 0 4px rgba(184,52,42,0.3)); }
+  75% { stroke-width: 4; filter: drop-shadow(0 0 12px rgba(184,52,42,0.6)); }
+  100% { stroke-width: 2; filter: drop-shadow(0 0 0 transparent); }
+}
+.person-node.located .person-rect {
+  stroke: var(--vermillion) !important;
+  stroke-width: 4;
+  animation: locatePulse 2s ease-in-out;
+}
 
 /* ===== DETAIL MODAL — Bottom Sheet ===== */
 .modal-overlay {
@@ -1996,6 +2009,87 @@ function collapseAll() {
 document.getElementById('expand-all').addEventListener('click', expandAll);
 document.getElementById('collapse-all').addEventListener('click', collapseAll);
 
+// ============ LOCATE IN TREE ============
+function locateInTree(personId) {
+  const p = getById(personId);
+  if (!p) return;
+
+  // 1. Expand all ancestors so the person is visible
+  function getAncestors(id) {
+    const ancestors = [];
+    let current = getById(id);
+    while (current && current.parentId) {
+      ancestors.push(current.parentId);
+      current = getById(current.parentId);
+    }
+    return ancestors;
+  }
+  const ancestors = getAncestors(personId);
+  ancestors.forEach(aid => collapsedNodes.delete(aid));
+
+  // 2. Reset filters so the person is not filtered out
+  document.getElementById('branch-filter').value = 'all';
+  document.getElementById('gen-filter').value = 'all';
+  document.getElementById('tree-search').value = '';
+  // Sync mobile filters
+  if (document.getElementById('m-branch-btns')) {
+    document.querySelectorAll('#m-branch-btns .mobile-branch-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.branch === 'all');
+    });
+  }
+  if (document.getElementById('m-gen-scroll')) {
+    document.querySelectorAll('#m-gen-scroll .mobile-gen-pill').forEach(p => {
+      p.classList.toggle('active', p.dataset.gen === 'all');
+    });
+  }
+  if (document.getElementById('m-tree-search')) {
+    document.getElementById('m-tree-search').value = '';
+  }
+
+  // 3. Switch to tree page
+  switchPage('tree');
+
+  // 4. After tree is drawn, pan to the person and highlight
+  setTimeout(() => {
+    const pos = lastPositions[personId];
+    if (!pos) return;
+
+    const container = document.getElementById('tree-container');
+    const cw = container.clientWidth;
+    const ch = container.clientHeight;
+
+    // Center the person in view
+    const targetX = pos.x + lastNodeW / 2;
+    const targetY = pos.y + 30;
+
+    // Zoom to a comfortable level
+    const targetScale = Math.max(0.6, Math.min(1.2, panZoom.scale));
+    panZoom.scale = targetScale;
+    panZoom.panX = cw / 2 - targetX * targetScale;
+    panZoom.panY = ch / 2 - targetY * targetScale;
+    panZoom.apply();
+    panZoom.showZoomLevel();
+
+    // 5. Highlight the node with pulse animation
+    setTimeout(() => {
+      const allNodes = document.querySelectorAll('.person-node');
+      allNodes.forEach(n => n.classList.remove('located'));
+
+      // Find the node by matching onclick attribute
+      allNodes.forEach(node => {
+        const onclick = node.getAttribute('onclick');
+        if (onclick && onclick.includes(`'${personId}'`)) {
+          node.classList.add('located');
+          // Remove highlight after animation
+          setTimeout(() => node.classList.remove('located'), 2500);
+        }
+      });
+    }, 100);
+
+    showToast(`已定位：${p.name}`);
+  }, 150);
+}
+
 // Filter listeners
 document.getElementById('branch-filter').addEventListener('change', drawTree);
 document.getElementById('gen-filter').addEventListener('change', drawTree);
@@ -2121,7 +2215,7 @@ function renderSearch() {
     const genNum = p.generation === 0 ? '祖' : p.generation;
     const isDeceased = p.deathYear != null;
     return `
-      <div class="person-card branch-${p.branch}" onclick="showDetail('${p.id}')" style="animation:fadeInUp 0.4s var(--ease-out) ${delay}s both;">
+      <div class="person-card branch-${p.branch}" onclick="locateInTree('${p.id}')" style="animation:fadeInUp 0.4s var(--ease-out) ${delay}s both;">
         <div class="pc-accent"></div>
         <div class="pc-body">
           <div class="pc-avatar" title="${getGenLabel(p.generation)}">
@@ -2139,7 +2233,10 @@ function renderSearch() {
               <span class="gen-tag">${getGenLabel(p.generation)}</span>
             </div>
           </div>
-          <span class="pc-arrow">›</span>
+          <span class="pc-actions" style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;padding-right:10px;">
+            <span class="pc-action-btn" onclick="event.stopPropagation();showDetail('${p.id}')" style="font-size:12px;color:var(--bronze);cursor:pointer;white-space:nowrap;padding:4px 0;">👤 詳情</span>
+            <span style="font-size:12px;color:var(--patina);white-space:nowrap;padding:4px 0;">📍 定位</span>
+          </span>
         </div>
       </div>
     `;
