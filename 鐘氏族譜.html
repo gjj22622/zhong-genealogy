@@ -1340,8 +1340,68 @@ body::before {
       </div>
     </div>
 
+    <!-- 常見問題與範例 -->
+    <div class="edit-section reveal reveal-d1" style="border-left:5px solid var(--patina);">
+      <h3>常見申請範例</h3>
+      <div style="display:flex;flex-direction:column;gap:20px;margin-top:4px;">
+
+        <div>
+          <div style="font-size:18px;font-weight:700;color:var(--ink);font-family:var(--font-display);margin-bottom:6px;">Q1. 想把兒子/女兒加入族譜？</div>
+          <div style="font-size:16px;color:var(--ink);line-height:1.9;background:var(--paper-warm);padding:14px 16px;border-radius:var(--radius);">
+            點 <strong>「📝 新增族人申請」</strong>，填寫：<br>
+            <span style="color:var(--ink-faint);">
+            - 族人姓名：鍾○○（您孩子的名字）<br>
+            - 性別：男 或 女<br>
+            - 世代：看父親是第幾代，加 1（例如父親第8代，孩子填第9代）<br>
+            - 支系：與父親相同<br>
+            - 父親姓名：填父親在族譜上的全名<br>
+            - 其他欄位視情況填寫
+            </span>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:18px;font-weight:700;color:var(--ink);font-family:var(--font-display);margin-bottom:6px;">Q2. 想新增或更正某人的配偶？</div>
+          <div style="font-size:16px;color:var(--ink);line-height:1.9;background:var(--paper-warm);padding:14px 16px;border-radius:var(--radius);">
+            點 <strong>「📋 資料修改申請」</strong>，填寫：<br>
+            <span style="color:var(--ink-faint);">
+            - 要修改的族人姓名：鍾○○（已在族譜上的那個人）<br>
+            - 正確配偶姓名：林○○（配偶的名字）<br>
+            - 其他欄位留空不用填
+            </span>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:18px;font-weight:700;color:var(--ink);font-family:var(--font-display);margin-bottom:6px;">Q3. 族人過世了，要更新卒年？</div>
+          <div style="font-size:16px;color:var(--ink);line-height:1.9;background:var(--paper-warm);padding:14px 16px;border-radius:var(--radius);">
+            點 <strong>「📋 資料修改申請」</strong>，填寫：<br>
+            <span style="color:var(--ink-faint);">
+            - 要修改的族人姓名：鍾○○<br>
+            - 正確卒年（西元）：例如 2025<br>
+            - 其他欄位留空不用填
+            </span>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:18px;font-weight:700;color:var(--ink);font-family:var(--font-display);margin-bottom:6px;">Q4. 發現族譜上的資料有誤？</div>
+          <div style="font-size:16px;color:var(--ink);line-height:1.9;background:var(--paper-warm);padding:14px 16px;border-radius:var(--radius);">
+            點 <strong>「📋 資料修改申請」</strong>，填寫：<br>
+            <span style="color:var(--ink-faint);">
+            - 要修改的族人姓名：填族譜上目前顯示的名字<br>
+            - 只填要改的欄位（例如：正確出生年填 1943）<br>
+            - 不需要改的欄位全部留空<br>
+            - 可在「其他說明」補充修改原因
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
     <!-- 申請按鈕 -->
-    <div class="edit-section reveal reveal-d1">
+    <div class="edit-section reveal reveal-d2">
       <h3>我要提交申請</h3>
       <div style="display:flex;flex-direction:column;gap:12px;">
         <button class="btn btn-primary" id="btn-form-add" onclick="if(FORM_ADD_URL){window.open(FORM_ADD_URL,'_blank')}else{showToast('表單尚未設定')}" style="background:linear-gradient(135deg,var(--patina),var(--patina-muted));width:100%;min-height:64px;font-size:19px;display:flex;align-items:center;justify-content:center;gap:10px;border-radius:var(--radius-lg);">
