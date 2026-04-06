@@ -181,9 +181,28 @@ function runReview() {
   SpreadsheetApp.getUi().alert(
     '審核完成！\n\n' +
     '新增族人：' + addCount + ' 筆\n' +
-    '修改申請：' + editCount + ' 筆已標記完成\n\n' +
-    '（修改申請需手動到族人資料表修改對應欄位）'
+    '修改申請：' + editCount + ' 筆已自動修改\n\n' +
+    '已發送審核結果通知 Email 給申請人。'
   );
+}
+
+// ========== 發送審核結果通知給申請人 ==========
+function notifyApplicant(email, applicantName, type, detail, approved) {
+  if (!email) return;
+  try {
+    const status = approved ? '✅ 已通過' : '❌ 已退回';
+    const subject = '【鐘氏族譜】您的' + type + '申請' + (approved ? '已通過' : '已退回');
+    const body = applicantName + ' 您好，\n\n' +
+      '您提交的' + type + '申請審核結果如下：\n\n' +
+      '狀態：' + status + '\n' +
+      '內容：' + detail + '\n\n' +
+      (approved ? '族譜已更新，重新開啟網頁即可看到最新資料。\n' : '') +
+      '\n鐘氏族譜維護人 鐘基啟';
+    MailApp.sendEmail(email, subject, body);
+    Logger.log('已通知申請人：' + email);
+  } catch(e) {
+    Logger.log('通知失敗：' + e.message);
+  }
 }
 
 // ========== 處理新增申請 ==========
@@ -263,6 +282,11 @@ function processAddRequests() {
     addSheet.getRange(i + 1, reviewCol + 1).setValue('✅ 已加入 (' + newId + ')');
     count++;
     Logger.log('✅ 已新增：' + name + ' → ' + newId + (parentId ? '，父親：' + parentId : ''));
+
+    // 通知申請人
+    const applicantEmail = col('Email') >= 0 ? String(data[i][col('Email')]).trim() : '';
+    const applicantName = col('申請人姓名') >= 0 ? String(data[i][col('申請人姓名')]) : '';
+    notifyApplicant(applicantEmail, applicantName, '新增族人', '新增「' + name + '」至族譜', true);
   }
 
   Logger.log('新增申請處理完成：' + count + ' 筆');
@@ -375,6 +399,12 @@ function processEditRequests() {
       Logger.log('📝 「' + targetName + '」無需修改的欄位');
     }
     count++;
+
+    // 通知申請人
+    const applicantEmail = col('Email') >= 0 ? String(data[i][col('Email')]).trim() : '';
+    const applicantName = col('申請人姓名') >= 0 ? String(data[i][col('申請人姓名')]) : '';
+    const detail = changes.length > 0 ? '修改「' + targetName + '」：' + changes.join('、') : '「' + targetName + '」無需變更';
+    notifyApplicant(applicantEmail, applicantName, '資料修改', detail, true);
   }
 
   Logger.log('修改申請處理完成：' + count + ' 筆');

@@ -49,9 +49,17 @@ function createAddPersonForm() {
     .setRequired(true);
 
   form.addTextItem()
-    .setTitle('聯絡方式（手機/Email/Line）')
-    .setHelpText('請至少填一種聯絡方式，方便管理員與您確認')
+    .setTitle('Email')
+    .setHelpText('審核通過後會以 Email 通知您，請務必填寫正確')
     .setRequired(true);
+
+  form.addTextItem()
+    .setTitle('手機號碼')
+    .setHelpText('選填');
+
+  form.addTextItem()
+    .setTitle('Line ID')
+    .setHelpText('選填');
 
   form.addParagraphTextItem()
     .setTitle('您與族人的關係')
