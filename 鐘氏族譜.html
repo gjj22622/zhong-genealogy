@@ -1664,6 +1664,13 @@ function saveData() {
 
 function getById(id) { return persons.find(p => p.id === id); }
 function getChildren(id) { return persons.filter(p => p.parentId === id); }
+
+// 鐘/鍾 互通搜尋（這兩個字在本族內是同一個字）
+function zhongMatch(text, query) {
+  if (!text || !query) return false;
+  const normalize = (s) => s.replace(/鐘/g, '鍾');
+  return normalize(text).includes(normalize(query));
+}
 function getGenLabel(g) { return g === 0 ? '渡台祖' : `第${g}代`; }
 
 const BRANCH_COLORS = {
@@ -1920,7 +1927,7 @@ function buildTreeLayout(branchFilter, genFilter, searchText) {
       (p.childrenIds || []).map(cid => buildNode(cid)).filter(Boolean);
     if (branchFilter !== 'all' && p.branch !== branchFilter && p.branch !== '全族' && children.length === 0 && !isCollapsed) return null;
     if (genFilter !== 'all' && p.generation !== parseInt(genFilter) && children.length === 0 && !isCollapsed) return null;
-    if (searchText && !p.name.includes(searchText) && children.length === 0 && !isCollapsed) return null;
+    if (searchText && !zhongMatch(p.name, searchText) && children.length === 0 && !isCollapsed) return null;
     return { id: p.id, children, isCollapsed, hasChildren };
   }
   return buildNode('p1');
@@ -2354,11 +2361,11 @@ function renderSearch() {
   let results = persons;
   if (query) {
     results = persons.filter(p =>
-      p.name.includes(query) ||
-      (p.spouse && p.spouse.includes(query)) ||
-      p.branch.includes(query) ||
-      getGenLabel(p.generation).includes(query) ||
-      (p.notes && p.notes.includes(query))
+      zhongMatch(p.name, query) ||
+      zhongMatch(p.spouse, query) ||
+      zhongMatch(p.branch, query) ||
+      zhongMatch(getGenLabel(p.generation), query) ||
+      zhongMatch(p.notes, query)
     );
   }
 
