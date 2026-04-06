@@ -1,202 +1,338 @@
 /**
- * 鐘氏族譜 — Google Apps Script
- *
- * 功能：
- * 1. 當有人填寫「新增族人申請」表單時，自動發 Email 通知管理員
- * 2. 管理員在 Google Sheet 上標記「通過」後，自動把資料加入族人主表
+ * 鐘氏族譜 — Google Apps Script（審核機制）
  *
  * 設定步驟：
  * 1. 打開你的族人資料 Google Sheet
- * 2. 擴充功能 > Apps Script
- * 3. 貼上這段程式碼
- * 4. 修改下面的常數（EMAIL、SHEET 名稱等）
- * 5. 執行 setupTriggers() 一次來設定自動觸發
+ * 2. 擴充功能 → Apps Script
+ * 3. 把這段程式碼全部貼上（取代原有內容）
+ * 4. 儲存 → 執行「初始設定」
+ * 5. 授權後即完成！
+ *
+ * 使用方式：
+ * - 收到新申請 → 自動寄 Email 通知你
+ * - 打開 Sheet → 上方選單出現「族譜管理」
+ * - 在回覆表的「審核」欄選「✅ 通過」
+ * - 點選單「族譜管理 → 執行審核」→ 自動處理
  */
 
-// ========== 設定區 ==========
-const ADMIN_EMAIL = 'gjj22622@gmail.com';       // 管理員 Email
-const MAIN_SHEET_NAME = '族人資料';               // 族人主表的工作表名稱
-const ADD_RESPONSES_SHEET = '新增申請回覆';       // 新增表單的回覆工作表名稱
-const EDIT_RESPONSES_SHEET = '修改申請回覆';      // 修改表單的回覆工作表名稱
+// ========== 設定區（請確認名稱與你的 Sheet 一致）==========
+const ADMIN_EMAIL = 'gjj22622@gmail.com';
+const MAIN_SHEET = '族人資料';
+const ADD_SHEET = '新增族人申請';
+const EDIT_SHEET = '資料修改申請';
 
-// ========== 設定觸發器（只需執行一次）==========
-function setupTriggers() {
-  // 當「新增申請」表單有新回覆時觸發
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  ScriptApp.newTrigger('onNewAddRequest')
-    .forSpreadsheet(ss)
-    .onFormSubmit()
-    .create();
-  Logger.log('觸發器已建立！');
+// ========== 自訂選單 ==========
+function onOpen() {
+  SpreadsheetApp.getUi().createMenu('族譜管理')
+    .addItem('🔄 執行審核（新增 + 修改）', 'runReview')
+    .addSeparator()
+    .addItem('📋 只審核新增申請', 'processAddRequests')
+    .addItem('📝 只審核修改申請', 'processEditRequests')
+    .addSeparator()
+    .addItem('✅ 檢查資料完整性', 'validateData')
+    .addItem('⚙️ 初始設定（首次使用）', 'initialSetup')
+    .addToUi();
 }
 
-// ========== 新增申請通知 ==========
-function onNewAddRequest(e) {
+// ========== 初始設定（只需執行一次）==========
+function initialSetup() {
+  const ui = SpreadsheetApp.getUi();
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  // 1. 在新增申請表加入「審核」欄
+  const addSheet = ss.getSheetByName(ADD_SHEET);
+  if (addSheet) {
+    const addHeaders = addSheet.getRange(1, 1, 1, addSheet.getLastColumn()).getValues()[0];
+    if (addHeaders.indexOf('審核') === -1) {
+      const nextCol = addSheet.getLastColumn() + 1;
+      addSheet.getRange(1, nextCol).setValue('審核');
+      // 對所有現有行加入下拉選單
+      if (addSheet.getLastRow() > 1) {
+        const range = addSheet.getRange(2, nextCol, addSheet.getLastRow() - 1, 1);
+        const rule = SpreadsheetApp.newDataValidation()
+          .requireValueInList(['✅ 通過', '❌ 退回', '⏳ 待審核'])
+          .setAllowInvalid(false)
+          .build();
+        range.setDataValidation(rule);
+        range.setValue('⏳ 待審核');
+      }
+      Logger.log('已在「' + ADD_SHEET + '」新增「審核」欄');
+    }
+  }
+
+  // 2. 在修改申請表加入「審核」欄
+  const editSheet = ss.getSheetByName(EDIT_SHEET);
+  if (editSheet) {
+    const editHeaders = editSheet.getRange(1, 1, 1, editSheet.getLastColumn()).getValues()[0];
+    if (editHeaders.indexOf('審核') === -1) {
+      const nextCol = editSheet.getLastColumn() + 1;
+      editSheet.getRange(1, nextCol).setValue('審核');
+      if (editSheet.getLastRow() > 1) {
+        const range = editSheet.getRange(2, nextCol, editSheet.getLastRow() - 1, 1);
+        const rule = SpreadsheetApp.newDataValidation()
+          .requireValueInList(['✅ 通過', '❌ 退回', '⏳ 待審核'])
+          .setAllowInvalid(false)
+          .build();
+        range.setDataValidation(rule);
+        range.setValue('⏳ 待審核');
+      }
+      Logger.log('已在「' + EDIT_SHEET + '」新增「審核」欄');
+    }
+  }
+
+  // 3. 設定表單提交觸發器（Email 通知）
+  const triggers = ScriptApp.getProjectTriggers();
+  const hasFormTrigger = triggers.some(t => t.getHandlerFunction() === 'onFormSubmitNotify');
+  if (!hasFormTrigger) {
+    ScriptApp.newTrigger('onFormSubmitNotify')
+      .forSpreadsheet(ss)
+      .onFormSubmit()
+      .create();
+    Logger.log('已建立表單提交通知觸發器');
+  }
+
+  // 4. 設定 onOpen 觸發器（自訂選單）
+  const hasOpenTrigger = triggers.some(t => t.getHandlerFunction() === 'onOpen');
+  if (!hasOpenTrigger) {
+    ScriptApp.newTrigger('onOpen')
+      .forSpreadsheet(ss)
+      .onOpen()
+      .create();
+    Logger.log('已建立選單觸發器');
+  }
+
+  ui.alert('✅ 初始設定完成！\n\n' +
+    '1. 已在回覆表新增「審核」欄（下拉選單）\n' +
+    '2. 已設定新申請 Email 通知\n' +
+    '3. 上方選單已出現「族譜管理」\n\n' +
+    '使用方式：在「審核」欄選「✅ 通過」→ 點「族譜管理 → 執行審核」');
+}
+
+// ========== 新申請 Email 通知 ==========
+function onFormSubmitNotify(e) {
   try {
-    const responses = e.namedValues;
-    const applicant = responses['申請人姓名'] ? responses['申請人姓名'][0] : '未知';
-    const personName = responses['族人姓名'] ? responses['族人姓名'][0] : '未知';
-    const contact = responses['聯絡方式（手機/Email/Line）'] ? responses['聯絡方式（手機/Email/Line）'][0] : '';
+    const sheetName = e.range.getSheet().getName();
+    const row = e.namedValues || {};
 
-    const subject = `【鐘氏族譜】新增族人申請：${personName}`;
-    const body = `
-收到新的族人新增申請！
+    let subject, body;
 
-申請人：${applicant}
-聯絡方式：${contact}
-族人姓名：${personName}
-性別：${responses['性別'] ? responses['性別'][0] : ''}
-世代：${responses['世代（第幾代）'] ? responses['世代（第幾代）'][0] : ''}
-支系：${responses['支系'] ? responses['支系'][0] : ''}
-出生年：${responses['出生年（西元）'] ? responses['出生年（西元）'][0] : ''}
-配偶：${responses['配偶姓名'] ? responses['配偶姓名'][0] : ''}
-父親：${responses['父親姓名'] ? responses['父親姓名'][0] : ''}
-備註：${responses['備註'] ? responses['備註'][0] : ''}
+    if (sheetName === ADD_SHEET) {
+      const name = row['族人姓名'] ? row['族人姓名'][0] : '未知';
+      const applicant = row['申請人姓名'] ? row['申請人姓名'][0] : '未知';
+      subject = '【族譜】新增申請：' + name + '（申請人：' + applicant + '）';
+      body = '收到新增族人申請，請到 Google Sheet 審核。\n\n' +
+        '族人姓名：' + name + '\n' +
+        '申請人：' + applicant + '\n' +
+        '聯絡方式：' + (row['聯絡方式（手機/Email/Line）'] ? row['聯絡方式（手機/Email/Line）'][0] : '') + '\n\n' +
+        '請到「' + ADD_SHEET + '」工作表，在「審核」欄選擇「✅ 通過」後執行審核。';
 
-請到 Google Sheet 審核此申請。
-    `.trim();
+      // 自動在新行加入審核下拉選單
+      const sheet = e.range.getSheet();
+      const reviewCol = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0].indexOf('審核') + 1;
+      if (reviewCol > 0) {
+        const cell = sheet.getRange(e.range.getRow(), reviewCol);
+        const rule = SpreadsheetApp.newDataValidation()
+          .requireValueInList(['✅ 通過', '❌ 退回', '⏳ 待審核'])
+          .setAllowInvalid(false)
+          .build();
+        cell.setDataValidation(rule);
+        cell.setValue('⏳ 待審核');
+      }
+    } else if (sheetName === EDIT_SHEET) {
+      const target = row['要修改的族人姓名'] ? row['要修改的族人姓名'][0] : '未知';
+      const applicant = row['申請人姓名'] ? row['申請人姓名'][0] : '未知';
+      subject = '【族譜】修改申請：' + target + '（申請人：' + applicant + '）';
+      body = '收到資料修改申請，請到 Google Sheet 審核。\n\n' +
+        '要修改的族人：' + target + '\n' +
+        '修改欄位：' + (row['要修改哪些欄位？（可複選）'] ? row['要修改哪些欄位？（可複選）'][0] : '') + '\n' +
+        '修改說明：' + (row['修改內容說明'] ? row['修改內容說明'][0] : '') + '\n' +
+        '申請人：' + applicant + '\n\n' +
+        '請到「' + EDIT_SHEET + '」工作表，在「審核」欄選擇「✅ 通過」後執行審核。\n' +
+        '注意：修改申請需要你手動到「' + MAIN_SHEET + '」找到該族人並修改對應欄位。';
+
+      // 自動在新行加入審核下拉選單
+      const sheet = e.range.getSheet();
+      const reviewCol = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0].indexOf('審核') + 1;
+      if (reviewCol > 0) {
+        const cell = sheet.getRange(e.range.getRow(), reviewCol);
+        const rule = SpreadsheetApp.newDataValidation()
+          .requireValueInList(['✅ 通過', '❌ 退回', '⏳ 待審核'])
+          .setAllowInvalid(false)
+          .build();
+        cell.setDataValidation(rule);
+        cell.setValue('⏳ 待審核');
+      }
+    } else {
+      return; // 不是我們的表單
+    }
 
     MailApp.sendEmail(ADMIN_EMAIL, subject, body);
-    Logger.log('已發送通知：' + subject);
+    Logger.log('通知已發送：' + subject);
   } catch (err) {
-    Logger.log('通知發送失敗：' + err.message);
+    Logger.log('通知錯誤：' + err.message);
   }
 }
 
-// ========== 批准申請 → 自動加入主表 ==========
-/**
- * 在「新增申請回覆」工作表中，新增一欄「審核狀態」
- * 管理員填入「通過」後，執行此函式會自動把通過的資料加入族人主表
- *
- * 使用方式：手動執行，或設定定時觸發（例如每小時）
- */
-function processApprovedRequests() {
+// ========== 執行全部審核 ==========
+function runReview() {
+  const addCount = processAddRequests();
+  const editCount = processEditRequests();
+
+  SpreadsheetApp.getUi().alert(
+    '審核完成！\n\n' +
+    '新增族人：' + addCount + ' 筆\n' +
+    '修改申請：' + editCount + ' 筆已標記完成\n\n' +
+    '（修改申請需手動到族人資料表修改對應欄位）'
+  );
+}
+
+// ========== 處理新增申請 ==========
+function processAddRequests() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const responseSheet = ss.getSheetByName(ADD_RESPONSES_SHEET);
-  const mainSheet = ss.getSheetByName(MAIN_SHEET_NAME);
+  const addSheet = ss.getSheetByName(ADD_SHEET);
+  const mainSheet = ss.getSheetByName(MAIN_SHEET);
+  if (!addSheet || !mainSheet) { Logger.log('找不到工作表'); return 0; }
 
-  if (!responseSheet || !mainSheet) {
-    Logger.log('找不到工作表，請確認名稱設定');
-    return;
-  }
+  const data = addSheet.getDataRange().getValues();
+  const headers = data[0].map(h => String(h).trim());
+  const reviewCol = headers.indexOf('審核');
+  if (reviewCol === -1) { Logger.log('找不到「審核」欄'); return 0; }
 
-  const data = responseSheet.getDataRange().getValues();
-  const headers = data[0];
-
-  // 找到「審核狀態」欄的 index
-  const statusCol = headers.indexOf('審核狀態');
-  if (statusCol === -1) {
-    Logger.log('請在回覆表新增「審核狀態」欄');
-    return;
-  }
-
-  // 找到主表的最後一個 ID
+  // 找主表最大 ID
   const mainData = mainSheet.getDataRange().getValues();
   let maxId = 0;
   mainData.forEach(row => {
-    const id = String(row[0]);
-    const num = parseInt(id.replace('p', ''));
+    const num = parseInt(String(row[0]).replace('p', ''));
     if (!isNaN(num) && num > maxId) maxId = num;
   });
 
-  let addedCount = 0;
+  // 欄位對應
+  const col = (name) => {
+    const idx = headers.indexOf(name);
+    return idx >= 0 ? idx : -1;
+  };
 
+  let count = 0;
   for (let i = 1; i < data.length; i++) {
-    const row = data[i];
-    const status = String(row[statusCol]).trim();
+    const status = String(data[i][reviewCol]).trim();
+    if (status !== '✅ 通過') continue;
 
-    // 只處理「通過」且尚未處理的
-    if (status === '通過') {
-      // 取得欄位（依據表單欄位順序，可能需要調整 index）
-      const nameCol = headers.indexOf('族人姓名');
-      const genderCol = headers.indexOf('性別');
-      const genCol = headers.indexOf('世代（第幾代）');
-      const branchCol = headers.indexOf('支系');
-      const birthCol = headers.indexOf('出生年（西元）');
-      const spouseCol = headers.indexOf('配偶姓名');
-      const fatherCol = headers.indexOf('父親姓名');
-      const notesCol = headers.indexOf('備註');
+    const name = col('族人姓名') >= 0 ? String(data[i][col('族人姓名')]) : '';
+    if (!name) continue;
 
-      const newId = 'p' + (++maxId);
-      const name = nameCol >= 0 ? row[nameCol] : '';
-      const gender = genderCol >= 0 ? row[genderCol] : 'male';
-      const gen = genCol >= 0 ? row[genCol] : '';
-      const branch = branchCol >= 0 ? row[branchCol] : '';
-      const birth = birthCol >= 0 ? row[birthCol] : '';
-      const spouse = spouseCol >= 0 ? row[spouseCol] : '';
-      const father = fatherCol >= 0 ? row[fatherCol] : '';
-      const notes = notesCol >= 0 ? row[notesCol] : '';
+    const genderRaw = col('性別') >= 0 ? String(data[i][col('性別')]) : '';
+    const gender = (genderRaw === '女' || genderRaw === 'female') ? 'female' : 'male';
 
-      // 找到父親的 ID（用姓名比對）
-      let parentId = '';
-      if (father) {
-        for (let j = 1; j < mainData.length; j++) {
-          if (String(mainData[j][1]).trim() === String(father).trim()) {
-            parentId = String(mainData[j][0]);
-            break;
-          }
+    const genRaw = col('世代（第幾代）') >= 0 ? String(data[i][col('世代（第幾代）')]) : '';
+    // 解析「第9代」→ 9
+    const genMatch = genRaw.match(/(\d+)/);
+    const generation = genMatch ? genMatch[1] : '';
+
+    const branch = col('支系') >= 0 ? String(data[i][col('支系')]) : '';
+    const birthYear = col('出生年（西元）') >= 0 ? String(data[i][col('出生年（西元）')]) : '';
+    const deathYear = col('卒年（西元）') >= 0 ? String(data[i][col('卒年（西元）')]) : '';
+    const spouse = col('配偶姓名') >= 0 ? String(data[i][col('配偶姓名')]) : '';
+    const fatherName = col('父親姓名') >= 0 ? String(data[i][col('父親姓名')]).trim() : '';
+    const notes = col('備註') >= 0 ? String(data[i][col('備註')]) : '';
+
+    // 用姓名找父親 ID
+    let parentId = '';
+    if (fatherName) {
+      for (let j = 1; j < mainData.length; j++) {
+        if (String(mainData[j][1]).trim() === fatherName) {
+          parentId = String(mainData[j][0]);
+          break;
         }
       }
-
-      // 加入主表
-      mainSheet.appendRow([
-        newId,                    // id
-        name,                     // name
-        gender === '女' ? 'female' : 'male',  // gender
-        gen,                      // generation
-        branch,                   // branch
-        birth,                    // birthYear
-        '',                       // deathYear
-        spouse,                   // spouse
-        '',                       // childrenIds
-        parentId,                 // parentId
-        notes                     // notes
-      ]);
-
-      // 標記已處理
-      responseSheet.getRange(i + 1, statusCol + 1).setValue('已加入');
-      addedCount++;
-
-      Logger.log(`已加入：${name} (${newId})`);
+      if (!parentId) Logger.log('⚠️ 找不到父親「' + fatherName + '」的 ID');
     }
+
+    const newId = 'p' + (++maxId);
+
+    // 加入主表
+    mainSheet.appendRow([
+      newId, name, gender, generation,
+      branch === '不確定' ? '' : branch,
+      birthYear, deathYear, spouse,
+      '',       // childrenIds
+      parentId, // parentId
+      notes
+    ]);
+
+    // 標記已處理
+    addSheet.getRange(i + 1, reviewCol + 1).setValue('✅ 已加入 (' + newId + ')');
+    count++;
+    Logger.log('✅ 已新增：' + name + ' → ' + newId + (parentId ? '，父親：' + parentId : ''));
   }
 
-  Logger.log(`本次處理完成，新增 ${addedCount} 筆`);
+  Logger.log('新增申請處理完成：' + count + ' 筆');
+  return count;
 }
 
-// ========== 工具：檢查主表資料完整性 ==========
-function validateData() {
+// ========== 處理修改申請 ==========
+function processEditRequests() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName(MAIN_SHEET_NAME);
-  const data = sheet.getDataRange().getValues();
+  const editSheet = ss.getSheetByName(EDIT_SHEET);
+  if (!editSheet) { Logger.log('找不到修改申請工作表'); return 0; }
 
-  let issues = [];
-  const ids = new Set();
+  const data = editSheet.getDataRange().getValues();
+  const headers = data[0].map(h => String(h).trim());
+  const reviewCol = headers.indexOf('審核');
+  if (reviewCol === -1) { Logger.log('找不到「審核」欄'); return 0; }
 
+  const col = (name) => headers.indexOf(name);
+
+  let count = 0;
   for (let i = 1; i < data.length; i++) {
-    const id = String(data[i][0]);
-    const name = String(data[i][1]);
-    const parentId = String(data[i][9]);
+    const status = String(data[i][reviewCol]).trim();
+    if (status !== '✅ 通過') continue;
 
-    if (ids.has(id)) issues.push(`重複 ID: ${id} (第 ${i+1} 行)`);
-    ids.add(id);
+    const targetName = col('要修改的族人姓名') >= 0 ? String(data[i][col('要修改的族人姓名')]) : '';
+    const fields = col('要修改哪些欄位？（可複選）') >= 0 ? String(data[i][col('要修改哪些欄位？（可複選）')]) : '';
+    const description = col('修改內容說明') >= 0 ? String(data[i][col('修改內容說明')]) : '';
 
-    if (parentId && !ids.has(parentId)) {
-      // parentId 可能在後面的行，先跳過
-    }
+    // 標記為已處理（修改需要管理員手動到主表改）
+    editSheet.getRange(i + 1, reviewCol + 1).setValue('✅ 已處理');
+    count++;
+    Logger.log('📝 修改申請已標記完成：' + targetName + ' → ' + fields);
+    Logger.log('   修改說明：' + description);
+    Logger.log('   ⚠️ 請手動到「' + MAIN_SHEET + '」找到「' + targetName + '」並修改對應欄位');
   }
 
-  // 二次檢查 parentId
+  Logger.log('修改申請處理完成：' + count + ' 筆');
+  return count;
+}
+
+// ========== 檢查主表資料完整性 ==========
+function validateData() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(MAIN_SHEET);
+  const data = sheet.getDataRange().getValues();
+
+  const ids = new Set();
+  const issues = [];
+
+  for (let i = 1; i < data.length; i++) {
+    const id = String(data[i][0]).trim();
+    const name = String(data[i][1]).trim();
+    if (!id) { issues.push('第 ' + (i+1) + ' 行缺少 ID'); continue; }
+    if (!name) issues.push('第 ' + (i+1) + ' 行（' + id + '）缺少姓名');
+    if (ids.has(id)) issues.push('重複 ID：' + id + '（第 ' + (i+1) + ' 行）');
+    ids.add(id);
+  }
+
+  // 檢查 parentId
   for (let i = 1; i < data.length; i++) {
     const parentId = String(data[i][9]).trim();
     if (parentId && parentId !== 'undefined' && parentId !== 'null' && !ids.has(parentId)) {
-      issues.push(`找不到父親: ${data[i][1]} 的 parentId=${parentId} (第 ${i+1} 行)`);
+      issues.push('第 ' + (i+1) + ' 行（' + data[i][1] + '）的父親 ID「' + parentId + '」不存在');
     }
   }
 
-  if (issues.length === 0) {
-    Logger.log('資料完整性檢查通過！共 ' + (data.length - 1) + ' 筆');
-  } else {
-    Logger.log('發現問題：\n' + issues.join('\n'));
-  }
+  const msg = issues.length === 0
+    ? '✅ 資料完整性檢查通過！\n共 ' + (data.length - 1) + ' 筆族人'
+    : '⚠️ 發現 ' + issues.length + ' 個問題：\n\n' + issues.join('\n');
+
+  SpreadsheetApp.getUi().alert(msg);
+  Logger.log(msg);
 }
