@@ -1347,12 +1347,8 @@ body::before {
         <textarea id="edit-notes" placeholder="特殊事蹟、職業、居住地等"></textarea>
       </div>
       <div class="btn-group">
-        <button class="btn btn-primary" id="btn-add">新增族人（本機）</button>
-        <button class="btn btn-primary" id="btn-form-add" onclick="if(FORM_ADD_URL){window.open(FORM_ADD_URL,'_blank')}else{showToast('表單尚未設定')}" style="background:linear-gradient(135deg,var(--patina),var(--patina-muted));">📝 提交新增申請</button>
-        <button class="btn btn-secondary" id="btn-form-edit" onclick="if(FORM_EDIT_URL){window.open(FORM_EDIT_URL,'_blank')}else{showToast('表單尚未設定')}" style="">📋 提交修改申請</button>
-        <button class="btn btn-secondary" id="btn-export">匯出 JSON</button>
-        <button class="btn btn-secondary" id="btn-import">匯入資料</button>
-        <input type="file" id="file-import" accept=".json" style="display:none">
+        <button class="btn btn-primary" id="btn-form-add" onclick="if(FORM_ADD_URL){window.open(FORM_ADD_URL,'_blank')}else{showToast('表單尚未設定')}" style="background:linear-gradient(135deg,var(--patina),var(--patina-muted));width:100%;">📝 提交新增申請</button>
+        <button class="btn btn-secondary" id="btn-form-edit" onclick="if(FORM_EDIT_URL){window.open(FORM_EDIT_URL,'_blank')}else{showToast('表單尚未設定')}" style="width:100%;">📋 提交修改申請</button>
       </div>
     </div>
     <div class="edit-section reveal reveal-d1">
