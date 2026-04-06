@@ -269,34 +269,112 @@ function processAddRequests() {
   return count;
 }
 
-// ========== 處理修改申請 ==========
+// ========== 處理修改申請（自動修改主表）==========
 function processEditRequests() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const editSheet = ss.getSheetByName(EDIT_SHEET);
-  if (!editSheet) { Logger.log('找不到修改申請工作表'); return 0; }
+  const mainSheet = ss.getSheetByName(MAIN_SHEET);
+  if (!editSheet || !mainSheet) { Logger.log('找不到工作表'); return 0; }
 
   const data = editSheet.getDataRange().getValues();
   const headers = data[0].map(h => String(h).trim());
   const reviewCol = headers.indexOf('審核');
   if (reviewCol === -1) { Logger.log('找不到「審核」欄'); return 0; }
 
-  const col = (name) => headers.indexOf(name);
+  const col = (name) => {
+    const idx = headers.indexOf(name);
+    return idx >= 0 ? idx : -1;
+  };
+
+  // 讀取主表
+  const mainData = mainSheet.getDataRange().getValues();
+  const mainHeaders = mainData[0]; // id,name,gender,generation,branch,birthYear,deathYear,spouse,childrenIds,parentId,notes
+
+  // 表單欄位 → 主表欄位 index 的對應
+  const fieldMap = [
+    { formCol: '正確姓名',         mainIdx: 1 },  // name
+    { formCol: '正確性別',         mainIdx: 2, transform: (v) => v === '女' ? 'female' : v === '男' ? 'male' : null },
+    { formCol: '正確世代（第幾代）', mainIdx: 3 },  // generation
+    { formCol: '正確支系',         mainIdx: 4 },  // branch
+    { formCol: '正確出生年（西元）', mainIdx: 5 },  // birthYear
+    { formCol: '正確卒年（西元）',   mainIdx: 6, transform: (v) => v === '在世' ? '' : v },  // deathYear
+    { formCol: '正確配偶姓名',     mainIdx: 7 },  // spouse
+    { formCol: '正確父親姓名',     mainIdx: 9, isFather: true },  // parentId（需要比對姓名→ID）
+    { formCol: '正確備註',         mainIdx: 10 }, // notes
+  ];
 
   let count = 0;
   for (let i = 1; i < data.length; i++) {
     const status = String(data[i][reviewCol]).trim();
     if (status !== '✅ 通過') continue;
 
-    const targetName = col('要修改的族人姓名') >= 0 ? String(data[i][col('要修改的族人姓名')]) : '';
-    const fields = col('要修改哪些欄位？（可複選）') >= 0 ? String(data[i][col('要修改哪些欄位？（可複選）')]) : '';
-    const description = col('修改內容說明') >= 0 ? String(data[i][col('修改內容說明')]) : '';
+    const targetName = col('要修改的族人姓名') >= 0 ? String(data[i][col('要修改的族人姓名')]).trim() : '';
+    if (!targetName) continue;
 
-    // 標記為已處理（修改需要管理員手動到主表改）
-    editSheet.getRange(i + 1, reviewCol + 1).setValue('✅ 已處理');
+    // 在主表找到這個人
+    let targetRow = -1;
+    for (let j = 1; j < mainData.length; j++) {
+      if (String(mainData[j][1]).trim() === targetName) {
+        targetRow = j;
+        break;
+      }
+    }
+
+    if (targetRow === -1) {
+      editSheet.getRange(i + 1, reviewCol + 1).setValue('❌ 找不到「' + targetName + '」');
+      Logger.log('❌ 找不到族人：' + targetName);
+      continue;
+    }
+
+    // 逐欄檢查並修改
+    let changes = [];
+    for (const field of fieldMap) {
+      const formIdx = col(field.formCol);
+      if (formIdx === -1) continue;
+
+      let newValue = String(data[i][formIdx]).trim();
+      if (!newValue || newValue === '不修改') continue;
+
+      // 轉換值
+      if (field.transform) {
+        const transformed = field.transform(newValue);
+        if (transformed === null) continue; // 「不修改」
+        newValue = transformed;
+      }
+
+      // 父親姓名 → 找 ID
+      if (field.isFather) {
+        let foundId = '';
+        for (let j = 1; j < mainData.length; j++) {
+          if (String(mainData[j][1]).trim() === newValue) {
+            foundId = String(mainData[j][0]);
+            break;
+          }
+        }
+        if (foundId) {
+          newValue = foundId;
+        } else {
+          Logger.log('⚠️ 找不到父親「' + newValue + '」的 ID，跳過此欄');
+          continue;
+        }
+      }
+
+      const oldValue = String(mainData[targetRow][field.mainIdx]);
+      if (oldValue.trim() !== newValue) {
+        // 寫入主表（targetRow+1 因為 Sheet 是 1-indexed）
+        mainSheet.getRange(targetRow + 1, field.mainIdx + 1).setValue(newValue);
+        changes.push(String(mainHeaders[field.mainIdx]) + '：' + oldValue + ' → ' + newValue);
+      }
+    }
+
+    if (changes.length > 0) {
+      editSheet.getRange(i + 1, reviewCol + 1).setValue('✅ 已修改（' + changes.length + '欄）');
+      Logger.log('✅ 已修改「' + targetName + '」：' + changes.join('、'));
+    } else {
+      editSheet.getRange(i + 1, reviewCol + 1).setValue('✅ 已處理（無變更）');
+      Logger.log('📝 「' + targetName + '」無需修改的欄位');
+    }
     count++;
-    Logger.log('📝 修改申請已標記完成：' + targetName + ' → ' + fields);
-    Logger.log('   修改說明：' + description);
-    Logger.log('   ⚠️ 請手動到「' + MAIN_SHEET + '」找到「' + targetName + '」並修改對應欄位');
   }
 
   Logger.log('修改申請處理完成：' + count + ' 筆');
