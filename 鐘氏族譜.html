@@ -1296,84 +1296,78 @@ body::before {
     </div>
   </div>
 
-  <!-- ===== EDIT PAGE ===== -->
+  <!-- ===== EDIT PAGE (申請頁) ===== -->
   <div class="page" id="page-edit">
-    <div class="edit-section reveal">
-      <h3>新增族人</h3>
-      <div class="form-row">
-        <div class="form-group">
-          <label>姓名</label>
-          <input type="text" id="edit-name" placeholder="例：鐘○○">
+
+    <!-- 流程說明 -->
+    <div class="edit-section reveal" style="border-left:5px solid var(--bronze);">
+      <h3>如何新增或修改族人資料</h3>
+      <div style="display:flex;flex-direction:column;gap:18px;margin-top:4px;">
+
+        <div style="display:flex;gap:14px;align-items:flex-start;">
+          <div style="width:40px;height:40px;flex-shrink:0;border-radius:50%;background:var(--bronze);color:var(--paper);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;font-family:var(--font-display);">1</div>
+          <div>
+            <div style="font-size:18px;font-weight:700;color:var(--ink);font-family:var(--font-display);">填寫表單</div>
+            <div style="font-size:16px;color:var(--ink);line-height:1.8;margin-top:2px;">
+              點下方按鈕，會開啟 Google 表單。<br>
+              填寫要<strong>新增的族人資料</strong>或<strong>修改的內容</strong>。
+            </div>
+          </div>
         </div>
-        <div class="form-group">
-          <label>性別</label>
-          <select id="edit-gender"><option value="male">男</option><option value="female">女</option></select>
+
+        <div style="display:flex;gap:14px;align-items:flex-start;">
+          <div style="width:40px;height:40px;flex-shrink:0;border-radius:50%;background:var(--bronze);color:var(--paper);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;font-family:var(--font-display);">2</div>
+          <div>
+            <div style="font-size:18px;font-weight:700;color:var(--ink);font-family:var(--font-display);">管理員審核</div>
+            <div style="font-size:16px;color:var(--ink);line-height:1.8;margin-top:2px;">
+              管理員（鐘基啟）收到通知後會審核您的申請。<br>
+              如有疑問會透過您留的聯絡方式與您確認。
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>出生年（西元）</label>
-          <input type="number" id="edit-birth" placeholder="例：1990">
+
+        <div style="display:flex;gap:14px;align-items:flex-start;">
+          <div style="width:40px;height:40px;flex-shrink:0;border-radius:50%;background:var(--bronze);color:var(--paper);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;font-family:var(--font-display);">3</div>
+          <div>
+            <div style="font-size:18px;font-weight:700;color:var(--ink);font-family:var(--font-display);">更新族譜</div>
+            <div style="font-size:16px;color:var(--ink);line-height:1.8;margin-top:2px;">
+              審核通過後，族譜會自動更新。<br>
+              重新開啟網頁即可看到最新資料。
+            </div>
+          </div>
         </div>
-        <div class="form-group">
-          <label>卒年（在世留空）</label>
-          <input type="number" id="edit-death" placeholder="在世者留空">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>世代</label>
-          <select id="edit-gen"></select>
-        </div>
-        <div class="form-group">
-          <label>支系</label>
-          <select id="edit-branch">
-            <option value="頂番婆">頂番婆</option>
-            <option value="草湳底">草湳底</option>
-            <option value="埔姜崙">埔姜崙</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>配偶姓名</label>
-        <input type="text" id="edit-spouse" placeholder="例：林○○">
-      </div>
-      <div class="form-group">
-        <label>父親（從現有族人選擇）</label>
-        <select id="edit-parent"><option value="">-- 選擇父親 --</option></select>
-      </div>
-      <div class="form-group">
-        <label>備註</label>
-        <textarea id="edit-notes" placeholder="特殊事蹟、職業、居住地等"></textarea>
-      </div>
-      <div class="btn-group">
-        <button class="btn btn-primary" id="btn-form-add" onclick="if(FORM_ADD_URL){window.open(FORM_ADD_URL,'_blank')}else{showToast('表單尚未設定')}" style="background:linear-gradient(135deg,var(--patina),var(--patina-muted));width:100%;">📝 提交新增申請</button>
-        <button class="btn btn-secondary" id="btn-form-edit" onclick="if(FORM_EDIT_URL){window.open(FORM_EDIT_URL,'_blank')}else{showToast('表單尚未設定')}" style="width:100%;">📋 提交修改申請</button>
+
       </div>
     </div>
+
+    <!-- 申請按鈕 -->
     <div class="edit-section reveal reveal-d1">
-      <h3>已新增的族人（本機）</h3>
-      <div id="added-list" style="font-size:14px;color:var(--ink-faint);">尚未新��任何族人</div>
-    </div>
-    <div class="edit-section reveal reveal-d2">
-      <h3>編輯現有族人</h3>
-      <div class="form-group">
-        <label>選擇要編輯的族人</label>
-        <select id="edit-select"><option value="">-- 選擇族人 --</option></select>
-      </div>
-      <div id="edit-existing-form" style="display:none;">
-        <div class="form-row">
-          <div class="form-group"><label>姓名</label><input type="text" id="ex-name"></div>
-          <div class="form-group"><label>配偶</label><input type="text" id="ex-spouse"></div>
+      <h3>我要提交申請</h3>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <button class="btn btn-primary" id="btn-form-add" onclick="if(FORM_ADD_URL){window.open(FORM_ADD_URL,'_blank')}else{showToast('表單尚未設定')}" style="background:linear-gradient(135deg,var(--patina),var(--patina-muted));width:100%;min-height:64px;font-size:19px;display:flex;align-items:center;justify-content:center;gap:10px;border-radius:var(--radius-lg);">
+          <span style="font-size:28px;">📝</span> 新增族人申請
+        </button>
+        <div style="font-size:14px;color:var(--ink-faint);padding:0 4px;line-height:1.6;">
+          想把家族成員加入族譜？填寫姓名、性別、世代、父親等資訊。
         </div>
-        <div class="form-row">
-          <div class="form-group"><label>出生年</label><input type="number" id="ex-birth"></div>
-          <div class="form-group"><label>卒年</label><input type="number" id="ex-death"></div>
+        <button class="btn btn-secondary" id="btn-form-edit" onclick="if(FORM_EDIT_URL){window.open(FORM_EDIT_URL,'_blank')}else{showToast('表單尚未設定')}" style="width:100%;min-height:64px;font-size:19px;display:flex;align-items:center;justify-content:center;gap:10px;border-radius:var(--radius-lg);margin-top:8px;">
+          <span style="font-size:28px;">📋</span> 資料修改申請
+        </button>
+        <div style="font-size:14px;color:var(--ink-faint);padding:0 4px;line-height:1.6;">
+          發現名字、年份、配偶等資料有誤？填寫要修改的內容。
         </div>
-        <div class="form-group"><label>備註</label><textarea id="ex-notes"></textarea></div>
-        <div class="btn-group"><button class="btn btn-primary" id="btn-save-edit">儲存修改</button></div>
       </div>
     </div>
+
+    <!-- 聯絡資訊 -->
+    <div class="edit-section reveal reveal-d2" style="text-align:center;">
+      <div style="font-size:15px;color:var(--ink-faint);line-height:1.8;">
+        有任何問題歡迎聯繫族譜維護人<br>
+        <strong style="color:var(--ink);font-size:17px;">鐘基啟</strong><br>
+        <a href="mailto:gjj22622@gmail.com" style="color:var(--bronze);font-size:16px;">gjj22622@gmail.com</a>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -2348,161 +2342,15 @@ function renderFilters() {
 }
 
 // ============ EDIT ============
-function populateEditDropdowns() {
-  const genSelect = document.getElementById('edit-gen');
-  const genFilter = document.getElementById('gen-filter');
-  genSelect.innerHTML = '';
-  genFilter.innerHTML = '<option value="all">所有世代</option>';
-  for (let i = 0; i <= 12; i++) {
-    genSelect.innerHTML += `<option value="${i}">${getGenLabel(i)}</option>`;
-    genFilter.innerHTML += `<option value="${i}">${getGenLabel(i)}</option>`;
-  }
 
-  const parentSelect = document.getElementById('edit-parent');
-  parentSelect.innerHTML = '<option value="">-- 選擇父親 --</option>';
-  const editSelect = document.getElementById('edit-select');
-  editSelect.innerHTML = '<option value="">-- 選擇族人 --</option>';
 
-  const sorted = [...persons].sort((a,b) => a.generation - b.generation);
-  sorted.forEach(p => {
-    parentSelect.innerHTML += `<option value="${p.id}">${getGenLabel(p.generation)} ${p.name}</option>`;
-    editSelect.innerHTML += `<option value="${p.id}">${getGenLabel(p.generation)} ${p.name}</option>`;
-  });
-}
 
-document.getElementById('btn-add').addEventListener('click', () => {
-  const name = document.getElementById('edit-name').value.trim();
-  if (!name) { showToast('請輸入姓名'); return; }
 
-  const newPerson = {
-    id: 'p' + (nextId++),
-    name,
-    gender: document.getElementById('edit-gender').value,
-    generation: parseInt(document.getElementById('edit-gen').value),
-    branch: document.getElementById('edit-branch').value,
-    birthYear: document.getElementById('edit-birth').value ? parseInt(document.getElementById('edit-birth').value) : null,
-    deathYear: document.getElementById('edit-death').value ? parseInt(document.getElementById('edit-death').value) : null,
-    spouse: document.getElementById('edit-spouse').value.trim() || null,
-    childrenIds: [],
-    parentId: document.getElementById('edit-parent').value || null,
-    notes: document.getElementById('edit-notes').value.trim()
-  };
-  if (newPerson.parentId) {
-    const parent = getById(newPerson.parentId);
-    if (parent && !parent.childrenIds.includes(newPerson.id)) {
-      parent.childrenIds.push(newPerson.id);
-    }
-  }
-  persons.push(newPerson);
-  addedPersons.push(newPerson.id);
-  saveData();
-  ['edit-name','edit-birth','edit-death','edit-spouse','edit-notes'].forEach(id => document.getElementById(id).value = '');
-  populateEditDropdowns();
-  renderStats();
-  renderAddedList();
-  showToast(`已新增 ${name}（本機）`);
-});
 
-function renderAddedList() {
-  const list = document.getElementById('added-list');
-  const added = addedPersons.map(id => getById(id)).filter(Boolean);
-  if (added.length === 0) { list.innerHTML = '尚未新增任何族人'; return; }
-  list.innerHTML = added.map(p => `
-    <div style="padding:12px 0;border-bottom:1px solid var(--border-light);display:flex;justify-content:space-between;align-items:center;gap:10px;">
-      <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;font-family:var(--font-display);">${p.name} (${getGenLabel(p.generation)}, ${p.branch})</span>
-      <button class="btn btn-danger" style="padding:6px 14px;font-size:13px;flex-shrink:0;min-height:36px;" onclick="removePerson('${p.id}')">刪除</button>
-    </div>
-  `).join('');
-}
-
-window.removePerson = function(id) {
-  const p = getById(id);
-  if (!p) return;
-  if (p.parentId) {
-    const parent = getById(p.parentId);
-    if (parent) parent.childrenIds = parent.childrenIds.filter(c => c !== id);
-  }
-  persons = persons.filter(pp => pp.id !== id);
-  addedPersons = addedPersons.filter(aid => aid !== id);
-  saveData();
-  populateEditDropdowns();
-  renderStats();
-  renderAddedList();
-  showToast(`已刪除 ${p.name}`);
-};
-
-document.getElementById('edit-select').addEventListener('change', (e) => {
-  const id = e.target.value;
-  const form = document.getElementById('edit-existing-form');
-  if (!id) { form.style.display = 'none'; return; }
-  const p = getById(id);
-  if (!p) return;
-  form.style.display = 'block';
-  document.getElementById('ex-name').value = p.name;
-  document.getElementById('ex-spouse').value = p.spouse || '';
-  document.getElementById('ex-birth').value = p.birthYear || '';
-  document.getElementById('ex-death').value = p.deathYear || '';
-  document.getElementById('ex-notes').value = p.notes || '';
-});
-
-document.getElementById('btn-save-edit').addEventListener('click', () => {
-  const id = document.getElementById('edit-select').value;
-  if (!id) return;
-  const p = getById(id);
-  if (!p) return;
-
-  p.name = document.getElementById('ex-name').value.trim() || p.name;
-  p.spouse = document.getElementById('ex-spouse').value.trim() || null;
-  p.birthYear = editData.birthYear;
-  p.deathYear = editData.deathYear;
-  p.notes = editData.notes;
-  saveData();
-  populateEditDropdowns();
-  showToast(`已更新 ${p.name}（本機）`);
-});
 
 // Export
-document.getElementById('btn-export').addEventListener('click', () => {
-  const data = JSON.stringify({ persons, exported: new Date().toISOString() }, null, 2);
-  const blob = new Blob([data], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = '鐘氏族譜_' + new Date().toISOString().split('T')[0] + '.json';
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('已匯出族譜資料');
-});
 
 // Import
-document.getElementById('btn-import').addEventListener('click', () => {
-  document.getElementById('file-import').click();
-});
-document.getElementById('file-import').addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    try {
-      const data = JSON.parse(ev.target.result);
-      if (data.persons && Array.isArray(data.persons)) {
-        persons = data.persons;
-        addedPersons = [];
-        saveData();
-        populateEditDropdowns();
-        renderStats();
-        drawTree();
-        renderSearch();
-        showToast('已匯入族譜資料');
-      } else {
-        showToast('檔案格式不正確');
-      }
-    } catch(err) {
-      showToast('讀取檔案失敗');
-    }
-  };
-  reader.readAsText(file);
-  e.target.value = '';
-});
 
 // ============ WINDOW RESIZE ============
 let resizeTimer;
@@ -2620,8 +2468,6 @@ loadData();
 collapseByDefault();
 renderStats();
 renderFilters();
-populateEditDropdowns();
-renderAddedList();
 initMobileFilters();
 drawTree();
 
@@ -2631,7 +2477,6 @@ drawTree();
   if (loaded) {
     collapseByDefault();
     renderStats();
-    populateEditDropdowns();
     drawTree();
   }
 })();
