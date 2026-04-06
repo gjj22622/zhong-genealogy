@@ -247,7 +247,7 @@ function processAddRequests() {
       '', parentId, notes
     ]);
 
-    addSheet.getRange(i + 1, reviewCol + 1).setValue('✅ 已加入 (' + newId + ')');
+    addSheet.getRange(i + 1, reviewCol + 1).clearDataValidations().setValue('✅ 已加入 (' + newId + ')');
     count++;
     Logger.log('✅ 已新增：' + name + ' → ' + newId);
 
@@ -314,7 +314,7 @@ function processEditRequests() {
       }
     }
     if (targetRow === -1) {
-      editSheet.getRange(i + 1, reviewCol + 1).setValue('❌ 找不到「' + targetName + '」');
+      editSheet.getRange(i + 1, reviewCol + 1).clearDataValidations().setValue('❌ 找不到「' + targetName + '」');
       Logger.log('❌ 找不到族人：' + targetName);
       continue;
     }
@@ -352,10 +352,10 @@ function processEditRequests() {
     }
 
     if (changes.length > 0) {
-      editSheet.getRange(i + 1, reviewCol + 1).setValue('✅ 已修改（' + changes.length + '欄）');
+      editSheet.getRange(i + 1, reviewCol + 1).clearDataValidations().setValue('✅ 已修改（' + changes.length + '欄）');
       Logger.log('✅ 已修改「' + targetName + '」：' + changes.join('、'));
     } else {
-      editSheet.getRange(i + 1, reviewCol + 1).setValue('✅ 已處理（無變更）');
+      editSheet.getRange(i + 1, reviewCol + 1).clearDataValidations().setValue('✅ 已處理（無變更）');
     }
     count++;
 
