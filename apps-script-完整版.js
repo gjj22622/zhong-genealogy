@@ -247,6 +247,20 @@ function processAddRequests() {
       '', parentId, notes
     ]);
 
+    // 更新父親的 childrenIds（在主表找到父親那行，在 childrenIds 欄加入新 ID）
+    if (parentId) {
+      for (let j = 1; j < mainData.length; j++) {
+        if (String(mainData[j][0]).trim() === parentId) {
+          const childrenCol = 9; // childrenIds 是第 9 欄（0-indexed=8, 1-indexed=9）
+          const existing = String(mainData[j][8] || '').trim();
+          const updated = existing ? existing + ',' + newId : newId;
+          mainSheet.getRange(j + 1, childrenCol).setValue(updated);
+          Logger.log('   ↳ 已更新父親 ' + parentId + ' 的 childrenIds：' + updated);
+          break;
+        }
+      }
+    }
+
     addSheet.getRange(i + 1, reviewCol + 1).clearDataValidations().setValue('✅ 已加入 (' + newId + ')');
     count++;
     Logger.log('✅ 已新增：' + name + ' → ' + newId);

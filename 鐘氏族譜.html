@@ -1634,6 +1634,24 @@ function loadData() {
   nextId = 200;
 }
 
+// 用 parentId 補齊 childrenIds（確保雙向關係一致）
+function fixChildrenIds() {
+  // 先建立 id → person 的 map
+  const idMap = {};
+  persons.forEach(p => { idMap[p.id] = p; });
+
+  // 用 parentId 反推，確保父親的 childrenIds 包含此人
+  persons.forEach(p => {
+    if (p.parentId && idMap[p.parentId]) {
+      const parent = idMap[p.parentId];
+      if (!parent.childrenIds) parent.childrenIds = [];
+      if (!parent.childrenIds.includes(p.id)) {
+        parent.childrenIds.push(p.id);
+      }
+    }
+  });
+}
+
 function saveData() {
   try {
     if (window.localStorage) {
@@ -2529,6 +2547,7 @@ function collapseByDefault() {
 // ============ INIT ============
 initTheme();
 loadData();
+fixChildrenIds();
 collapseByDefault();
 renderStats();
 renderFilters();
@@ -2539,6 +2558,7 @@ drawTree();
 (async () => {
   const loaded = await fetchSheetsData();
   if (loaded) {
+    fixChildrenIds();
     collapseByDefault();
     renderStats();
     drawTree();
